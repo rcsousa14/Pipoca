@@ -4,7 +4,7 @@ Pipoca is a *location-base* social network. Users with be able to interact with 
 
 ## Getting Started
 
-___
+
 
 ### Folder Pipoca
 **Description**: This folder contains the app made with `flutter` for IOS and Android. 
@@ -19,10 +19,9 @@ To get started clone repository and run `yarn install  or npm install` to instal
 
 
 ## Road Map
-___
 
  - [x] finishing the DB schema
- - [ ] starting on the node + express + sequlize server
+ - [x] starting on the node + express + sequlize server
  - [ ] create all the end points 
  - [ ] finishing the app design 
  - [ ] figure out best solution for refratoring 
@@ -30,7 +29,7 @@ ___
  - [ ] nice to have a chat functionality down the road
   
 ## General Info
-___
+
 author: Ruben De Sousa
 
 Email: rcsousa14@hotmail.com
