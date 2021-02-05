@@ -25,7 +25,7 @@ router.delete('/v1/admin/roles/:id', authorizeMiddleware, role.destroy );
 router.get('/v1/admin/roles', authorizeMiddleware, role.index );
 
 //user routes
-router.get('/v1/users', authorizeMiddleware, user.one );
+router.get('/v1/users', authorizeMiddleware, user.show);
 router.get('/v1/admin/users', authorizeMiddleware, user.index);
 router.delete('/v1/users', authorizeMiddleware, user.delete);
 router.put('/v1/users', authorizeMiddleware, user.update);

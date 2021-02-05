@@ -20,7 +20,7 @@ exports.index = async ({ decoded }, res) => {
     }
 };
 
-exports.one = async ({ decoded }, res) => {
+exports.show = async ({ decoded }, res) => {
     try {
         const user = await models.user.findOne({
             
