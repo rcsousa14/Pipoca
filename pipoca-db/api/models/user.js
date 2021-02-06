@@ -12,13 +12,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
      user.belongsTo(models.role,{
-       as: 'role',
+       as: 'roles',
        foreignKey: 'role_id'
      });
-     user.hasMany(models.points,{
-       as: 'user',
+     user.hasMany(models.point,{
+       as: 'users',
        foreignKey: 'user_id',
-     })
+     });
     }
   };
   user.init({

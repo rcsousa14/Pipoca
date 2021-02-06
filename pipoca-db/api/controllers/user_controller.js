@@ -6,7 +6,8 @@ const models = require('../models');
 
 exports.index = async ({ decoded }, res) => {
     try {
-        const admin = await models.user.findone({ where: { id: decoded.id, role_id: 1 },  });
+        //TODO: need to figure out where the role equals the name not the id
+        const admin = await models.user.findone({ where: { id: decoded.id, role_id: 4 },  });
         if (!admin) {
             return res.status(401).send('401: Unauthorized 💩!');
         }

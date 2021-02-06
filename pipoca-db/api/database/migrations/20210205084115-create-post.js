@@ -31,6 +31,7 @@ module.exports = {
       coordinates: {
         type: Sequelize.GEOMETRY('POINT')
       },
+      //this needs to go
       isNear: {
         type: Sequelize.BOOLEAN
       },

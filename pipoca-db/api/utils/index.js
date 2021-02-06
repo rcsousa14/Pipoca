@@ -19,8 +19,7 @@ exports.jwtToken  = {
         
     }
 
-}
-
+};
 
 
 export const hashPassword = (password) => bcrypt.hashSync(password, 10);

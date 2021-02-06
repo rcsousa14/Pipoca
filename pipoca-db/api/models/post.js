@@ -29,13 +29,13 @@ module.exports = (sequelize, DataTypes) => {
     links: DataTypes.ARRAY(DataTypes.STRING),
     tags: DataTypes.ARRAY(DataTypes.STRING),
     coordinates: DataTypes.GEOMETRY,
-    isNear: DataTypes.BOOLEAN,
     isFlagged: DataTypes.BOOLEAN,
     flag: DataTypes.INTEGER,
     total_points: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'post',
+    //need to create a class method here for total points and for is flagged
   });
   return post;
 };

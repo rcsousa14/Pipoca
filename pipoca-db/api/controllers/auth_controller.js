@@ -11,18 +11,19 @@ const Op =require('sequelize').Op;
     exports.signup = async (req, res) => {
         
         try {
-            //TODO: sanitize the shit out of everything
+          
             const { username, name, password, phone, gender, birthday, picture, fcm_token } = req.body;
            
             const hash = auth.hashPassword(password);
-            
-            const newUser = await models.user.create({username, name, password: hash, phone, gender, birthday, picture, fcm_token});
+            const { id } = await models.role.findOne({where: {role: 'regular'}})
+            const newUser = await models.user.create({username, name, password: hash, phone, gender, birthday, picture, fcm_token, role_id: id });
             const token = auth.jwtToken.createToken(newUser);
             
             return res.status(201).send({    message: 'welcome to Pipoca 🍿 use the token to gain access!😄', token });
         } catch (error) {
             
             return res.status(500).json({
+                status: 500,
                 message: error.message
              });
         }

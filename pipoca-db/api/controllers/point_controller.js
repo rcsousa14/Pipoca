@@ -1,12 +1,12 @@
 const models = require('../models');
 
-exports.store = async({body, decoded}, res, next) => {
+exports.store = async({body, decoded}, res, ) => {
     try {
         const { isPoint, post_id } = body; 
         
         const post = await models.post.findByPk(post_id);
         if(!post){
-            return res.status(400).send({ message: '🤔 Bago não foi encontrado'});
+            return res.status(400).send({ message: '🤔 Bago não foi encontrado!'});
         }
         const [point, created ] = await models.point.findOrCreate({
             where: {user_id: decoded.id, isPoint}

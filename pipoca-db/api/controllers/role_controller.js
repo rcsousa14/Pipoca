@@ -3,9 +3,10 @@ const models = require('../models');
 
 exports.store = async ({ body, decoded }, res) => {
     try {
-        const { role } = body;
-        
-        const admin = await models.user.findOne({ where: { id: decoded.id, role_id: 1 } });
+        //TODO: learn how to do includes 
+         const { role } = body;
+        const {id} = await models.role.findOne({where: {role: 'admin'}});
+        const admin = await models.user.findOne({ where: { id: decoded.id, role_id: id } });
         if (!admin) {
             return res.status(401).send('401: Unauthorized 💩!');
         }
@@ -21,8 +22,8 @@ exports.store = async ({ body, decoded }, res) => {
 exports.destroy = async ({ params, decoded }, res) => {
     try {
         const { id } = params;
-        
-        const admin = await models.user.findOne({ where: { id: decoded.id, role_id: 1 } });
+        const role_id = await models.role.findOne({where: {role: 'admin'}});
+        const admin = await models.user.findOne({ where: { id: decoded.id, role_id: role_id.id } });
         if (!admin) {
             return res.status(401).send('401: Unauthorized 💩!');
         }
@@ -37,8 +38,8 @@ exports.destroy = async ({ params, decoded }, res) => {
 
 exports.index = async ({ decoded }, res) => {
     try {
-        
-        const admin = await models.user.findOne({ where: { id: decoded.id, role_id: 1 } });
+        const {id} = await models.role.findOne({where: {role: 'admin'}});
+        const admin = await models.user.findOne({ where: { id: decoded.id, role_id: id } });
         if (!admin) {
             return res.status(401).send('401: Unauthorized 💩!');
         }
