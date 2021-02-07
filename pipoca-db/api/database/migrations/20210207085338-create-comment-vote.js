@@ -1,32 +1,35 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('post_points', {
+    await queryInterface.createTable('comment_votes', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      post_id: {
+      user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model:'posts',
-          key: 'id',
-          onUpdate: 'CASCADE',
-          onDelete: 'CASCADE' 
-         }
+          model: 'users', 
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
-      point_id: {
+      comment_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model:'posts',
-          key: 'id',
-          onUpdate: 'CASCADE',
-          onDelete: 'CASCADE' 
-         }
+          model: 'comments', 
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      is_voted: {
+        type: Sequelize.BOOLEAN
       },
       created_at: {
         allowNull: false,
@@ -39,6 +42,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('post_points');
+    await queryInterface.dropTable('comment_votes');
   }
 };

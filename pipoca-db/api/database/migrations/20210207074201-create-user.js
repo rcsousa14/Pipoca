@@ -8,56 +8,39 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING,
+      phone_number: {
+        type: Sequelize.STRING(20),
         allowNull: false,
       },
-      username: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      phone: {
-        type: Sequelize.STRING,
-        unique:true,
-      },
-      gender: {
-        type: Sequelize.STRING
-      },
-      birthday: {
-        type: Sequelize.STRING
-      },
-      picture: {
-        type: Sequelize.STRING
-      },
-      points: {
-        type: Sequelize.INTEGER,
-        defaultValue: 100,
-        
-      },
-      wallet: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-       
+      phone_carrier: {
+        type: Sequelize.STRING(20)
       },
       role_id: {
-        type:Sequelize.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'roles', 
           key: 'id'
         },
-        defaultValue: 2,
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      username: {
+        type: Sequelize.STRING(20),
+        allowNull: false,
+      },
+      avatar: {
+        type: Sequelize.STRING
+      },
+      birthday: {
+        type: Sequelize.STRING(15)
+      },
+      bio: {
+        type: Sequelize.STRING(124)
+      },
       fcm_token: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       created_at: {
         allowNull: false,

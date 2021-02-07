@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('posts', {
+    await queryInterface.createTable('comments', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,15 +12,25 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model:'users',
-          key:'id',
-          onUpdate: 'CASCADE',
-          onDelete:'CASCADE'
-        }
+          model: 'users', 
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
-      post_text: {
-        type: Sequelize.STRING(200),
+      post_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: 'posts', 
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      content: {
+        type: Sequelize.STRING(200),
+        allowNull: false
       },
       links: {
         type: Sequelize.ARRAY(Sequelize.STRING)
@@ -28,22 +38,13 @@ module.exports = {
       tags: {
         type: Sequelize.ARRAY(Sequelize.STRING)
       },
-      coordinates: {
-        type: Sequelize.GEOMETRY('POINT')
+      flags: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
       },
-      //this needs to go
-      isNear: {
-        type: Sequelize.BOOLEAN
-      },
-      isFlagged: {
+      is_flagged: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
-      },
-      flag: {
-        type: Sequelize.INTEGER
-      },
-      total_points: {
-        type: Sequelize.INTEGER
       },
       created_at: {
         allowNull: false,
@@ -56,6 +57,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('posts');
+    await queryInterface.dropTable('comments');
   }
 };

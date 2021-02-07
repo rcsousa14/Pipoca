@@ -1,19 +1,17 @@
 const models = require('../models');
 
 
-
-
-
-exports.index = async ({ decoded }, res) => {
+exports.index = async (req , res) => {
     try {
-        //TODO: need to figure out where the role equals the name not the id
-        const admin = await models.user.findone({ where: { id: decoded.id, role_id: 4 },  });
-        if (!admin) {
-            return res.status(401).send('401: Unauthorized 💩!');
-        }
-        const users = await models.user.findAll({attributes: {exclude: ['password']},});
-        const { id } = users;
-        return res.status(200).send({ message: "here is all the users admin", users    });
+        const users = await models.user.findAll({ attributes: { exclude: ['bio','role_id'] }, 
+        include: [{
+            model: models.role,
+            as: 'role',
+            where: { role: "regular" },
+            attributes: { exclude: ['createdAt','updatedAt','id'] }
+        }] });
+        
+        return res.status(200).send({ message: "here is all the users admin", users });
     } catch (error) {
         return res.status(500).json({
             error: error.message
@@ -22,15 +20,28 @@ exports.index = async ({ decoded }, res) => {
 };
 
 exports.show = async ({ decoded }, res) => {
+    /** 
+     * TODO: this needs to include:
+     * the total number of user posts
+     * the total number of user comments
+     * the total number of user subcomments
+     * maybe try to combine them( see the ui first)
+     * the total number of votes (post, comments, sub_comments)
+    */
     try {
         const user = await models.user.findOne({
-            
+
             where: {
                 id: decoded.id
             },
-            attributes: {exclude: ['password']}
+            include: [{
+                model: models.role,
+                as: 'role',
+                where: { role: "regular" },
+                attributes: { exclude: ['createdAt','updatedAt','id'] }
+            }] 
         });
-        
+
         return res.status(200).send({ message: "😁 Usuário foi encontrado", user });
     } catch (error) {
         return res.status(500).json({
@@ -42,9 +53,9 @@ exports.show = async ({ decoded }, res) => {
 
 };
 
-exports.delete = async ({ decoded }, res) => {
+exports.destroy = async ({ decoded }, res) => {
     try {
-        const user = await models.user.destroy({
+         await models.user.destroy({
             where: {
                 id: decoded.id
             }
@@ -60,13 +71,15 @@ exports.delete = async ({ decoded }, res) => {
 
 exports.update = async ({ body, decoded }, res) => {
     try {
-        const user = await models.user.update( body, {
+        // figure out how to patch instead
+        const {phone_number, phone_carrier, username, avatar, birthday, bio, fcm_token} =body;
+        const user = await models.user.update({body}, {
             where: {
                 id: decoded.id
             },
-            attributes: {exclude: ['password']},
+            
         });
-        const { id } = user;
+        
         return res.status(200).send({ message: "🍿 So sucesso! de volta a pipocar 😆", user });
     } catch (error) {
         return res.status(500).json({

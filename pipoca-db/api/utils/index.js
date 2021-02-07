@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 
@@ -8,8 +7,8 @@ require('dotenv').config();
 
 exports.jwtToken  = { 
 
-    createToken({ id, username }) {
-        return jwt.sign({ id, username }, process.env.JWT_SECRET, {
+    createToken({ id, phone_number, role_id }) {
+        return jwt.sign({ id, phone_number, role_id }, process.env.JWT_SECRET, {
             expiresIn: '7d'
         });
 
@@ -22,5 +21,3 @@ exports.jwtToken  = {
 };
 
 
-export const hashPassword = (password) => bcrypt.hashSync(password, 10);
-export const comparePassword = (password, hash) => bcrypt.compareSync(password, hash);

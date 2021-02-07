@@ -11,28 +11,45 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-     user.belongsTo(models.role,{
-       as: 'roles',
-       foreignKey: 'role_id'
-     });
-     user.hasMany(models.point,{
-       as: 'users',
-       foreignKey: 'user_id',
-     });
+      user.belongsTo(models.role,{
+        as: 'role',
+        foreignKey: 'role_id'
+      });
+      user.hasMany(models.post,{
+        as: 'posts',
+        foreignKey: 'user_id'
+      });
+      user.hasMany(models.post_vote,{
+        as: 'post_votes',
+        foreignKey: 'user_id'
+      });
+      user.hasMany(models.comment_vote, {
+        as: 'comment_votes',
+        foreignKey: 'user_id'
+      });
+      user.hasMany(models.comment,{
+        as: 'comments',
+        foreignKey: 'user_id'
+      });
+      user.hasMany(models.sub_comment, {
+        as:'sub_comments',
+        foreignKey: 'user_id'
+      });
+      user.hasMany(models.sub_comment_vote, {
+        as: 'sub_comment_votes',
+        foreignKey: 'user_id'
+      })
     }
   };
   user.init({
-    name: DataTypes.STRING,
-    password: DataTypes.STRING,
-    username: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    gender: DataTypes.STRING,
-    birthday: DataTypes.STRING,
-    picture: DataTypes.STRING,
-    points: DataTypes.INTEGER,
-    wallet: DataTypes.INTEGER,
-    fcm_token: DataTypes.STRING,
-    role_id: DataTypes.INTEGER
+    phone_number: DataTypes.STRING(20),
+    phone_carrier: DataTypes.STRING(20),
+    role_id: DataTypes.INTEGER,
+    username: DataTypes.STRING(20),
+    avatar: DataTypes.STRING,
+    birthday: DataTypes.STRING(15),
+    bio: DataTypes.STRING(124),
+    fcm_token: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'user',
