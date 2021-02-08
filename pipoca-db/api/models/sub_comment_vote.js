@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
   sub_comment_vote.init({
     user_id: DataTypes.INTEGER,
     sub_comment_id: DataTypes.INTEGER,
-    is_voted: DataTypes.BOOLEAN
+    voted: DataTypes.SMALLINT
   }, {
     sequelize,
     modelName: 'sub_comment_vote',

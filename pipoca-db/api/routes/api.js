@@ -8,6 +8,7 @@ const auth = require('../controllers/auth_controller');
 const role = require('../controllers/role_controller');
 const vote = require('../controllers/post_vote_controller');
 const post = require('../controllers/post_controller');
+const user_posts = require('../controllers/user_post_controller');
 const router = Router();
 
 
@@ -34,21 +35,23 @@ router.delete('/v1/admin/roles/:id', authorizeMiddleware, adminMiddleware, role.
 router.get('/v1/admin/roles', authorizeMiddleware, adminMiddleware, role.index ); //☑️
 
 //user routes
-router.get('/v1/users', authorizeMiddleware, user.show); //❎
+router.get('/v1/users', authorizeMiddleware, user.show); //☑️
 router.get('/v1/admin/users', authorizeMiddleware, adminMiddleware, user.index); //☑️
-router.delete('/v1/users', authorizeMiddleware, user.destroy); //❎
-router.put('/v1/users', authorizeMiddleware, user.update);//❎
+router.delete('/v1/users', authorizeMiddleware, user.destroy); //☑️
+router.patch('/v1/users', authorizeMiddleware, user.update);//☑️
 
 //votes routes
-router.post('/v1/votes', authorizeMiddleware, vote.store);//❎☑️ works but i have notes for better implementation
+router.post('/v1/votes', authorizeMiddleware, vote.store);//☑️ 
 
-//post roures
-router.post('/v1/posts', authorizeMiddleware, postauthMiddleware, post.store); //☑️
-router.get('/v1/posts', authorizeMiddleware, post.index); //❎
-router.get('/v1/feed', authorizeMiddleware, post.all); //❎
+//post routes
+router.get('/v1/feed', authorizeMiddleware, post.index); //❎ figure out limit sorting and the isnear
 router.get('/v1/posts/:id', authorizeMiddleware, post.show); //☑️
-router.delete('/v1/posts/:id', authorizeMiddleware, post.destroy); //☑️
 
+// user posts routes
+router.post('/v1/user/posts', authorizeMiddleware, postauthMiddleware, user_posts.store); //☑️
+router.get('/v1/user/feed', authorizeMiddleware, user_posts.index); //❎ figure out limit sorting and show more info with includes
+router.get('/v1/user/posts', authorizeMiddleware, user_posts.show);//☑️ need to filter it 
+router.delete('/v1/user/posts/:id', authorizeMiddleware, user_posts.destroy); //☑️
 /**
  * need the comment and comment_vote route
  * need the sub_comment and sub_comment_voute route
