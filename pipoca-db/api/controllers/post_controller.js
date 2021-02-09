@@ -19,11 +19,13 @@ exports.index = async({ body, decoded }, res) => {
         });
     }
 };
-exports.show = async({ params }, res) => {
+exports.show = async({ query, params, decoded }, res) => {
     try {
         const { id } = params;
-        var post = await models.post.findOne({
-            group: ['post.id','user_post.id', 'post_comments.id', 'post_votes.id'],
+        
+
+        var oldPosts = await models.post.findOne({
+            group: ['post.id','creator.id'],
             where: {id: id},
             attributes: [
                 'id',
@@ -33,13 +35,13 @@ exports.show = async({ params }, res) => {
                 'flags',
                 'is_flagged',
                 'createdAt',
-                [Sequelize.fn('COUNT', Sequelize.col('post_comments.id')), 'post_comments_total'],
-                [Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'posts_votes_total'],
+                [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('post_comments.id')),'INT'), 'post_comments_total'],
+                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')),'INT'), 'posts_votes_total'],
             ],
             include: [
                 {
                     model: models.user,
-                    as: 'user_post',
+                    as: 'creator',
                     attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id'] }
                 },
                 {
@@ -61,7 +63,26 @@ exports.show = async({ params }, res) => {
             ]
 
         });
-        return res.status(200).send({ message: `🍿 Bago ${id}  para ti 🥳`, post });
+        
+       
+        const votes = await models.post_vote.findOne({
+            where: { user_id: decoded.id, post_id: id },
+            attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
+        });
+        const isVoted = votes ? true : false;
+            
+        var data = {
+            "user_voted": isVoted,
+            "user_vote": votes,
+             "post":oldPosts
+        };
+
+         
+
+            
+    
+
+        return res.status(200).send({ message: `🍿 Bago ${id}  para ti 🥳`, data });
         
        
     } catch (error) {

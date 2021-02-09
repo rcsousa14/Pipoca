@@ -92,7 +92,7 @@ exports.index = async ({ body, query, decoded }, res) => {
                 },
             ],
 
-        })
+        });
         var newPost = [];
         for (var post of oldPosts) {
 
@@ -115,6 +115,9 @@ exports.index = async ({ body, query, decoded }, res) => {
         };
 
         const posts = {};
+        posts.total = {
+           data_total: newPost.length
+        }
         if(endIndex < newPost.length){
             posts.next = {
                 page: page + 1,
@@ -130,11 +133,11 @@ exports.index = async ({ body, query, decoded }, res) => {
     
         }
         
-       // posts.data = newPost.slice(startIndex, endIndex)
+        posts.data = newPost.slice(startIndex, endIndex);
 
 
 
-        return res.status(200).send({ message: '🍿 Todos os Bagos proximo de ti 🥳', newPost });
+        return res.status(200).send({ message: '🍿 Todos os Bagos proximo de ti 🥳', posts });
 
     } catch (error) {
         return res.status(500).json({
@@ -163,10 +166,17 @@ exports.destroy = async ({ params, decoded }, res) => {
     }
 }
 
-exports.show = async ({ decoded }, res) => {
+exports.show = async ({ query, decoded }, res) => {
     try {
-        const posts = await models.post.findAll({
-            group: ['post.id', 'user_post.id'],
+        const page = parseInt(query.page);
+        const limit = parseInt(query.limit);
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const oldPosts = await models.post.findAll({
+            group: ['post.id', 'creator.id'],
+            order: [
+                ['createdAt', 'DESC']
+            ],
             where: { user_id: decoded.id },
             attributes: [
                 'id',
@@ -176,13 +186,13 @@ exports.show = async ({ decoded }, res) => {
                 'flags',
                 'is_flagged',
                 'createdAt',
-                [Sequelize.fn('COUNT', Sequelize.col('post_comments.id')), 'post_comments_total'],
-                [Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'posts_votes_total'],
+                [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('post_comments.id')),'INT'), 'post_comments_total'],
+                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')),'INT'), 'posts_votes_total'],
             ],
             include: [
                 {
                     model: models.user,
-                    as: 'user_post',
+                    as: 'creator',
                     attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id'] }
                 },
                 {
@@ -204,7 +214,53 @@ exports.show = async ({ decoded }, res) => {
             ]
 
         });
-        return res.status(200).send({ message: `Aqui esta todos os teu Bagos! 🍿`, posts });
+        var newPost = [];
+        for (var post of oldPosts) {
+
+            
+
+            const votes = await models.post_vote.findOne({
+                where: { user_id: decoded.id, post_id: post.id },
+                attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
+            });
+            const isVoted = votes ? true : false;
+            
+
+
+            newPost.push({
+                "user_voted": isVoted,
+                "user_vote": votes,
+                post
+            });
+
+        };
+        
+       
+           const items_total = newPost.length
+           var page_info = {
+            
+           }
+      
+        if(endIndex < newPost.length){
+           
+                page_info.next = {
+                    next_page: page + 1,
+                    page_limit: limit
+                }
+           
+        }
+       
+        if(startIndex > 0){
+            page_info.previous = {
+                previous_page: page - 1,
+                page_limit: limit
+            }
+    
+        }
+        
+        var data = newPost.slice(startIndex, endIndex);
+
+        return res.status(200).send({ message: `Aqui esta todos os teu Bagos! 🍿`, items_total, page_info, data });
     } catch (error) {
         return res.status(500).json({
             error: error.message
