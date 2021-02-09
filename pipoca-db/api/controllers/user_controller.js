@@ -23,54 +23,36 @@ exports.index = async (req, res) => {
 };
 
 exports.show = async ({ decoded }, res) => {
-    /** 
-     * TODO: this needs to include:
-     * the total number of user posts
-     * the total number of user comments
-     * the total number of user subcomments
-     * maybe try to combine them( see the ui first)
-     * the total number of votes (post, comments, sub_comments)
-    */
+    
     try {
-        const user = await models.user.findOne({
-            group: ['user.id', 'posts.id', 'comments.id','posts->post_votes.id','comments->comment_votes.id','sub_comments->sub_comment_votes.id'],
+        const karma_total = await models.user.findOne({
+            group: ['user.id'],
             where: {
                 id: decoded.id
             },
-           
             attributes: [
-                'id',
-                'username',
-                'bio',
-                'phone_number',
-                'avatar',
-                'birthday',
-                'fcm_token',
-                'phone_carrier',
-                'createdAt',
-                [Sequelize.fn('COUNT', Sequelize.col('posts.id')), 'user_posts_total'],
-                [Sequelize.fn('COUNT', Sequelize.col('comments.id')), 'user_comments_total'],
-                [Sequelize.fn('COUNT', Sequelize.col('sub_comments.id')), 'user_sub_comments_total'],
-                [Sequelize.fn('COUNT', Sequelize.col('sub_comments.id')), 'user_sub_comments_total'],
-                [Sequelize.fn('SUM', Sequelize.col('posts->post_votes.voted')), 'user_posts_votes_total'],
-                [Sequelize.fn('SUM', Sequelize.col('comments->comment_votes.voted')), 'user_comments_votes_total'],
-                [Sequelize.fn('SUM', Sequelize.col('sub_comments->sub_comment_votes.voted')), 'user_sub_comments_votes_total']
-            ],
+           
+                [Sequelize.fn('SUM', Sequelize.col('posts->post_votes.voted')), 'posts_votes_total'],
+                [Sequelize.fn('SUM', Sequelize.col('comments->comment_votes.voted')), 'comments_votes_total'],
+                [Sequelize.fn('SUM', Sequelize.col('sub_comments->sub_comment_votes.voted')), 'sub_comments_votes_total']
 
+                
+            ],
             include: [
 
                 {
                     
                     model: models.post,
                     as: 'posts',
-                    attributes : [],
+                    attributes: [],
                     include: [
                         {
                             model: models.post_vote,
                             as: 'post_votes',
-                            attributes : [],
+                            attributes: []
                         }
                     ]
+
 
                 },
                 {
@@ -81,7 +63,7 @@ exports.show = async ({ decoded }, res) => {
                         {
                             model: models.comment_vote,
                             as: 'comment_votes',
-                            attributes : [],
+                            attributes: [],
                         }
                     ]
 
@@ -94,7 +76,7 @@ exports.show = async ({ decoded }, res) => {
                         {
                             model: models.sub_comment_vote,
                             as: 'sub_comment_votes',
-                            attributes : [],
+                            attributes: [],
                         }
                     ]
 
@@ -102,12 +84,59 @@ exports.show = async ({ decoded }, res) => {
 
 
             ],
+        });
+        const user = await models.user.findOne({
+            group: ['user.id'],
+            where: {
+                id: decoded.id
+            },
+
+            attributes: [
+                'id',
+                'username',
+                'bio',
+                'phone_number',
+                'avatar',
+                'birthday',
+                'fcm_token',
+                'phone_carrier',
+                'createdAt',
+                [Sequelize.fn('COUNT', Sequelize.col('posts.content')), 'user_posts_total'],
+                [Sequelize.fn('COUNT', Sequelize.col('comments.content')), 'user_comments_total'],
+                [Sequelize.fn('COUNT', Sequelize.col('sub_comments.content')), 'user_sub_comments_total'],
+            ],
+            include: [
+
+                {
+                    
+                    model: models.post,
+                    as: 'posts',
+                    attributes: [],
+
+                },
+                {
+                    model: models.comment,
+                    as: 'comments',
+                    attributes: [],
+
+                },
+                {
+                    model: models.sub_comment,
+                    as: 'sub_comments',
+                    attributes: [],
+                    
+                },
+
+
+            ],
+
+            
 
 
 
         });
-       
-        return res.status(200).json({ message: "😁 Usuário foi encontrado", user});
+
+        return res.status(200).json({ message: "😁 Usuário foi encontrado", user, karma_total });
     } catch (error) {
         return res.status(500).json({
             error: error.message
@@ -138,7 +167,7 @@ exports.update = async ({ body, decoded }, res) => {
     try {
         // figure out how to patch instead
         const { phone_number, phone_carrier, username, avatar, birthday, bio, fcm_token } = body;
-        const user = await models.user.update({phone_number, phone_carrier, username, avatar, birthday, bio, fcm_token }, {
+        const user = await models.user.update({ phone_number, phone_carrier, username, avatar, birthday, bio, fcm_token }, {
             where: {
                 id: decoded.id
             },

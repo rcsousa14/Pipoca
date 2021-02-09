@@ -28,8 +28,9 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      is_voted: {
-        type: Sequelize.BOOLEAN
+      voted: {
+        type: Sequelize.SMALLINT,
+        defaultValue: 0,
       },
       created_at: {
         allowNull: false,

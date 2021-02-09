@@ -6,7 +6,9 @@ import adminMiddleware from '../middleware/admin_auth';
 const user = require('../controllers/user_controller');
 const auth = require('../controllers/auth_controller');
 const role = require('../controllers/role_controller');
-const vote = require('../controllers/post_vote_controller');
+const post_vote = require('../controllers/post_vote_controller');
+const comment_vote = require('../controllers/comment_vote_controller');
+const sub_comment_vote = require('../controllers/sub_comment_vote');
 const post = require('../controllers/post_controller');
 const user_posts = require('../controllers/user_post_controller');
 const router = Router();
@@ -41,15 +43,17 @@ router.delete('/v1/users', authorizeMiddleware, user.destroy); //☑️
 router.patch('/v1/users', authorizeMiddleware, user.update);//☑️
 
 //votes routes
-router.post('/v1/votes', authorizeMiddleware, vote.store);//☑️ 
+router.post('/v1/post/votes', authorizeMiddleware, post_vote.store);//☑️
+router.post('/v1/comment/votes', authorizeMiddleware, comment_vote.store);//☑️
+router.post('/v1/sub_comment/votes', authorizeMiddleware, sub_comment_vote.store);//☑️
 
 //post routes
 router.get('/v1/feed', authorizeMiddleware, post.index); //❎ figure out limit sorting and the isnear
 router.get('/v1/posts/:id', authorizeMiddleware, post.show); //☑️
 
 // user posts routes
-router.post('/v1/user/posts', authorizeMiddleware, postauthMiddleware, user_posts.store); //☑️
-router.get('/v1/user/feed', authorizeMiddleware, user_posts.index); //❎ figure out limit sorting and show more info with includes
+router.post('/v1/user/posts', authorizeMiddleware, postauthMiddleware, user_posts.store); //☑️❎ user upvote
+router.get('/v1/user/feed', authorizeMiddleware, user_posts.index); //❎ figure out limit sorting user upvote
 router.get('/v1/user/posts', authorizeMiddleware, user_posts.show);//☑️ need to filter it 
 router.delete('/v1/user/posts/:id', authorizeMiddleware, user_posts.destroy); //☑️
 /**
