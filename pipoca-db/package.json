@@ -8,7 +8,9 @@
         "clean": "rm -rf build && mkdir build",
         "build": "yarn run clean && build",
         "start": "env NODE_ENV=production node api/index.js",
-        "dev": "env NODE_ENV=development nodemon api/index.js"
+        "dev": "env NODE_ENV=development nodemon api/index.js",
+        "git": "git add . && git commit -m",
+        "push": "git push"
     },
     "keywords": [],
     "author": "Ruben Sousa",
