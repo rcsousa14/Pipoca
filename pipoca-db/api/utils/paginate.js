@@ -22,6 +22,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
 
         if (vote == 'post') {
             // this gets the total of all comments a post has 
+
             const comments = await models.comment.findAll({
                 where: { post_id: row.id },
 

@@ -1,37 +1,39 @@
 {
-  "name": "pipoca-db",
-  "version": "1.0.0",
-  "description": "this is the backend for Pipoca a location based social network.",
-  "main": "index.js",
-  "license": "MIT",
-  "scripts": {
-    "clean": "rm -rf build && mkdir build",
-    "build": "yarn run clean && build",
-    "start": "node build/index.js",
-    "dev": "env NODE_ENV=development nodemon api/index.js"
-  },
-  "keywords": [],
-  "author": "Ruben Sousa",
-  "devDependencies": {
-    "faker": "^5.3.1",
-    "jest": "^26.6.3",
-    "nodemon": "^2.0.7"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "esm": "^3.2.25",
-    "express": "^4.17.1",
-    "express-rate-limit": "^5.2.5",
-    "express-slow-down": "^1.4.0",
-    "express-subdomain": "^1.0.5",
-    "helmet": "^4.4.1",
-    "jsonwebtoken": "^8.5.1",
-    "morgan": "^1.10.0",
-    "pg": "^8.5.1",
-    "pg-hstore": "^2.3.3",
-    "sequelize": "^6.5.0",
-    "swagger-jsdoc": "^6.0.2",
-    "swagger-ui-express": "^4.1.6"
-  }
+    "name": "pipoca-db",
+    "version": "1.0.0",
+    "description": "this is the backend for Pipoca a location based social network.",
+    "main": "api/index.js",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf build && mkdir build",
+        "build": "yarn run clean && build",
+        "start": "env NODE_ENV=production node api/index.js",
+        "dev": "env NODE_ENV=development nodemon api/index.js"
+    },
+    "keywords": [],
+    "author": "Ruben Sousa",
+    "devDependencies": {
+        "faker": "^5.3.1",
+        "jest": "^26.6.3",
+        "nodemon": "^2.0.7"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "ejs": "^3.1.6",
+        "esm": "^3.2.25",
+        "express": "^4.17.1",
+        "express-rate-limit": "^5.2.5",
+        "express-slow-down": "^1.4.0",
+        "express-subdomain": "^1.0.5",
+        "geolib": "^3.3.1",
+        "helmet": "^4.4.1",
+        "jsonwebtoken": "^8.5.1",
+        "morgan": "^1.10.0",
+        "pg": "^8.5.1",
+        "pg-hstore": "^2.3.3",
+        "sequelize": "^6.5.0",
+        "swagger-jsdoc": "^6.0.2",
+        "swagger-ui-express": "^4.1.6"
+    }
 }

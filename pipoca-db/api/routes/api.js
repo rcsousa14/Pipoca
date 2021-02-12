@@ -74,7 +74,7 @@ router.delete('/v1/sub_comments/:id', authorizeMiddleware, user_sub_comments.des
 
 
 /**
- * need the sub_comment  route
+ * 
  * need to delete tags
  * need to figure out the right way to delete a comment maybe soft 
  * delete need to add isDeleted to comments and subcomments need to add the isnear on all posts
