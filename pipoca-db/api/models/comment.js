@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       comment.belongsTo(models.user,{
-        as: 'user_comment',
+        as: 'creator',
         foreignKey: 'user_id'
       });
       comment.belongsTo(models.post,{
@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'comment_votes',
         foreignKey: 'comment_id'
       });
+      comment.hasMany(models.sub_comment, {
+        as: 'comment_sub_comments',
+        foreignKey: 'comment_id'
+      })
     }
   };
   comment.init({

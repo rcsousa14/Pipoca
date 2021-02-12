@@ -1,8 +1,10 @@
+const { paginate } = require('../utils/paginate');
 const models = require('../models');
 const Sequelize = require('sequelize');
-const { post } = require('got');
 
-exports.store = async ({ body, decoded }, res) => {
+
+
+exports.store = async({ body, decoded }, res) => {
     try {
         const { content, links, tags, longitude, latitude } = body;
 
@@ -22,32 +24,20 @@ exports.store = async ({ body, decoded }, res) => {
         });
     }
 };
-
-exports.index = async ({ body, query, decoded }, res) => {
+//feed shows all posts that are near by you can sort it for posts with higher points
+exports.index = async({ body, query, decoded }, res) => {
     try {
-        /**
-         * TODO: this is the index to see all the post that are nearby (user perspective)
-         * 
-         * 
-         * in the includes i need to add the karma total and post total
-         * find it withing 4.5km
-         * query is like this ?lat=0&lng=0
-         * im here
-         */
-
-        const { lat, lng } = query;
+        const vote = 'post';
+        const { lat, lng } = body;
+        const id = decoded.id;
         const page = parseInt(query.page);
-        const limit = parseInt(query.limit);
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
-        var oldPosts = await models.post.findAll({
-            
-            order: [
-                ['createdAt', 'DESC']
-            ],
-            group: ['post.id', 'creator.id', ],
+        const limit = 12;
 
-            where: Sequelize.where(
+        let search;
+        let order = [];
+
+        if (lat && lng) {
+            search = Sequelize.where(
                 Sequelize.fn('ST_DWithin',
                     Sequelize.col('coordinates'),
                     Sequelize.fn('ST_SetSRID',
@@ -55,85 +45,59 @@ exports.index = async ({ body, query, decoded }, res) => {
                             lng, lat),
                         4326),
                     0.032),
-                true),
-            attributes: [
-                'id',
-                'content',
-                'links',
-                'tags',
-                'flags',
-                'is_flagged',
-                'createdAt',
-
-                [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('post_comments.id')),'INT'), 'post_comments_total'],
-                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')),'INT'), 'posts_votes_total'],
-            ],
-            include: [
-                {
-                    model: models.user,
-                    as: 'creator',
-                    attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id'] }
-                },
-                {
-
-
-                    model: models.post_vote,
-                    as: 'post_votes',
-                    attributes: [],
-
-
-                },
-                {
-                    model: models.comment,
-                    as: 'post_comments',
-                    attributes: [],
-
-
-                },
-            ],
-
-        });
-        var newPost = [];
-        for (var post of oldPosts) {
-
-            
-
-            const votes = await models.post_vote.findOne({
-                where: { user_id: decoded.id, post_id: post.id },
-                attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
-            });
-            const isVoted = votes ? true : false;
-            
-
-
-            newPost.push({
-                "user_voted": isVoted,
-                "user_vote": votes,
-                post
-            });
-
-        };
-
-        const posts = {};
-        posts.total = {
-           data_total: newPost.length
+                true)
         }
-        if(endIndex < newPost.length){
-            posts.next = {
-                page: page + 1,
-                limit: limit
-            }
+        let group = ['post.id', 'creator.id'];
+        if (query.filter == 'pipocar') {
+            // do a sort function for the last part
+            // order.push(
+            //     [Sequelize.literal('votes_total ASC')], [Sequelize.literal('comments_total ASC')], ['createdAt', 'DESC']
+            // );
         }
-       
-        if(startIndex > 0){
-            posts.previous = {
-                page: page - 1,
-                limit: limit
-            }
-    
+        if (query.filter == 'date') {
+            order.push(['createdAt', 'DESC']);
         }
-        
-        posts.data = newPost.slice(startIndex, endIndex);
+        let attributes = [
+            'id',
+            'content',
+            'links',
+            'tags',
+            'flags',
+            'is_flagged',
+            'createdAt',
+
+            // [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('post_comments.id')), 'INT'), 'comments_total'],
+            // [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'INT'), 'votes_total'],
+        ];
+
+        let include = [{
+                model: models.user,
+                as: 'creator',
+                attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
+            },
+
+            // {
+
+
+            //     model: models.post_vote,
+            //     as: 'post_votes',
+            //     attributes: [],
+            //     duplicating: false,
+            //     required: false
+
+            // },
+            // {
+            //     model: models.comment,
+            //     as: 'post_comments',
+            //     attributes: [],
+            //     duplicating: false,
+            //     required: false
+
+            // },
+        ];
+        const model = models.post;
+        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, vote);
+
 
 
 
@@ -145,122 +109,84 @@ exports.index = async ({ body, query, decoded }, res) => {
         });
     }
 };
+// deletes users posts
+exports.destroy = async({ params, decoded }, res) => {
+        try {
+            const { id } = params;
 
-exports.destroy = async ({ params, decoded }, res) => {
-    try {
-        const { id } = params;
-        /**
-         * TODO: check if there is find and destroy
-         */
-        await models.post.destroy({
-            where: {
-                id: id,
-                user_id: decoded.id
-            }
-        });
-        return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        });
-    }
-}
-
-exports.show = async ({ query, decoded }, res) => {
-    try {
-        const page = parseInt(query.page);
-        const limit = parseInt(query.limit);
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
-        const oldPosts = await models.post.findAll({
-            group: ['post.id', 'creator.id'],
-            order: [
-                ['createdAt', 'DESC']
-            ],
-            where: { user_id: decoded.id },
-            attributes: [
-                'id',
-                'content',
-                'links',
-                'tags',
-                'flags',
-                'is_flagged',
-                'createdAt',
-                [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('post_comments.id')),'INT'), 'post_comments_total'],
-                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')),'INT'), 'posts_votes_total'],
-            ],
-            include: [
-                {
-                    model: models.user,
-                    as: 'creator',
-                    attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id'] }
-                },
-                {
-
-
-                    model: models.post_vote,
-                    as: 'post_votes',
-                    attributes: [],
-
-
-                },
-                {
-                    model: models.comment,
-                    as: 'post_comments',
-                    attributes: [],
-
-
-                },
-            ]
-
-        });
-        var newPost = [];
-        for (var post of oldPosts) {
-
-            
-
-            const votes = await models.post_vote.findOne({
-                where: { user_id: decoded.id, post_id: post.id },
-                attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
-            });
-            const isVoted = votes ? true : false;
-            
-
-
-            newPost.push({
-                "user_voted": isVoted,
-                "user_vote": votes,
-                post
-            });
-
-        };
-        
-       
-           const items_total = newPost.length
-           var page_info = {
-            
-           }
-      
-        if(endIndex < newPost.length){
-           
-                page_info.next = {
-                    next_page: page + 1,
-                    page_limit: limit
+            await models.post.destroy({
+                where: {
+                    id: id,
+                    user_id: decoded.id
                 }
-           
+            });
+            return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message
+            });
         }
-       
-        if(startIndex > 0){
-            page_info.previous = {
-                previous_page: page - 1,
-                page_limit: limit
-            }
-    
-        }
-        
-        var data = newPost.slice(startIndex, endIndex);
+    }
+    // shows all posts by user
+exports.show = async({ query, decoded }, res) => {
+    try {
+        const vote = 'post';
+        const id = decoded.id;
+        const page = parseInt(query.page);
+        const limit = 12;
 
-        return res.status(200).send({ message: `Aqui esta todos os teu Bagos! 🍿`, items_total, page_info, data });
+        let search = { user_id: decoded.id };
+        let order = [
+            ['createdAt', 'DESC']
+        ];
+        let group = ['post.id', 'creator.id'];
+        let attributes = [
+            'id',
+            'content',
+            'links',
+            'tags',
+            'flags',
+            'is_flagged',
+            'createdAt',
+
+            // [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('post_comments.id')), 'INT'), 'comments_total'],
+            // [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'INT'), 'votes_total'],
+        ];
+
+        let include = [{
+                model: models.user,
+
+                as: 'creator',
+                attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
+            },
+
+            // {
+
+
+            //     model: models.post_vote,
+            //     as: 'post_votes',
+            //     separate: true,
+            //     attributes: [],
+            //     duplicating: false,
+            //     required: false
+
+            // },
+            // {
+            //     model: models.comment,
+            //     as: 'post_comments',
+            //     separate: true,
+            //     attributes: [],
+            //     duplicating: true,
+            //     required: false
+
+
+            // },
+        ];
+        const model = models.post;
+        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, vote);
+
+
+        return res.status(200).send({ message: `Aqui esta todos os teu Bagos! 🍿`, posts });
     } catch (error) {
         return res.status(500).json({
             error: error.message

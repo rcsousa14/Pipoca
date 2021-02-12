@@ -1,18 +1,22 @@
 const Sequelize = require('sequelize');
+const { admin } = require('../utils/paginate');
 const models = require('../models');
 
 
 exports.index = async (req, res) => {
     try {
-        const users = await models.user.findAll({
-            attributes: { exclude: ['bio', 'role_id'] },
-            include: [{
-                model: models.role,
-                as: 'role',
-                where: { role: "regular" },
-                attributes: { exclude: ['createdAt', 'updatedAt', 'id'] }
-            }]
-        });
+        const page = parseInt(req.query.page);
+        const limit = 25;
+        let attributes = { exclude: ['bio', 'role_id'] };
+        let include = [{
+            model: models.role,
+            as: 'role',
+            where: { role: "regular" },
+            attributes: { exclude: ['createdAt', 'updatedAt', 'id'] }
+        }];
+        const model = models.user;
+        const users = await admin(model, page, limit, attributes, include);
+        
 
         return res.status(200).send({ message: "here is all the users admin", users });
     } catch (error) {
@@ -31,10 +35,10 @@ exports.show = async ({ decoded }, res) => {
                 id: decoded.id
             },
             attributes: [
-           
-                [Sequelize.fn('SUM', Sequelize.col('posts->post_votes.voted')), 'posts_votes_total'],
-                [Sequelize.fn('SUM', Sequelize.col('comments->comment_votes.voted')), 'comments_votes_total'],
-                [Sequelize.fn('SUM', Sequelize.col('sub_comments->sub_comment_votes.voted')), 'sub_comments_votes_total']
+               
+                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('posts->post_votes.voted')),'INT'), 'posts_votes_total'],
+                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('comments->comment_votes.voted')),'INT'), 'comments_votes_total'],
+                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('sub_comments->sub_comment_votes.voted')),'INT'), 'sub_comments_votes_total']
 
                 
             ],
@@ -101,9 +105,9 @@ exports.show = async ({ decoded }, res) => {
                 'fcm_token',
                 'phone_carrier',
                 'createdAt',
-                [Sequelize.fn('COUNT', Sequelize.col('posts.content')), 'user_posts_total'],
-                [Sequelize.fn('COUNT', Sequelize.col('comments.content')), 'user_comments_total'],
-                [Sequelize.fn('COUNT', Sequelize.col('sub_comments.content')), 'user_sub_comments_total'],
+                [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('posts.content')),'INT'), 'user_posts_total'],
+                [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('comments.content')),'INT'), 'user_comments_total'],
+                [Sequelize.cast(Sequelize.fn('COUNT', Sequelize.col('sub_comments.content')),'INT'), 'user_sub_comments_total'],
             ],
             include: [
 
