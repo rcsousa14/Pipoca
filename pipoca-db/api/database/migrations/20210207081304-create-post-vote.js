@@ -12,25 +12,28 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'users', 
+          model: 'users',
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       },
       post_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'posts', 
+          model: 'posts',
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       },
       voted: {
         type: Sequelize.SMALLINT,
-        defaultValue: 0,
+        allowNull: false,
+        validate: {
+          is: /^\-?[0-1]$/i
+        }
       },
       created_at: {
         allowNull: false,

@@ -11,6 +11,7 @@ module.exports = {
       phone_number: {
         type: Sequelize.STRING(20),
         allowNull: false,
+        unique: true,
       },
       phone_carrier: {
         type: Sequelize.STRING(20)
@@ -22,12 +23,13 @@ module.exports = {
           model: 'roles', 
           key: 'id'
         },
-        onUpdate: 'CASCADE',
+        onUpdate: 'RESTRICT',
         onDelete: 'CASCADE'
       },
       username: {
         type: Sequelize.STRING(20),
         allowNull: false,
+        unique: true,
       },
       avatar: {
         type: Sequelize.STRING

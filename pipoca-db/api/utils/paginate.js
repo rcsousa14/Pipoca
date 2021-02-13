@@ -1,7 +1,9 @@
+import { getDistance } from 'geolib';
 const Sequelize = require('sequelize');
 const models = require('../models');
+
 require('dotenv').config();
-exports.paginate = async(model, id, page, limit, search, order, attributes, include, group, vote) => {
+exports.paginate = async (model, id, page, limit, search, order, attributes, include, group, vote, lat, lng) => {
 
     const offset = this.getOffset(page, limit);
 
@@ -13,17 +15,32 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         where: search,
         group: group,
         attributes: attributes,
-        include: include
+        include: include,
+
     });
 
     var data = [];
-    for (var row of rows) {
+    const newRows = rows.map(function (row) {
+        return row.toJSON()
+    });
+    for (var row of newRows) {
+        let distance;
+        if (lat && lng) {
+            distance = getDistance(
+                { latitude: lat, longitude: lng },
+                { latitude: row.coordinates.coordinates[1], longitude: row.coordinates.coordinates[0] }
+            );
+        }
 
+
+        let isNear;
+        if (distance <= 950) isNear = true;
+        if (distance > 950) isNear = false;
 
         if (vote == 'post') {
             // this gets the total of all comments a post has 
 
-            const comments = await models.comment.findAll({
+            const rawComments = await models.comment.findAll({
                 where: { post_id: row.id },
 
                 attributes: [
@@ -31,14 +48,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 ]
 
             });
-            // this gets the sum of all votes a post has
-            const votes = await models.post_vote.findAll({
 
-                where: { post_id: row.id },
-                attributes: [
-                    [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('voted')), 'INT'), 'total'],
-                ]
-            });
             // this gets if current user upvoted/downvoted and the value
             const vote = await models.post_vote.findOne({
                 raw: true,
@@ -46,19 +56,33 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
             });
             const isVoted = vote ? true : false;
+            const comments = rawComments.map(function (comment) {
+                return comment.toJSON()
+            });
+
 
             data.push({
                 "user_voted": isVoted,
                 "user_vote": vote == null ? 0 : vote.voted,
-                "post_comments_total": comments.total == null ? 0 : comments.total,
-                "post_votes_total": votes == null ? 0 : votes.total,
-                "post": row
+                "user_isNear": isNear,
+                "post": {
+                    "id": row.id,
+                    "content": row.content,
+                    "links": row.links,
+                    "comments_total": comments[0].total,
+                    "votes_total": row.votes_total == null ? 0 : row.votes_total,
+                    "flags": row.flags,
+                    "is_flagged": row.is_flagged,
+                    "is_deleted": row.is_deleted,
+                    "createdAt": row.createdAt,
+                    "creator": row.creator
+                }
             });
 
         }
         if (vote == 'comment') {
             // this gets the total of all sub_comments a comment has 
-            const sub_comments = await models.comment.findAll({
+            const rawComments = await models.comment.findAll({
                 where: { comemnt_id: row.id },
 
                 attributes: [
@@ -66,14 +90,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 ]
 
             });
-            // this gets the sum of all votes a comment has
-            const votes = await models.comment_vote.findAll({
-
-                where: { comment_id: row.id },
-                attributes: [
-                    [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('voted')), 'INT'), 'total'],
-                ]
-            });
+            
             // this gets if current user upvoted/downvoted and the value
             const vote = await models.comment_vote.findOne({
                 raw: true,
@@ -81,25 +98,31 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 attributes: { exclude: ['user_id', 'comment_id', 'createdAt', 'updatedAt', 'id'] }
             });
             const isVoted = vote ? true : false;
+            const sub_comments = rawComments.map(function (comment) {
+                return comment.toJSON()
+            });
 
             data.push({
                 "user_voted": isVoted,
                 "user_vote": vote == null ? 0 : vote.voted,
-                "comment_sub_comments_total": sub_comments.total == null ? 0 : sub_comments.total,
-                "comments_votes_total": votes == null ? 0 : votes.total,
-                "comment": row
+                "user_isNear": isNear,
+                "comment": {
+                    "id": row.id,
+                    "content": row.content,
+                    "links": row.links,
+                    "sub_comments_total": sub_comments[0].total,
+                    "votes_total":  row.votes_total == null ? 0 : row.votes_total,
+                    "flags": row.flags,
+                    "is_flagged": row.is_flagged,
+                    "is_deleted": row.is_deleted,
+                    "createdAt": row.createdAt,
+                    "creator": row.creator
+                }
             });
 
         }
         if (vote == 'sub') {
-            // this gets the sum of all votes a comment has
-            const votes = await models.sub_comment_vote.findAll({
-
-                where: { sub_comment_id: row.id },
-                attributes: [
-                    [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('voted')), 'INT'), 'total'],
-                ]
-            });
+            
             const vote = await models.sub_comment_vote.findOne({
                 raw: true,
                 where: { user_id: id, sub_comment_id: row.id },
@@ -110,8 +133,18 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             data.push({
                 "user_voted": isVoted,
                 "user_vote": vote == null ? 0 : vote.voted,
-                "sub_comments_votes_total": votes == null ? 0 : votes.total,
-                "sub_comment": row
+                "user_isNear": isNear,
+                "sub_comment": {
+                    "id": row.id,
+                    "content": row.content,
+                    "links": row.links,
+                    "votes_total": row.votes_total == null ? 0 : row.votes_total,
+                    "flags": row.flags,
+                    "is_flagged": row.is_flagged,
+                    "is_deleted": row.is_deleted,
+                    "createdAt": row.createdAt,
+                    "creator": row.creator
+                }
             });
 
         }
@@ -130,7 +163,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         data
     };
 }
-exports.admin = async(model, page, limit, attributes, include) => {
+exports.admin = async (model, page, limit, attributes, include) => {
     const offset = this.getOffset(page, limit);
     const { count, rows } = await model.findAndCountAll({
         limit: limit,

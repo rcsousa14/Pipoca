@@ -15,8 +15,8 @@ module.exports = {
           model: 'users', 
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       
       },
       comment_id: {
@@ -26,17 +26,15 @@ module.exports = {
           model: 'comments', 
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       
       },
       content: {
         type: Sequelize.STRING(200)
       },
+     
       links: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
-      tags: {
         type: Sequelize.ARRAY(Sequelize.STRING)
       },
       flags: {
@@ -44,6 +42,14 @@ module.exports = {
         defaultValue: 0
       },
       is_flagged: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      coordinates: {
+        type: Sequelize.GEOMETRY('POINT'),
+        allowNull: false
+      },
+      is_deleted: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },

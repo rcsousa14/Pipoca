@@ -23,16 +23,22 @@ module.exports = (sequelize, DataTypes) => {
         as: 'post_comments',
         foreignKey: 'post_id'
       });
+      this.belongsToMany(models.tag, {
+        as: 'tags',
+        foreignKey: 'post_id',
+        through: 'post_tags'
+
+      });
     }
   };
   post.init({
     user_id: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
     links: DataTypes.ARRAY(DataTypes.STRING),
-    tags: DataTypes.ARRAY(DataTypes.STRING),
     flags: DataTypes.INTEGER,
     is_flagged: DataTypes.BOOLEAN,
-    coordinates: DataTypes.GEOMETRY('POINT')
+    coordinates: DataTypes.GEOMETRY('POINT'),
+    is_deleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'post',

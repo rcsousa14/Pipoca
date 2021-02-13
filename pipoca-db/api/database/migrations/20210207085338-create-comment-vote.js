@@ -15,8 +15,8 @@ module.exports = {
           model: 'users', 
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       },
       comment_id: {
         type: Sequelize.INTEGER,
@@ -25,12 +25,15 @@ module.exports = {
           model: 'comments', 
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       },
       voted: {
         type: Sequelize.SMALLINT,
-        defaultValue: 0,
+        allowNull: false,
+        validate: {
+          is: /^\-?[0-1]$/i
+        }
       },
       created_at: {
         allowNull: false,

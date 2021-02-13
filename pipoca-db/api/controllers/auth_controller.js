@@ -15,7 +15,7 @@ exports.signup = async (req, res) => {
         const { username, phone_number, phone_carrier, birthday, avatar, bio, fcm_token } = req.body;
 
 
-        const { id } = await models.role.findOne({ where: { role: 'admin' } })
+        const { id } = await models.role.findOne({ where: { role: 'regular' } })
         const newUser = await models.user.create({ username, phone_number, phone_carrier, birthday, avatar, bio, fcm_token, role_id: id });
         const token = auth.jwtToken.createToken(newUser);
 

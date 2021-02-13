@@ -1,39 +1,32 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('sub_comment_votes', {
+    await queryInterface.createTable('post_tags', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
+      post_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
-          model: 'users', 
+          model: 'posts', 
           key: 'id'
         },
-        onUpdate: 'RESTRICT',
-        onDelete: 'SET NULL'
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      
       },
-      sub_comment_id: {
+      tag_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
-          model: 'sub_comments', 
+          model: 'tags', 
           key: 'id'
         },
-        onUpdate: 'RESTRICT',
-        onDelete: 'SET NULL'
-      },
-      voted: {
-        type: Sequelize.SMALLINT,
-        allowNull: false,
-        validate: {
-          is: /^\-?[0-1]$/i
-        }
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      
       },
       created_at: {
         allowNull: false,
@@ -46,6 +39,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('sub_comment_votes');
+    await queryInterface.dropTable('post_tags');
   }
 };

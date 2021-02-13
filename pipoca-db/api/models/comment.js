@@ -34,9 +34,10 @@ module.exports = (sequelize, DataTypes) => {
     post_id: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
     links: DataTypes.ARRAY(DataTypes.STRING),
-    tags: DataTypes.ARRAY(DataTypes.STRING),
     flags: DataTypes.INTEGER,
-    is_flagged: DataTypes.BOOLEAN
+    is_flagged: DataTypes.BOOLEAN,
+    coordinates: DataTypes.GEOMETRY('POINT'),
+    is_deleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'comment',
