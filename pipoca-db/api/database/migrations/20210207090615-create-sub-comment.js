@@ -53,6 +53,12 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      reply_to: {
+        type: Sequelize.STRING(50)
+      },
+      reply_to_fcm_token: {
+        type: Sequelize.STRING
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE

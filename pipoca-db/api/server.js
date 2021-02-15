@@ -6,6 +6,8 @@ import subdomain from 'express-subdomain';
 import fs from 'fs';
 import path from 'path';
 import routes from './routes';
+import cors from 'cors';
+
 require('./models');
 
 const app = express();
@@ -16,8 +18,11 @@ const accessLogStream = fs.createWriteStream(
     { flags: 'a' }
   );
 
-//TODO: need the accesslogstream in the morgan 
+
+app.set('view engine', 'ejs');
+
 app.use(helmet());
+app.use(cors());
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -26,7 +31,8 @@ app.use(subdomain('api', routes.user));
 
 
 app.use((req, res) => {
-     res.status(404).send('404: Page not Found 💩!');
+    res.status(404).render('404');
+     
 }); 
 
 

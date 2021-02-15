@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         as: 'sub_comment_votes',
         foreignKey: 'sub_comment_id'
       });
+      
     }
   };
   sub_comment.init({
@@ -31,6 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     content: DataTypes.STRING(200),
     links: DataTypes.ARRAY(DataTypes.STRING),
     flags: DataTypes.INTEGER,
+    reply_to: DataTypes.STRING(50),
+    reply_to_fcm_token:  DataTypes.STRING,
     is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
     is_deleted: DataTypes.BOOLEAN

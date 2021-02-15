@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
   post_vote.init({
     user_id: DataTypes.INTEGER,
     post_id: DataTypes.INTEGER,
-    voted: DataTypes.SMALLINT,
+    voted: DataTypes.INTEGER,
     
   }, {
     sequelize,

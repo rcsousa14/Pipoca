@@ -5,7 +5,7 @@ const { paginate } = require('../utils/paginate');
 exports.store = async ({ params, body, decoded }, res) => {
     try {
         const { comment_id } = params;
-        const { content, links, longitude, latitude } = body;
+        const { content, links, reply_to, reply_to_fcm_token, longitude, latitude } = body;
 
         var point = {
             type: 'Point',
@@ -26,7 +26,7 @@ exports.store = async ({ params, body, decoded }, res) => {
 exports.index = async ({ params, query, decoded }, res) => {
     try {
 
-        const vote = 'sub';
+        const filtro = 'sub';
         const { comment_id } = params;
         const { lat, lng } = query;
         const id = decoded.id;
@@ -40,7 +40,7 @@ exports.index = async ({ params, query, decoded }, res) => {
 
         order.push(
             [Sequelize.literal('votes_total ASC')],
-            ['createdAt', 'DESC']
+            
         );
 
 
@@ -53,7 +53,7 @@ exports.index = async ({ params, query, decoded }, res) => {
             'is_deleted',
             'createdAt',
             'coordinates',
-            [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('sub_comment_votes.voted')), 'INT'), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`), 'votes_total'],
         ];
         let include = [
             {
@@ -61,20 +61,10 @@ exports.index = async ({ params, query, decoded }, res) => {
                 as: 'creator',
                 attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
             },
-            {
-
-
-                model: models.sub_comment_vote,
-                as: 'sub_comment_votes',
-                attributes: [],
-                duplicating: false,
-                required: false
-
-            },
 
         ];
         const model = models.sub_comment;
-        const sub_comments = await paginate(model, id, page, limit, search, order, attributes, include, group, vote, lat, lng);
+        const sub_comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
 
         return res.status(200).send({ message: '🍿 Todos os Commentarios proximo de ti 🥳', sub_comments });
 
@@ -106,11 +96,12 @@ exports.soft = async ({ params, decoded }, res) => {
 
 exports.show = async ({ query, decoded }, res) => {
     try {
-
+        const filtro = 'sub';
         const page = parseInt(query.page);
+        const { lat, lng } = query;
         const limit = 9;
-        const vote = 'sub';
-        let search = { user_id: decoded.id };
+        const id = decoded.id;
+        let search = { user_id: id };
         let group = ['sub_comment.id', 'creator.id'];
         let order = [
             ['createdAt', 'DESC']
@@ -125,7 +116,7 @@ exports.show = async ({ query, decoded }, res) => {
             'createdAt',
             'coordinates',
 
-            [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('sub_comment_votes.voted')), 'INT'), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`), 'votes_total'],
         ];
         let include = [
             {
@@ -134,22 +125,13 @@ exports.show = async ({ query, decoded }, res) => {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
             },
 
-            {
-
-
-                model: models.sub_comment_vote,
-                as: 'sub_comment_votes',
-                attributes: [],
-                duplicating: false,
-                required: false
-
-            },
+           
 
         ];
         const model = models.sub_comment;
-        const sub_comments = await paginate(model, id, page, limit, search, order, attributes, include, group, vote, lat, lng);
+        const sub_comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
 
-        return res.status(200).send({ message: '🍿 Todos os teus Commentarios  🥳', sub_comments });
+        return res.status(200).send({ message: '🍿 Todos os teus sub_commentarios  🥳', sub_comments });
     } catch (error) {
         return res.status(500).json({
             error: error.message

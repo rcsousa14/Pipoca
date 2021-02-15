@@ -21,12 +21,14 @@ module.exports = (sequelize, DataTypes) => {
       });
       comment.hasMany(models.comment_vote, {
         as: 'comment_votes',
-        foreignKey: 'comment_id'
+        foreignKey: 'comment_id',
+       
       });
       comment.hasMany(models.sub_comment, {
         as: 'comment_sub_comments',
         foreignKey: 'comment_id'
-      })
+      });
+      
     }
   };
   comment.init({

@@ -21,12 +21,13 @@ module.exports = (sequelize, DataTypes) => {
         
 
       });
+      
     }
   };
   sub_comment_vote.init({
     user_id: DataTypes.INTEGER,
     sub_comment_id: DataTypes.INTEGER,
-    voted: DataTypes.SMALLINT
+    voted: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'sub_comment_vote',

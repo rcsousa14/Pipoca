@@ -25,7 +25,7 @@ exports.store = async ({ params, body, decoded }, res) => {
 
 exports.index = async ({ params, query, decoded }, res) => {
     try {
-        const vote = 'comment';
+        const filtro = 'comment';
         const { post_id } = params;
         const { lat, lng } = query;
         const id = decoded.id;
@@ -42,7 +42,8 @@ exports.index = async ({ params, query, decoded }, res) => {
         }
         if (query.filter == 'pipocar') {
             order.push(
-                [Sequelize.literal('votes_total DESC')], 
+                [Sequelize.literal('votes_total ASC')],
+                [Sequelize.literal('comments_total ASC')]
             );
         }
         if (query.filter == 'date') {
@@ -57,7 +58,8 @@ exports.index = async ({ params, query, decoded }, res) => {
             'is_deleted',
             'createdAt',
             'coordinates',
-            [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('comment_votes.voted')), 'INT'), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`), 'comments_total'],
         ];
         let include = [
             {
@@ -66,20 +68,10 @@ exports.index = async ({ params, query, decoded }, res) => {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
             },
 
-            {
-
-
-                model: models.comment_vote,
-                as: 'comment_votes',
-                attributes: [],
-                duplicating: false,
-                required: false
-
-            },
 
         ];
         const model = models.comment;
-        const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, vote, lat, lng);
+        const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
 
         return res.status(200).send({ message: '🍿 Todos os Commentarios proximo de ti 🥳', comments });
 
@@ -111,13 +103,13 @@ exports.soft = async ({ params, decoded }, res) => {
 
 exports.show = async ({ query, decoded }, res) => {
     try {
-        const vote = 'comment';
+        const filtro = 'comment';
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 9;
 
-        let search = { user_id: decoded.id };
+        let search = { user_id: id };
         let order = [
             ['createdAt', 'DESC']
         ];
@@ -131,7 +123,8 @@ exports.show = async ({ query, decoded }, res) => {
             'is_deleted',
             'createdAt',
             'coordinates',
-            [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('comment_votes.voted')), 'INT'), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`), 'comments_total'],
         ];
 
         let include = [
@@ -141,19 +134,10 @@ exports.show = async ({ query, decoded }, res) => {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
             },
 
-            {
-
-                model: models.comment_vote,
-                as: 'comment_votes',
-                attributes: [],
-                duplicating: false,
-                required: false
-
-            },
 
         ];
         const model = models.comment;
-        const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, vote, lat, lng);
+        const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
 
         return res.status(200).send({ message: '🍿 Todos os teus Commentarios  🥳', comments });
     } catch (error) {

@@ -29,11 +29,9 @@ module.exports = {
         onDelete: 'SET NULL'
       },
       voted: {
-        type: Sequelize.SMALLINT,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          is: /^\-?[0-1]$/i
-        }
+       
       },
       created_at: {
         allowNull: false,

@@ -25,9 +25,7 @@ const router = Router();
  */
 
 router.get('/v1', (req, res) => {
-    res.send({
-        message: "🎊welcome to pipoca api🍿!"
-    })
+    res.render('api');
 })
 
 
@@ -42,7 +40,7 @@ router.delete('/v1/admin/roles/:id', authorizeMiddleware, adminMiddleware, role.
 router.get('/v1/admin/roles', authorizeMiddleware, adminMiddleware, role.index); //☑️
 
 //user routes
-router.get('/v1/users', authorizeMiddleware, user.show); //❎
+router.get('/v1/users', authorizeMiddleware, user.show); //☑️
 router.get('/v1/admin/users', authorizeMiddleware, adminMiddleware, user.index); //☑️
 router.delete('/v1/users', authorizeMiddleware, user.destroy); //☑️
 router.patch('/v1/users', authorizeMiddleware, user.update); //☑️
@@ -53,8 +51,8 @@ router.post('/v1/comment/votes', authorizeMiddleware, voteMiddleware, comment_vo
 router.post('/v1/sub_comment/votes', authorizeMiddleware, voteMiddleware, sub_comment_vote.store); //☑️
 
 //post routes
-router.get('/v1/feed', authorizeMiddleware, post.index); //❎ this will be a search with where like
-router.get('/v1/posts/:id', authorizeMiddleware, post.show); //❎ check if it works might need to call the totals separte
+router.get('/v1/feed', authorizeMiddleware, post.index); //❎ this will be a search with where like need to think about it more
+router.get('/v1/posts/:id', authorizeMiddleware, post.show); //☑️ 
 
 // user posts routes
 router.post('/v1/posts', authorizeMiddleware, postauthMiddleware, user_posts.store); //☑️
@@ -65,14 +63,14 @@ router.patch('/v1/posts/:id', authorizeMiddleware, user_posts.soft); //☑️
 // user comments routes
 router.post('/v1/:post_id/comments', authorizeMiddleware, commentAuthMiddleware, user_comments.store); //☑️need to be tested
 router.get('/v1/:post_id/comments', authorizeMiddleware, user_comments.index); //☑️ need to be tested
-router.get('/v1/comments', authorizeMiddleware, user_comments.show); //❎ need to be tested
-router.patch('/v1/comments/:id', authorizeMiddleware, user_comments.soft); //❎ need to be tested
+router.get('/v1/comments', authorizeMiddleware, user_comments.show); //☑️ need to be tested
+router.patch('/v1/comments/:id', authorizeMiddleware, user_comments.soft); //☑️ need to be tested
 
 // user sub_comments routes
-router.post('/v1/:comment_id/sub_comments', authorizeMiddleware, commentAuthMiddleware, user_sub_comments.store); //❎ need to be tested
-router.get('/v1/:comment_id/sub_comments', authorizeMiddleware, user_sub_comments.index); //❎ need to be tested
-router.get('/v1/sub_comments', authorizeMiddleware, user_sub_comments.show); //❎ need to be tested
-router.patch('/v1/sub_comments/:id', authorizeMiddleware, user_sub_comments.soft); //❎ need to be tested
+router.post('/v1/:comment_id/sub_comments', authorizeMiddleware, commentAuthMiddleware, user_sub_comments.store); //☑️ need to be tested
+router.get('/v1/:comment_id/sub_comments', authorizeMiddleware, user_sub_comments.index); //☑️need to be tested
+router.get('/v1/sub_comments', authorizeMiddleware, user_sub_comments.show); //☑️ need to be tested
+router.patch('/v1/sub_comments/:id', authorizeMiddleware, user_sub_comments.soft); //☑️ need to be tested
 
 
 /**

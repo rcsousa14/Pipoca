@@ -17,10 +17,10 @@ exports.store = async ({ body, decoded }, res) => {
         const post = await models.post.create({ user_id: decoded.id, content, links, coordinates: point });
         if (hashes) {
             for (var hash of hashes) {
-                const [ tag ] = await models.tag.findOrCreate({
+                const [tag] = await models.tag.findOrCreate({
                     where: { hash: hash }
                 });
-                
+
                 await post.addTag(tag);
             }
 
@@ -38,7 +38,7 @@ exports.store = async ({ body, decoded }, res) => {
 //feed shows all posts that are near by you can sort it for posts with higher points
 exports.index = async ({ query, decoded }, res) => {
     try {
-        const vote = 'post';
+        const filtro = 'post';
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -46,42 +46,64 @@ exports.index = async ({ query, decoded }, res) => {
 
         let search;
         let order = [];
-        const TODAY_START = new Date().setHours(0, 0, 0, 0); 
+        const TODAY_START = new Date().setHours(0, 0, 0, 0);
+
         const NOW = new Date();
+
         if (lat && lng) {
-            if(query.filter == 'pipocar'){
-                search = { 
-                    [Op.gt]: TODAY_START,
-                    [Op.lt]: NOW,
-                    $and:Sequelize.where(
-                    Sequelize.fn('ST_DWithin',
-                        Sequelize.col('coordinates'),
-                        Sequelize.fn('ST_SetSRID',
-                            Sequelize.fn('ST_MakePoint',
-                                lng, lat),
-                            4326),
-                        950),
-                    true)
+            if (query.filter == 'pipocar') {
+                search = {
+                    is_deleted: false,
+                    createdAt: {
+                        [Op.gt]: TODAY_START,
+                        [Op.lt]: NOW,
+                    },
+                    [Op.and]: Sequelize.where(
+                        Sequelize.fn('ST_DWithin',
+                            Sequelize.col('post.coordinates'),
+                            Sequelize.fn('ST_SetSRID',
+                                Sequelize.fn('ST_MakePoint',
+                                    lng, lat),
+                                4326),
+                            950),
+                        true)
+
+                        /**
+                         * for location-post
+                         * Sequelize.where(
+                         Sequelize.fn('ST_Contains',
+                            Sequelize.col('location.poly'),
+                            Sequelize.fn('ST_SetSRID',
+                                Sequelize.fn('ST_MakePoint',
+                                    lng, lat),
+                                4326),
+                            950),
+                        true)
+                         */
                 }
             }
-            search = {
-                is_deleted: false,
-                $and: Sequelize.where(
-                Sequelize.fn('ST_DWithin',
-                    Sequelize.col('coordinates'),
-                    Sequelize.fn('ST_SetSRID',
-                        Sequelize.fn('ST_MakePoint',
-                            lng, lat),
-                        4326),
-                    950),
-                true)
+            if (query.filter == 'date') {
+                search = {
+                    is_deleted: false,
+                    [Op.and]: Sequelize.where(
+                        Sequelize.fn('ST_DWithin',
+                            Sequelize.col('post.coordinates'),
+                            Sequelize.fn('ST_SetSRID',
+                                Sequelize.fn('ST_MakePoint',
+                                    lng, lat),
+                                4326),
+                            950),
+                        true)
+                }
             }
+
         }
         let group = ['post.id', 'creator.id'];
         if (query.filter == 'pipocar') {
-            
+
             order.push(
-                [Sequelize.literal('votes_total DESC')]
+                [Sequelize.literal('votes_total ASC')],
+                [Sequelize.literal('comments_total ASC')]
             );
         }
         if (query.filter == 'date') {
@@ -96,7 +118,9 @@ exports.index = async ({ query, decoded }, res) => {
             'is_deleted',
             'createdAt',
             'coordinates',
-            [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'INT'), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`), 'comments_total'],
+
         ];
 
         let include = [
@@ -105,18 +129,11 @@ exports.index = async ({ query, decoded }, res) => {
                 as: 'creator',
                 attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
             },
-            {
-                model: models.post_vote,
-                as: 'post_votes',
-                attributes: [],
-                duplicating: false,
-                required: false
-
-            },
+            
 
         ];
         const model = models.post;
-        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, vote, lat, lng);
+        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group,  lat, lng, filtro);
 
 
 
@@ -135,7 +152,7 @@ exports.soft = async ({ params, decoded }, res) => {
         const { id } = params;
         await models.post.update({
             is_deleted: false
-        },{
+        }, {
             where: {
                 id: id,
                 user_id: decoded.id
@@ -151,7 +168,7 @@ exports.soft = async ({ params, decoded }, res) => {
 // shows all posts by user
 exports.show = async ({ query, decoded }, res) => {
     try {
-        const vote = 'post';
+        const filtro = 'post';
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -161,7 +178,7 @@ exports.show = async ({ query, decoded }, res) => {
         let order = [
             ['createdAt', 'DESC']
         ];
-        let group = ['post.id', 'creator.id'];
+        let group = ['post.id', 'creator.id', ];
         let attributes = [
             'id',
             'content',
@@ -171,7 +188,9 @@ exports.show = async ({ query, decoded }, res) => {
             'is_deleted',
             'createdAt',
             'coordinates',
-            [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'INT'), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
+            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`), 'comments_total'],
+           
         ];
 
         let include = [
@@ -182,18 +201,10 @@ exports.show = async ({ query, decoded }, res) => {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
             },
 
-            {
-                model: models.post_vote,
-                as: 'post_votes',
-                attributes: [],
-                duplicating: false,
-                required: false
 
-            },
-            
         ];
         const model = models.post;
-        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, vote, lat, lng);
+        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
 
 
         return res.status(200).send({ message: `Aqui esta todos os teu Bagos! 🍿`, posts });
