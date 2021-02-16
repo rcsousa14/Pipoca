@@ -9,12 +9,12 @@ exports.jwtToken  = {
 
     createToken({ id, phone_number, role_id }) {
         return jwt.sign({ id, phone_number, role_id }, process.env.JWT_SECRET, {
-            expiresIn: '7d'
+            expiresIn: '365d'
         });
 
     },
      verifyToken(token) {
-        return jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '7d' });
+        return jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '365d' });
         
     }
 

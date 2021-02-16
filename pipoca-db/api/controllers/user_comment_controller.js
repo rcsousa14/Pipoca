@@ -1,20 +1,30 @@
+import CacheService from '../utils/cache';
 const models = require('../models');
 const Sequelize = require('sequelize');
 const { paginate } = require('../utils/paginate');
+const ttl = 10;
+const cache = new CacheService(ttl);
+const cachePost = new CacheService(60);
 
 exports.store = async ({ params, body, decoded }, res) => {
     try {
         const { post_id } = params;
         const { content, links, longitude, latitude } = body;
-
+        const result = cachePost.get(`user_comment_${decoded.id}`);
+        if (result && result == content) {
+            console.log(result)
+            return res.status(550).json({ message: '🖐🏾 Eh mano ninguem gosta de spam 👾' });
+        }
         var point = {
             type: 'Point',
             coordinates: [longitude, latitude],
 
         };
 
-        await models.comment.create({ user_id: decoded.id, post_id, content, links,  coordinates: point });
-
+        const comment = await models.comment.create({ user_id: decoded.id, post_id, content, links, coordinates: point });
+        cachePost.set(`user_comment_${decoded.id}`, comment.content);
+        cache.del(`user_comments_feed_${decoded.id}`);
+        cache.del(`user_comments_${decoded.id}`);
         return res.status(201).send({ message: '🍿 Commentario criado com sucesso! 🥳' })
     } catch (error) {
         return res.status(500).json({
@@ -25,6 +35,10 @@ exports.store = async ({ params, body, decoded }, res) => {
 
 exports.index = async ({ params, query, decoded }, res) => {
     try {
+        const result = cache.get(`user_comments_feed_${decoded.id}`);
+        if (result) {
+            return res.status(200).json(result);
+        }
         const filtro = 'comment';
         const { post_id } = params;
         const { lat, lng } = query;
@@ -72,8 +86,10 @@ exports.index = async ({ params, query, decoded }, res) => {
         ];
         const model = models.comment;
         const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
+        const data = { message: '🍿 Todos os commentarios proximo de ti 🥳', comments };
+        cache.set(`user_comments_feed_${decoded.id}`, data);
+        return res.status(200).send(data);
 
-        return res.status(200).send({ message: '🍿 Todos os Commentarios proximo de ti 🥳', comments });
 
     } catch (error) {
         return res.status(500).json({
@@ -90,9 +106,11 @@ exports.soft = async ({ params, decoded }, res) => {
         }, {
             where: {
                 user_id: decoded.id,
-                post_id: params.id
+                id: params.id
             }
         });
+        cache.del(`user_comments_feed_${decoded.id}`);
+        cache.del(`user_comments_${decoded.id}`);
         return res.status(200).send({ message: `Commentario ${id} foi eliminado com sucesso` });
     } catch (error) {
         return res.status(500).json({
@@ -103,6 +121,10 @@ exports.soft = async ({ params, decoded }, res) => {
 
 exports.show = async ({ query, decoded }, res) => {
     try {
+        const result = cache.get(`user_comments_${decoded.id}`);
+        if (result) {
+            return res.status(200).json(result);
+        }
         const filtro = 'comment';
         const { lat, lng } = query;
         const id = decoded.id;
@@ -138,8 +160,9 @@ exports.show = async ({ query, decoded }, res) => {
         ];
         const model = models.comment;
         const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
-
-        return res.status(200).send({ message: '🍿 Todos os teus Commentarios  🥳', comments });
+        const data = { message: '🍿 Todos os teus sub commentarios  🥳', comments };
+        cache.set(`user_comments_${decoded.id}`, data);
+        return res.status(200).send(result);
     } catch (error) {
         return res.status(500).json({
             error: error.message

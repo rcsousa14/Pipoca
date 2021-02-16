@@ -11,6 +11,7 @@ import cors from 'cors';
 require('./models');
 
 const app = express();
+app.set('trust proxy', 1);
 const port = process.env.PORT || 3000;
 
 const accessLogStream = fs.createWriteStream(
