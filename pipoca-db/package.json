@@ -5,8 +5,7 @@
     "main": "api/index.js",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf build && mkdir build",
-        "build": "yarn run clean && build",
+
         "start": "node api/index.js",
         "dev": "env NODE_ENV=development nodemon api/index.js",
         "git": "git add . && git commit -m",
