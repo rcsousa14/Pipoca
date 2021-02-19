@@ -8,7 +8,7 @@
         "start": "node api/index.js",
         "dev": "env NODE_ENV=development nodemon api/index.js",
         "git": "git add . && git commit -m",
-        "push": "git push origin && git push heroku"
+        "push": "git push origin && git subtree push --prefix pipoca-db heroku main"
     },
     "keywords": [],
     "author": "Ruben Sousa",
