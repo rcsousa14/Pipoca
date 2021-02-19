@@ -1,42 +1,30 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import 'package:location/location.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
 
 @lazySingleton
 class LocationService {
-  GeoPoint _currentLocation;
-
   Location location = Location();
+  Coordinates currentLocation;
 
-  /* CONTINUOUSLY EMIT LOCATION UPDATES */
-  StreamController<GeoPoint> _locationController =
-      StreamController<GeoPoint>.broadcast();
+  StreamController<Coordinates> locationController =
+      StreamController<Coordinates>.broadcast();
+
+  Stream<Coordinates> get getStreamData => locationController.stream;
 
   LocationService() {
-    location.requestPermission().then((value) {
-      if (value == PermissionStatus.granted) {
-        location.onLocationChanged.listen((locationData) {
-          if (locationData != null) {
-            _locationController.add(GeoPoint(
-                locationData.latitude,
-                locationData.longitude));
-          }
+    location.requestPermission().then((locationPermission) {
+      if (locationPermission == PermissionStatus.granted) {
+        location.onLocationChanged.listen((location) {
+          locationController.add(
+            Coordinates(
+              longitude: location.longitude,
+              latitude: location.latitude,
+            ),
+          );
         });
       }
-      
     });
-  }
-
-  Stream<GeoPoint> get locationStream => _locationController.stream;
-  Future<GeoPoint> requestLocation() async {
-    try {
-      var userLocation = await location.getLocation();
-      _currentLocation = GeoPoint(
-           userLocation.latitude,  userLocation.latitude);
-    } catch (e) {
-      return e;
-    }
-    return _currentLocation;
   }
 }

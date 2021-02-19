@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pipoca/src/app/router.gr.dart' as myRouter;
 import 'package:pipoca/src/app_view_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
@@ -17,9 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<AppViewModel>.reactive(
       builder: (context, model, child) {
-        return StreamProvider<GeoPoint>.value(
-          value: locator<LocationService>().locationStream,
-          initialData: GeoPoint( -8.83682,  13.23432),
+        return StreamProvider<Coordinates>(
+          create: (_) => locator<LocationService>().getStreamData,
           child: MaterialApp(
             title: 'Pipoca',
             locale: Locale('pt', 'AO'),

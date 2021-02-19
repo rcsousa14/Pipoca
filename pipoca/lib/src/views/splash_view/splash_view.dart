@@ -9,12 +9,11 @@ class SplashView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     
-    
     return ViewModelBuilder<SplashViewModel>.nonReactive(
-     
-      onModelReady: (model)=> model.locationCheck(),
+        onModelReady: (model) => model.locationCheck(),
         builder: (context, model, child) {
+      
+     
           return Scaffold(
             body: Stack(
               fit: StackFit.expand,
@@ -29,20 +28,10 @@ class SplashView extends StatelessWidget {
                   ),
                 ),
                 Container(
-                padding: const EdgeInsets.all(160),
-                
-                child: SvgPicture.asset('images/pipoca.svg'),
-              ),
-             Align(
-               alignment: Alignment.center,
-               child: Container(padding: const EdgeInsets.only(top: 180),
-               child: CircularProgressIndicator(
-                 strokeWidth: 3.5,
-                 valueColor:  AlwaysStoppedAnimation<Color>(Colors.white),
-               ),),
-             )
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 165),
+                    child: Image.asset('images/white.png'))
               ],
-             
             ),
           );
         },

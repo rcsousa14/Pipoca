@@ -19,7 +19,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
   Widget build(BuildContext context) {
     return Navigator(
       key: _navigatorService
-          .nestedNavigationKey(NavChoice.home.nestedKeyValue()),
+         .nestedNavigationKey(NavChoice.home.nestedKeyValue()),
       onGenerateRoute: (RouteSettings settings) {
         return PageRouteBuilder(
             settings: settings,
@@ -28,20 +28,20 @@ class _HomeNavigatorState extends State<HomeNavigator> {
             pageBuilder: (BuildContext context, Animation<double> animation,
                 Animation<double> secondaryAnimation) {
               switch (settings.name) {
-                case homeRoute:
-                  return HomeView();
+                // case homeRoute:
+                //   return HomeView();
 
-                case postRoute:
-                  final typedArgs = settings.arguments as PostViewArguments;
+                // case postRoute:
+                //   final typedArgs = settings.arguments as PostViewArguments;
 
-                  return PostView(
-                    choice: typedArgs.choice,
-                  );
+                //   return PostView(
+                //     choice: typedArgs.choice,
+                //   );
                 case videoRoute:
                   
 
                 default:
-                  return HomeView();
+                //  return HomeView();
               }
             });
       },

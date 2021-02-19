@@ -1,14 +1,16 @@
-// class GeoPoint {
-//   final double longitude;
-//   final double latitude;
+import 'package:flutter/foundation.dart';
 
-//   GeoPoint({this.longitude, this.latitude});
+class Coordinates {
+  final double longitude;
+  final double latitude;
 
-//   GeoPoint.fromData(Map<String, dynamic> data)
-//       : latitude = data['latitude'],
-//         longitude = data['longitude'];
+  Coordinates({@required this.longitude, @required this.latitude});
 
-//   Map<String, dynamic> toJson() {
-//     return {'latitude': latitude, 'longitude': longitude};
-//   }
-// }
+  Coordinates.fromData(Map<String, dynamic> data)
+      : latitude = data['latitude'],
+        longitude = data['longitude'];
+
+  Map<String, dynamic> toJson() {
+    return {'latitude': latitude, 'longitude': longitude};
+  }
+}

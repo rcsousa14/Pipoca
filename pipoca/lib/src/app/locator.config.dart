@@ -10,11 +10,12 @@ import 'package:stacked_services/stacked_services.dart';
 
 import '../services/authentication_service.dart';
 import '../services/capture_png_service.dart';
-import '../services/firestore_service.dart';
 import '../services/location_service.dart';
 import '../views/main_view/main_view_model.dart';
+import '../services/shared_local_storage_service.dart';
 import '../services/third_party_service_model.dart';
 import '../services/social_share_service.dart';
+import '../services/validation_service.dart';
 import '../services/youtube_service.dart';
 
 /// adds generated dependencies
@@ -32,7 +33,6 @@ GetIt $initGetIt(
       () => thirdPartyServicesModule.bottomSheetService);
   gh.lazySingleton<CapturePngService>(() => CapturePngService());
   gh.lazySingleton<DialogService>(() => thirdPartyServicesModule.dialogService);
-  gh.lazySingleton<FirestoreService>(() => FirestoreService());
   gh.lazySingleton<LocationService>(() => LocationService());
   gh.lazySingleton<MainViewModel>(() => MainViewModel());
   gh.lazySingleton<NavigationService>(
@@ -40,7 +40,11 @@ GetIt $initGetIt(
   gh.lazySingleton<SnackbarService>(
       () => thirdPartyServicesModule.snackbarService);
   gh.lazySingleton<UrlLancherService>(() => UrlLancherService());
+  gh.lazySingleton<ValidationService>(() => ValidationService());
   gh.lazySingleton<YoutubeService>(() => YoutubeService());
+
+  // Eager singletons must be registered in the right order
+  gh.singleton<SharedLocalStorageService>(SharedLocalStorageService());
   return get;
 }
 

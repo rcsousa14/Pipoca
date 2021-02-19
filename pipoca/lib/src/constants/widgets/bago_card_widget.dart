@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_link_preview/flutter_link_preview.dart';
@@ -11,7 +9,7 @@ import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/constants/widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
 
 class BagoCard extends StatelessWidget {
   final int bagoIndex;

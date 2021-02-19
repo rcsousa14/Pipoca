@@ -1,11 +1,14 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/views/login_view/login_view_model.dart';
+import 'package:pipoca/src/views/login_view/widgets/buttons.dart';
+import 'package:pipoca/src/views/login_view/widgets/form.dart';
+import 'package:pipoca/src/views/login_view/widgets/logo.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({Key key}) : super(key: key);
@@ -14,51 +17,21 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<LoginViewModel>.reactive(
       builder: (context, model, child) {
-        final width = MediaQuery.of(context).size.width;
-        final height = MediaQuery.of(context).size.height;
         return Scaffold(
-          body: Stack(
-            fit: StackFit.expand,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomLeft,
-                    colors: [red, orange],
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(160),
-                child: SvgPicture.asset('images/pipoca.svg'),
-              ),
-              Container(
-                width: width,
-                height: height,
-                margin: const EdgeInsets.symmetric(vertical: 60),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SignInButton(Buttons.Google, text: 'Continua com Google',
-                        onPressed: () {
-                      model.loginWithGoogle();
-                      if (model.isBusy) {
-                        loading(context, width);
-                      }
-                    }),
-                    SignInButton(Buttons.Facebook,
-                        text: 'Continua com Facebook', onPressed: () {
-                      model.fbLogin();
-                      if (model.isBusy) {
-                        loading(context, width);
-                      }
-                    }),
-                    FlatButton(onPressed: ()=> model.logout(), child: Text('logout'))
-                  ],
-                ),
-              )
-            ],
+          body: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Stack(
+              children: [
+                GestureDetector(onVerticalDragUpdate: (_) {}, child: Logo()),
+                FormBuilder(
+                  currentIndex: model.currentIndex,
+                  setIndex: model.setIndex,
+                  login: _LoginForm(),
+                  signup: _SignUpForm(),
+                  termsTap: () => print('hi'),
+                )
+              ],
+            ),
           ),
         );
       },
@@ -67,32 +40,76 @@ class LoginView extends StatelessWidget {
   }
 }
 
-Future<void> loading(context, width) {
-  return showDialog(
-      context: context,
-      child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Container(
-              color: Colors.transparent,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                      width: width * .4,
-                      child: Center(child: CircularProgressIndicator())),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 20),
-                    child: Text(
-                      "LOADING...",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )));
+class _SignUpForm extends HookViewModelWidget<LoginViewModel> {
+  const _SignUpForm({Key key}) : super(key: key);
+
+  @override
+  Widget buildViewModelWidget(BuildContext context, LoginViewModel model) {
+    var username = useTextEditingController();
+    var phone = useTextEditingController();
+    return Form(
+      child: Column(
+        children: [
+          NewFormTextField(
+            isPhone: false,
+            keyboardType: TextInputType.text,
+            icon: FontAwesomeIcons.user,
+            text: 'Nome de Usuário',
+            controller: username,
+            formater: FilteringTextInputFormatter.deny(RegExp('[<>]')),
+            validator: model.validateUsername,
+            textCap: TextCapitalization.none,
+            validate: AutovalidateMode.onUserInteraction,
+          ),
+          NewFormTextField(
+            isPhone: true,
+            keyboardType: TextInputType.number,
+            text: 'Telefone',
+            controller: phone,
+            formater: FilteringTextInputFormatter.digitsOnly,
+            validator: model.validatePhone,
+            textCap: TextCapitalization.none,
+            validate: AutovalidateMode.onUserInteraction,
+          ),
+          BusyBtn(
+            tap: () => model.signup(username: username.text, phone: phone.text),
+            busy: model.isBusy,
+            color: orange,
+            text: 'Inscrever-se',
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _LoginForm extends HookViewModelWidget<LoginViewModel> {
+  const _LoginForm({Key key}) : super(key: key);
+
+  @override
+  Widget buildViewModelWidget(BuildContext context, LoginViewModel model) {
+    var phone = useTextEditingController();
+    return Form(
+      child: Column(
+        children: [
+          NewFormTextField(
+            isPhone: true,
+            keyboardType: TextInputType.number,
+            text: 'Telefone',
+            controller: phone,
+            formater: FilteringTextInputFormatter.digitsOnly,
+            validator: model.validatePhone,
+            textCap: TextCapitalization.none,
+            validate: AutovalidateMode.onUserInteraction,
+          ),
+          BusyBtn(
+            tap: () => model.login(phone: phone.text),
+            busy: model.isBusy,
+            color: orange,
+            text: 'Login',
+          )
+        ],
+      ),
+    );
+  }
 }
