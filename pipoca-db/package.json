@@ -8,7 +8,7 @@
         "start": "node api/index.js",
         "dev": "env NODE_ENV=development nodemon api/index.js",
         "git": "git add . && git commit -m",
-        "push": "git push"
+        "push": "git push origin && git push heroku"
     },
     "keywords": [],
     "author": "Ruben Sousa",

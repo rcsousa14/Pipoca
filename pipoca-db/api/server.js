@@ -20,7 +20,7 @@ const accessLogStream = fs.createWriteStream(
 
 
 app.set('view engine', 'ejs');
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
 app.use(cors());
 app.use(morgan('combined', { stream: accessLogStream }));
