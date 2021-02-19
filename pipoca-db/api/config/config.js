@@ -14,7 +14,6 @@ module.exports = {
         }
     },
     production: {
-        database: "pipocadb",
         use_env_variable: process.env.DATABASE_URL,
         dialect: "postgres"
     }
