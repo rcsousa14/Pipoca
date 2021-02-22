@@ -16,6 +16,10 @@ module.exports = {
     production: {
         use_env_variable: "DATABASE_URL",
         dialect: 'postgres',
+        define: {
+            timestamps: true,
+            underscored: true,
+        },
         dialectOptions: {
             ssl: {
                 require: true,
