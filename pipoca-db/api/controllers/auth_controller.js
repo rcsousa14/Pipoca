@@ -14,7 +14,17 @@ exports.signup = async (req, res) => {
 
         const { username, phone_number, phone_carrier, birthday, avatar, bio, fcm_token } = req.body;
 
-
+        const checkname = await models.user.findOne({
+            where: {
+                [Op.or]: [
+                    {username: username},
+                    {phone_number: phone_number}
+                ]
+            }
+        });
+        if (checkname) {
+            return res.status(409).send({ message: 'O nome de usuário já existe', checkname});
+        }
         const { id } = await models.role.findOne({ where: { role: 'admin' } })
         const newUser = await models.user.create({ username, phone_number, phone_carrier, birthday, avatar, bio, fcm_token, role_id: id });
         const token = auth.jwtToken.createToken(newUser);
@@ -45,9 +55,9 @@ exports.login = async (req, res) => {
                     { phone_number: phone_number }
 
             });
-            if(!checkUser){
-                return res.status(400).send({ message: 'usuario nao existe!' });
-            }
+        if (!checkUser) {
+            return res.status(400).send({ message: 'usuario nao existe!' });
+        }
 
         const token = auth.jwtToken.createToken(checkUser);
         return res.status(200).send({ message: 'welcome back to Pipoca 🍿 use the token to gain access!😄', token });

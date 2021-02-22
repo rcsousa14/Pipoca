@@ -11,10 +11,7 @@ module.exports = {
       phone_number: {
         type: Sequelize.STRING(20),
         allowNull: false,
-        unique: {
-          args: 'phone_number',
-          msg: 'o número de telefone já existe'
-        },
+        unique: true
       },
       phone_carrier: {
         type: Sequelize.STRING(20)
@@ -32,10 +29,7 @@ module.exports = {
       username: {
         type: Sequelize.STRING(20),
         allowNull: false,
-        unique: {
-          args: 'username',
-          msg: 'o nome de usuário já existe'
-        },
+        unique: true
 
       },
       avatar: {
