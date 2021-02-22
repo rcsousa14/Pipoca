@@ -16,7 +16,7 @@ exports.signup = async (req, res) => {
 
 
         const { id } = await models.role.findOne({ where: { role: 'admin' } })
-        const newUser = await models.user.findOrCreate({ username, phone_number, phone_carrier, birthday, avatar, bio, fcm_token, role_id: id });
+        const newUser = await models.user.create({ username, phone_number, phone_carrier, birthday, avatar, bio, fcm_token, role_id: id });
         const token = auth.jwtToken.createToken(newUser);
 
         return res.status(201).send({ message: 'welcome to Pipoca 🍿 use the token to gain access!😄', token });
