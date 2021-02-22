@@ -2,12 +2,15 @@ import 'dotenv/config';
 import express from 'express';
 const morgan = require('morgan');
 import helmet from 'helmet';
-import subdomain from 'express-subdomain';
 import fs from 'fs';
 import path from 'path';
 import routes from './routes';
 import cors from 'cors';
 
+// import subdomain from 'express-subdomain';
+// import { ApolloServer, gql } from 'apollo-server-express';
+// import resolvers from './resolvers'
+// import typeDefs from './schema'
 require('./models');
 
 const app = express();
@@ -17,6 +20,12 @@ const port = process.env.PORT || 3000;
 const accessLogStream = fs.createWriteStream(
     path.join(__dirname, '../access.log'), { flags: 'a' }
 );
+
+/** 
+ * once I get a graps of graphql
+ * const server = new ApolloServer({ typeDefs, resolvers, context: { models } });
+ * server.applyMiddleware({ app });
+ */
 
 
 app.set('view engine', 'ejs');
@@ -30,7 +39,7 @@ app.use(routes.user);
 //app.use(subdomain('api', routes.user));
 
 
-app.use((req, res) => {
+app.use((res) => {
     res.status(404).render('404');
 
 });
