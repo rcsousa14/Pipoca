@@ -188,7 +188,7 @@ class Tabs extends StatelessWidget {
                   physics: BouncingScrollPhysics(),
                   onTap: setIndex,
                   indicator: UnderlineTabIndicator(
-                      borderSide: BorderSide(width: 3.0, color: orange),
+                      borderSide: BorderSide(width: 3.0, color: Colors.transparent),
                       insets: EdgeInsets.only(
                           left: currentIndex == 0 ? 40.0 : 62.0,
                           right: currentIndex == 0 ? 60.0 : 54.0)),

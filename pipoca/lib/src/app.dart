@@ -7,6 +7,7 @@ import 'package:pipoca/src/services/location_service.dart';
 import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
 import 'package:flutter/material.dart' hide Router;
+import 'package:stacked_services/stacked_services.dart';
 
 import 'app/locator.dart';
 
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return ViewModelBuilder<AppViewModel>.reactive(
       builder: (context, model, child) {
         return StreamProvider<Coordinates>(

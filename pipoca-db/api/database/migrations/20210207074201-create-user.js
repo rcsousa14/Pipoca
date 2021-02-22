@@ -43,7 +43,7 @@ module.exports = {
       },
       fcm_token: {
         type: Sequelize.STRING,
-        allowNull: false,
+      
       },
       created_at: {
         allowNull: false,

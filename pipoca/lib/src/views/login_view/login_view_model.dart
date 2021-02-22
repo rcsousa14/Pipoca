@@ -1,4 +1,5 @@
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/models/auth_user_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/validation_service.dart';
 import 'package:stacked/stacked.dart';
@@ -38,7 +39,7 @@ class LoginViewModel extends IndexTrackingViewModel {
       setBusy(false);
     } else {
       await _navigationService.navigateTo(Routes.otpView,
-          arguments: OtpViewArguments(phone: phone, username: username));
+          arguments: OtpViewArguments(phone: phone, type: 'signup', fcmToken: fcmToken, username: username));
       setBusy(false);
     }
   }
@@ -58,12 +59,12 @@ class LoginViewModel extends IndexTrackingViewModel {
       setBusy(false);
     } else {
       await _navigationService.navigateTo(Routes.otpView,
-          arguments: OtpViewArguments(phone: phone));
+          arguments: OtpViewArguments(phone: phone, type:'login', fcmToken: fcmToken));
       setBusy(false);
     }
   }
 
-  Future logout() async {
-    await _authenticationService.signout();
-  }
+  // Future logout() async {
+  //   await _authenticationService.signout();
+  // }
 }

@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stacked_services/stacked_services.dart';
 
+import '../constants/api/header.dart';
 import '../services/authentication_service.dart';
 import '../services/capture_png_service.dart';
 import '../services/location_service.dart';
@@ -15,6 +16,7 @@ import '../views/main_view/main_view_model.dart';
 import '../services/shared_local_storage_service.dart';
 import '../services/third_party_service_model.dart';
 import '../services/social_share_service.dart';
+import '../repositories/user_repository.dart';
 import '../services/validation_service.dart';
 import '../services/youtube_service.dart';
 
@@ -28,6 +30,7 @@ GetIt $initGetIt(
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
   final thirdPartyServicesModule = _$ThirdPartyServicesModule();
+  gh.lazySingleton<ApiHeaders>(() => ApiHeaders());
   gh.lazySingleton<AuthenticationService>(() => AuthenticationService());
   gh.lazySingleton<BottomSheetService>(
       () => thirdPartyServicesModule.bottomSheetService);
@@ -40,6 +43,7 @@ GetIt $initGetIt(
   gh.lazySingleton<SnackbarService>(
       () => thirdPartyServicesModule.snackbarService);
   gh.lazySingleton<UrlLancherService>(() => UrlLancherService());
+  gh.lazySingleton<UserApi>(() => UserApi());
   gh.lazySingleton<ValidationService>(() => ValidationService());
   gh.lazySingleton<YoutubeService>(() => YoutubeService());
 

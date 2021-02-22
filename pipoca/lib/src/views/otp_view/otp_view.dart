@@ -6,7 +6,9 @@ import 'package:stacked/stacked.dart';
 class OtpView extends StatelessWidget {
   final String phone;
   final String username;
-  const OtpView({Key key, @required this.phone, this.username}) : super(key: key);
+  final String fcmToken;
+  final String type;
+  const OtpView({Key key, @required this.phone, this.username, this.fcmToken , @required this.type}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class OtpView extends StatelessWidget {
             ),
         );
       },
-      viewModelBuilder: () => OtpViewModel(phone: phone),
+      viewModelBuilder: () => OtpViewModel(phone: phone, type: type, fcmToken: fcmToken, username: username),
     );
   }
 }

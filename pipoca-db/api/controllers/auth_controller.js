@@ -65,7 +65,7 @@ exports.login = async (req, res) => {
         if (!checkUser) {
             return res.status(400).send({ message: 'usuario nao existe!' });
         }
-
+       
         const token = auth.jwtToken.createToken(checkUser);
         return res.status(200).send({ message: 'welcome back to Pipoca 🍿 use the token to gain access!😄', token });
 
