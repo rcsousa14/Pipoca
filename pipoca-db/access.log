@@ -1,1 +1,7 @@
 
+::ffff:127.0.0.1 - - [22/Feb/2021:10:45:15 +0000] "GET / HTTP/1.1" 500 1368 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+::ffff:127.0.0.1 - - [22/Feb/2021:10:46:12 +0000] "GET / HTTP/1.1" 500 1368 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+::ffff:127.0.0.1 - - [22/Feb/2021:10:46:38 +0000] "GET / HTTP/1.1" 500 1368 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+::ffff:127.0.0.1 - - [22/Feb/2021:10:47:48 +0000] "GET / HTTP/1.1" 200 308 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+::ffff:127.0.0.1 - - [22/Feb/2021:10:48:18 +0000] "GET / HTTP/1.1" 404 308 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+::ffff:127.0.0.1 - - [22/Feb/2021:10:48:24 +0000] "GET /v1 HTTP/1.1" 200 313 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"

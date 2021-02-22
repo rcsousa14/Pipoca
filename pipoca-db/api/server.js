@@ -39,7 +39,7 @@ app.use(routes.user);
 //app.use(subdomain('api', routes.user));
 
 
-app.use((res) => {
+app.use((req ,res) => {
     res.status(404).render('404');
 
 });
