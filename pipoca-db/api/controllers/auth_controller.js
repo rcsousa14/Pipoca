@@ -17,13 +17,20 @@ exports.signup = async (req, res) => {
         const checkname = await models.user.findOne({
             where: {
                 [Op.or]: [
-                    {username: username},
-                    {phone_number: phone_number}
+                    { username: username },
+                    { phone_number: phone_number }
                 ]
             }
         });
         if (checkname) {
-            return res.status(409).send({ message: 'O nome de usuário já existe', checkname});
+            if (checkname.username === username) {
+                return res.status(409).send({ message: 'O nome de usuário já existe' });
+            }
+            if (checkname.phone_number === phone_number) {
+                return res.status(409).send({ message: 'O número de telefone já existe' });
+
+            }
+
         }
         const { id } = await models.role.findOne({ where: { role: 'admin' } })
         const newUser = await models.user.create({ username, phone_number, phone_carrier, birthday, avatar, bio, fcm_token, role_id: id });
