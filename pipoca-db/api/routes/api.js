@@ -5,9 +5,7 @@ import authMiddleware from '../middleware/auth';
 import authorizeMiddleware from '../middleware/authorize';
 import postauthMiddleware from '../middleware/post_auth';
 import adminMiddleware from '../middleware/admin_auth';
-import commentAuthMiddleware from '../middleware/comment_auth';
 import voteMiddleware from '../middleware/vote_auth';
-
 const user = require('../controllers/user_controller');
 const auth = require('../controllers/auth_controller');
 const role = require('../controllers/role_controller');
@@ -40,7 +38,8 @@ router.get('/v1', (req, res) => {
 
 //auth routes - this route gives you the access key
 router.post('/v1/auth/signup', limiter, speedLimiter, authMiddleware, auth.signup); //☑️
-router.post('/v1/auth/login', limiter, speedLimiter,  auth.login); //☑️
+router.post('/v1/auth/login', limiter, speedLimiter, authMiddleware, auth.login); //☑️
+router.post('/v1/auth/social', limiter, speedLimiter, authMiddleware, auth.social); //☑️
 
 
 //roles routes - this route only for admins set user roles for the
@@ -49,10 +48,10 @@ router.delete('/v1/admin/roles/:id', authorizeMiddleware, adminMiddleware, role.
 router.get('/v1/admin/roles', speedLimiter, authorizeMiddleware, adminMiddleware, role.index); //☑️
 
 //user routes
-router.get('/v1/users',  speedLimiter, authorizeMiddleware, user.show); //☑️❎ cache data with redis
+router.get('/v1/users', speedLimiter, authorizeMiddleware, user.show); //☑️❎ cache data with redis
 router.get('/v1/admin/users', speedLimiter, authorizeMiddleware, adminMiddleware, user.index); //☑️
 router.delete('/v1/users', authorizeMiddleware, user.destroy); //☑️
-router.patch('/v1/users', limiter, speedLimiter, authorizeMiddleware, user.update); //☑️
+router.patch('/v1/users', limiter, speedLimiter, authorizeMiddleware, authMiddleware, user.update); //☑️
 
 //votes routes
 router.post('/v1/post/votes', limiter, authorizeMiddleware, voteMiddleware, post_vote.store); //☑️
@@ -70,13 +69,13 @@ router.get('/v1/posts', speedLimiter, authorizeMiddleware, user_posts.show); //�
 router.patch('/v1/posts/:id', limiter, speedLimiter, speedLimiter, authorizeMiddleware, user_posts.soft); //☑️
 
 // user comments routes
-router.post('/v1/:post_id/comments', limiter, speedLimiter, authorizeMiddleware, commentAuthMiddleware, user_comments.store); //☑️❎ cache data and check if is the samething as before for spam
-router.get('/v1/:post_id/comments',speedLimiter, authorizeMiddleware, user_comments.index); //☑️❎ cache data with redis
+router.post('/v1/:post_id/comments', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_comments.store); //☑️❎ cache data and check if is the samething as before for spam
+router.get('/v1/:post_id/comments', speedLimiter, authorizeMiddleware, user_comments.index); //☑️❎ cache data with redis
 router.get('/v1/comments', speedLimiter, authorizeMiddleware, user_comments.show); //☑️ ❎ cache data with redis
 router.patch('/v1/comments/:id', limiter, speedLimiter, authorizeMiddleware, user_comments.soft); //☑️ need to be tested
 
 // user sub_comments routes
-router.post('/v1/:comment_id/sub_comments', limiter, speedLimiter, authorizeMiddleware, commentAuthMiddleware, user_sub_comments.store);//☑️❎ cache data and check if is the samething as before for spam
+router.post('/v1/:comment_id/sub_comments', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_sub_comments.store); //☑️❎ cache data and check if is the samething as before for spam
 router.get('/v1/:comment_id/sub_comments', speedLimiter, authorizeMiddleware, user_sub_comments.index); //☑️❎ cache data with redis
 router.get('/v1/sub_comments', speedLimiter, authorizeMiddleware, user_sub_comments.show); //☑️❎ cache data with redis
 router.patch('/v1/sub_comments/:id', limiter, speedLimiter, authorizeMiddleware, user_sub_comments.soft); //☑️ need to be tested

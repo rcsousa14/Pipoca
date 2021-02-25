@@ -6,7 +6,7 @@ const ttl = 30;
 const cache = new CacheService(ttl);
 
 // for the admin need to see how many posts a user has etc etc
-exports.index = async (req, res) => {
+exports.index = async(req, res) => {
     try {
         const page = parseInt(req.query.page);
         const limit = 25;
@@ -30,118 +30,117 @@ exports.index = async (req, res) => {
 };
 
 
-exports.show = async ({ decoded }, res) => {
-    
+exports.show = async({ decoded }, res) => {
+
 
     try {
         const result = cache.get(`user_single_${decoded.id}`);
         if (result) {
             return res.status(200).json(result);
         }
-        
-            const user = await models.user.findOne({
-                group: ['user.id', 'posts.id', 'comments.id', 'sub_comments.id'],
-                raw: true,
 
-                where: {
-                    id: decoded.id
-                },
-                distinct: true,
-                attributes: [
-                    'id',
-                    'username',
-                    'bio',
-                    'phone_number',
-                    'avatar',
-                    'birthday',
-                    'fcm_token',
-                    'phone_carrier',
-                    'createdAt',
-                    [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = posts.id)`), 'posts_votes_total'],
-                    [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comments.id)`), 'comments_votes_total'],
-                    [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comments.id)`), 'sub_comments_votes_total'],
-                    [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM posts WHERE user_id = ${decoded.id})`), 'user_posts_total'],
-                    [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE user_id = ${decoded.id})`), 'user_comments_total'],
-                    [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE user_id = ${decoded.id})`), 'user_sub_comments_total'],
+        const user = await models.user.findOne({
+            group: ['user.id', 'posts.id', 'comments.id', 'sub_comments.id'],
+            raw: true,
 
-                ],
-                include: [
+            where: {
+                id: decoded.id
+            },
+            distinct: true,
+            attributes: [
+                'id',
+                'username',
+                'email',
+                'bio',
 
-                    {
+                'avatar',
+                'birthday',
+                'fcm_token',
 
-                        model: models.post,
-                        as: 'posts',
+                'createdAt', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = posts.id)`), 'posts_votes_total'],
+                [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comments.id)`), 'comments_votes_total'],
+                [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comments.id)`), 'sub_comments_votes_total'],
+                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM posts WHERE user_id = ${decoded.id})`), 'user_posts_total'],
+                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE user_id = ${decoded.id})`), 'user_comments_total'],
+                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE user_id = ${decoded.id})`), 'user_sub_comments_total'],
 
-                        attributes: [],
-                        duplicating: false,
-                        required: false,
+            ],
+            include: [
 
+                {
 
+                    model: models.post,
+                    as: 'posts',
 
-                    },
-                    {
-                        model: models.comment,
-                        as: 'comments',
-                        attributes: [],
-                        duplicating: false,
-                        required: false,
-
-
-                    },
-                    {
-                        model: models.sub_comment,
-                        as: 'sub_comments',
-                        attributes: [],
-                        duplicating: false,
-                        required: false,
-
-
-                    },
-
-
-                ],
-
-
-
-
-
-            });
-
-            const data = {
-                message: "😁 Usuário foi encontrado",
-
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    bio: user.bio,
-                    phone_number: user.phone_number,
-                    phone_carrier: user.phone_carrier,
-                    avatar: user.avatar,
-                    birthday: user.birthday,
-                    fcm_token: user.fcm_token,
-                    created_at: user.createdAt,
-                    karma_total: 10 + user.posts_votes_total + user.comments_votes_total + user.sub_comments_votes_total,
-                    interation_total: user.user_posts_total + user.user_comments_total + user.user_sub_comments_total,
-                    karma: {
-                        posts_votes_total: user.posts_votes_total == null ? 0 : user.posts_votes_total,
-                        comments_votes_total: user.comments_votes_total == null ? 0 : user.comments_votes_total,
-                        sub_comments_votes_total: user.sub_comments_votes_total == null ? 0 : user.sub_comments_votes_total,
-                    },
-                    interation: {
-                        user_posts_total: user.user_posts_total,
-                        user_comments_total: user.user_comments_total,
-                        user_sub_comments_total: user.user_sub_comments_total
-                    }
+                    attributes: [],
+                    duplicating: false,
+                    required: false,
 
 
 
                 },
+                {
+                    model: models.comment,
+                    as: 'comments',
+                    attributes: [],
+                    duplicating: false,
+                    required: false,
 
-            }
-            cache.set(`user_single_${decoded.id}`, data);
 
-            return res.status(200).json(data);
-        
+                },
+                {
+                    model: models.sub_comment,
+                    as: 'sub_comments',
+                    attributes: [],
+                    duplicating: false,
+                    required: false,
+
+
+                },
+
+
+            ],
+
+
+
+
+
+        });
+
+        const data = {
+            message: "😁 Usuário foi encontrado",
+
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                bio: user.bio,
+                avatar: user.avatar,
+                birthday: user.birthday,
+                fcm_token: user.fcm_token,
+                created_at: user.createdAt,
+                karma_total: 10 + user.posts_votes_total + user.comments_votes_total + user.sub_comments_votes_total,
+                interation_total: user.user_posts_total + user.user_comments_total + user.user_sub_comments_total,
+                karma: {
+                    posts_votes_total: user.posts_votes_total == null ? 0 : user.posts_votes_total,
+                    comments_votes_total: user.comments_votes_total == null ? 0 : user.comments_votes_total,
+                    sub_comments_votes_total: user.sub_comments_votes_total == null ? 0 : user.sub_comments_votes_total,
+                },
+                interation: {
+                    user_posts_total: user.user_posts_total,
+                    user_comments_total: user.user_comments_total,
+                    user_sub_comments_total: user.user_sub_comments_total
+                }
+
+
+
+            },
+
+        }
+        cache.set(`user_single_${decoded.id}`, data);
+
+        return res.status(200).json(data);
+
     } catch (error) {
         return res.status(500).json({
             error: error.message
@@ -152,7 +151,7 @@ exports.show = async ({ decoded }, res) => {
 
 };
 
-exports.destroy = async ({ decoded }, res) => {
+exports.destroy = async({ decoded }, res) => {
     try {
         await models.user.destroy({
             where: {
@@ -179,11 +178,11 @@ exports.destroy = async ({ decoded }, res) => {
 
 };
 
-exports.update = async ({ body, decoded }, res) => {
+exports.update = async({ body, decoded }, res) => {
     try {
         // figure out how to patch instead
-        const { phone_number, phone_carrier, username, avatar, birthday, bio, fcm_token } = body;
-        const user = await models.user.update({ phone_number, phone_carrier, username, avatar, birthday, bio, fcm_token }, {
+        const { username, avatar, birthday, bio, fcm_token, password } = body;
+        const user = await models.user.update({ password, username, avatar, birthday, bio, fcm_token }, {
             where: {
                 id: decoded.id
             },
@@ -198,4 +197,3 @@ exports.update = async ({ body, decoded }, res) => {
     }
 
 };
-

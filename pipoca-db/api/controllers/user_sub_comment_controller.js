@@ -6,7 +6,7 @@ const ttl = 10;
 const cache = new CacheService(ttl);
 const cachePost = new CacheService(60);
 
-exports.store = async ({ params, body, decoded }, res) => {
+exports.store = async({ params, body, decoded }, res) => {
     try {
         const { comment_id } = params;
         const { content, links, reply_to, reply_to_fcm_token, longitude, latitude } = body;
@@ -34,7 +34,7 @@ exports.store = async ({ params, body, decoded }, res) => {
     }
 }
 
-exports.index = async ({ params, query, decoded }, res) => {
+exports.index = async({ params, query, decoded }, res) => {
     try {
         const result = cache.get(`user_sub_comments_feed_${decoded.id}`);
         if (result) {
@@ -66,14 +66,21 @@ exports.index = async ({ params, query, decoded }, res) => {
             'is_flagged',
             'is_deleted',
             'createdAt',
-            'coordinates',
-            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`), 'votes_total'],
+            'coordinates', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`), 'votes_total'],
         ];
-        let include = [
-            {
+        let include = [{
                 model: models.user,
                 as: 'creator',
-                attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "birthday",
+                        "role_id",
+                        "bio",
+                        "password",
+                    ]
+                }
             },
 
         ];
@@ -90,7 +97,7 @@ exports.index = async ({ params, query, decoded }, res) => {
     }
 }
 
-exports.soft = async ({ params, decoded }, res) => {
+exports.soft = async({ params, decoded }, res) => {
     try {
 
         await models.sub_comment.update({
@@ -111,7 +118,7 @@ exports.soft = async ({ params, decoded }, res) => {
     }
 }
 
-exports.show = async ({ query, decoded }, res) => {
+exports.show = async({ query, decoded }, res) => {
     try {
         const result = cache.get(`user_sub_comments_${decoded.id}`);
         if (result) {
@@ -139,11 +146,19 @@ exports.show = async ({ query, decoded }, res) => {
 
             [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`), 'votes_total'],
         ];
-        let include = [
-            {
+        let include = [{
                 model: models.user,
                 as: 'creator',
-                attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "birthday",
+                        "role_id",
+                        "bio",
+                        "password",
+                    ]
+                }
             },
 
 

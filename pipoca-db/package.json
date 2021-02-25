@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "autoprefixer": "^10.2.4",
+        "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "ejs": "^3.1.6",

@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import CacheService from '../utils/cache';
 import models from '../models';
 require('dotenv').config();
 

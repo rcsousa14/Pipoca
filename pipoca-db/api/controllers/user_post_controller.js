@@ -8,11 +8,11 @@ const cachePost = new CacheService(60);
 
 const Op = Sequelize.Op;
 
-exports.store = async ({ body, decoded }, res) => {
+exports.store = async({ body, decoded }, res) => {
     try {
 
         const { content, links, hashes, longitude, latitude } = body;
-        
+
         const result = cachePost.get(`user_post_${decoded.id}`);
         if (result && result == content) {
             console.log(result)
@@ -48,7 +48,7 @@ exports.store = async ({ body, decoded }, res) => {
     }
 };
 //feed shows all posts that are near by you can sort it for posts with higher points
-exports.index = async ({ query, decoded }, res) => {
+exports.index = async({ query, decoded }, res) => {
     try {
         const result = cache.get(`user_feed_${decoded.id}`);
         if (result) {
@@ -118,8 +118,7 @@ exports.index = async ({ query, decoded }, res) => {
         if (query.filter == 'pipocar') {
 
             order.push(
-                [Sequelize.literal('votes_total ASC')],
-                [Sequelize.literal('comments_total ASC')]
+                [Sequelize.literal('votes_total ASC')], [Sequelize.literal('comments_total ASC')]
             );
         }
         if (query.filter == 'date') {
@@ -133,17 +132,24 @@ exports.index = async ({ query, decoded }, res) => {
             'is_flagged',
             'is_deleted',
             'createdAt',
-            'coordinates',
-            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
+            'coordinates', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
             [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`), 'comments_total'],
 
         ];
 
-        let include = [
-            {
+        let include = [{
                 model: models.user,
                 as: 'creator',
-                attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "birthday",
+                        "role_id",
+                        "bio",
+                        "password",
+                    ]
+                }
             },
 
 
@@ -163,28 +169,28 @@ exports.index = async ({ query, decoded }, res) => {
     }
 };
 // deletes users posts
-exports.soft = async ({ params, decoded }, res) => {
-    try {
-        const { id } = params;
-        await models.post.update({
-            is_deleted: false
-        }, {
-            where: {
-                id: id,
-                user_id: decoded.id
-            }
-        });
-        cache.del(`user_feed_${decoded.id}`);
-        cache.del(`user_posts_${decoded.id}`);
-        return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        });
+exports.soft = async({ params, decoded }, res) => {
+        try {
+            const { id } = params;
+            await models.post.update({
+                is_deleted: false
+            }, {
+                where: {
+                    id: id,
+                    user_id: decoded.id
+                }
+            });
+            cache.del(`user_feed_${decoded.id}`);
+            cache.del(`user_posts_${decoded.id}`);
+            return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message
+            });
+        }
     }
-}
-// shows all posts by user
-exports.show = async ({ query, decoded }, res) => {
+    // shows all posts by user
+exports.show = async({ query, decoded }, res) => {
     try {
         const result = cache.get(`user_posts_${decoded.id}`);
         if (result) {
@@ -200,7 +206,7 @@ exports.show = async ({ query, decoded }, res) => {
         let order = [
             ['createdAt', 'DESC']
         ];
-        let group = ['post.id', 'creator.id',];
+        let group = ['post.id', 'creator.id', ];
         let attributes = [
             'id',
             'content',
@@ -209,18 +215,25 @@ exports.show = async ({ query, decoded }, res) => {
             'is_flagged',
             'is_deleted',
             'createdAt',
-            'coordinates',
-            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
+            'coordinates', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
             [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`), 'comments_total'],
 
         ];
 
-        let include = [
-            {
+        let include = [{
                 model: models.user,
 
                 as: 'creator',
-                attributes: { exclude: ['createdAt', 'updatedAt', 'phone_number', 'phone_carrier', 'birthday', 'role_id', 'bio'] }
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "birthday",
+                        "role_id",
+                        "bio",
+                        "password",
+                    ]
+                }
             },
 
 

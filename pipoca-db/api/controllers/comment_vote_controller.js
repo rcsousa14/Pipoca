@@ -1,5 +1,7 @@
+import CacheService from '../utils/cache';
 const models = require('../models');
-
+const ttl = 10;
+const cache = new CacheService(ttl);
 exports.store = async({ body, decoded }, res, ) => {
     try {
 
@@ -17,10 +19,13 @@ exports.store = async({ body, decoded }, res, ) => {
 
                 where: { id: vote.id },
             });
-
+            cache.del(`user_comments_feed_${decoded.id}`);
+            cache.del(`user_comments_${decoded.id}`);
             return res.status(200).send({ message: "updated", updated_vote });
         }
         const add_vote = await models.comment_vote.create({ user_id: decoded.id, comment_id, voted });
+        cache.del(`user_comments_feed_${decoded.id}`);
+        cache.del(`user_comments_${decoded.id}`);
         return res.status(201).send({ message: 'added', add_vote });
 
 

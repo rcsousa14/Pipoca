@@ -4,12 +4,11 @@ const models = require('../models');
 const Op = Sequelize.Op;
 
 require('dotenv').config();
-exports.paginate = async (model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
+exports.paginate = async(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
 
     const offset = this.getOffset(page, limit);
 
     const { count, rows } = await model.findAndCountAll({
-        // distinct: true,
         order: order,
         limit: limit,
         offset: offset,
@@ -21,16 +20,13 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
     });
 
     var data = [];
-    const newRows = rows.map(function (row) {
+    const newRows = rows.map(function(row) {
         return row.toJSON()
     });
     for (var row of newRows) {
         let distance;
         if (lat && lng) {
-            distance = getDistance(
-                { latitude: lat, longitude: lng },
-                { latitude: row.coordinates.coordinates[1], longitude: row.coordinates.coordinates[0] }
-            );
+            distance = getDistance({ latitude: lat, longitude: lng }, { latitude: row.coordinates.coordinates[1], longitude: row.coordinates.coordinates[0] });
         }
 
 
@@ -83,7 +79,6 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
             "user_voted": isVoted,
             "user_vote": vote == null ? 0 : vote.voted,
             "user_isNear": isNear,
-
             "post": {
                 "id": row.id,
                 "content": row.content,
@@ -101,7 +96,6 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
             "user_voted": isVoted,
             "user_vote": vote == null ? 0 : vote.voted,
             "user_isNear": isNear,
-
             "comment": {
                 "id": row.id,
                 "content": row.content,
@@ -119,7 +113,6 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
             "user_voted": isVoted,
             "user_vote": vote == null ? 0 : vote.voted,
             "user_isNear": isNear,
-
             "sub_comment": {
                 "id": row.id,
                 "content": row.content,
@@ -149,7 +142,7 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
         data
     };
 }
-exports.admin = async (model, page, limit, attributes, include) => {
+exports.admin = async(model, page, limit, attributes, include) => {
     const offset = this.getOffset(page, limit);
     const { count, rows } = await model.findAndCountAll({
         limit: limit,
