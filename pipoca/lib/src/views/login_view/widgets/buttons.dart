@@ -11,7 +11,7 @@ class BusyBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-     margin: EdgeInsets.only(top: 15, left: 20, right: 20),
+     margin: EdgeInsets.only(top: 8, left: 20, right: 20),
       child: RaisedButton(
         color: color,
         elevation: 0.8,

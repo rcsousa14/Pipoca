@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
+import 'package:sign_button/sign_button.dart';
 
 class NewFormTextField extends StatelessWidget {
   final TextInputType keyboardType;
@@ -12,14 +15,14 @@ class NewFormTextField extends StatelessWidget {
   final Function validator;
   final FilteringTextInputFormatter formater;
   final bool focus;
+  final bool isPassword;
   final AutovalidateMode validate;
   final TextCapitalization textCap;
-  final bool isPhone;
   const NewFormTextField(
       {Key key,
       this.keyboardType,
       this.icon,
-      @required this.isPhone,
+      this.isPassword = false,
       this.text,
       this.controller,
       this.validator,
@@ -32,9 +35,10 @@ class NewFormTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
       child: TextFormField(
         style: TextStyle(fontSize: 14.5, color: Colors.grey[850]),
+        obscureText: isPassword ? true : false,
         autofocus: focus,
         autovalidateMode: validate,
         textCapitalization: textCap,
@@ -43,7 +47,7 @@ class NewFormTextField extends StatelessWidget {
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 1),
+            contentPadding: const EdgeInsets.all(0),
             filled: true,
             fillColor: Colors.white,
             enabledBorder: OutlineInputBorder(
@@ -59,35 +63,11 @@ class NewFormTextField extends StatelessWidget {
               borderSide: BorderSide(color: orange),
               borderRadius: BorderRadius.all(Radius.circular(4.0)),
             ),
-            prefixIconConstraints: isPhone == true
-                ? BoxConstraints(minWidth: 0, minHeight: 0)
-                : null,
-            prefixIcon: isPhone == true
-                ? Container(
-                    width: 100,
-                    padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10),
-                    child: Row(
-                      children: [
-                        Image.asset('images/angola.png'),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 10),
-                          child: VerticalDivider(
-                            width: 5,
-                            color: Colors.grey[300],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text('+244'),
-                        ),
-                      ],
-                    ),
-                  )
-                : Icon(
-                    icon,
-                    size: 18,
-                    color: Colors.black,
-                  ),
+            prefixIcon: Icon(
+              icon,
+              size: 18,
+              color: Colors.black,
+            ),
             errorStyle: TextStyle(fontSize: 12, color: red),
             prefixStyle: TextStyle(fontSize: 12, color: red),
             // prefixText: isPhone == true? '+244 ' : null,
@@ -118,9 +98,9 @@ class FormBuilder extends StatelessWidget {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Positioned(
-      top: height * 0.415,
-      right: width * 0.13,
-      left: width * 0.13,
+      top: height * 0.315,
+      right: width * 0.15,
+      left: width * 0.15,
       child: Column(
         children: [
           Material(
@@ -128,7 +108,7 @@ class FormBuilder extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: Container(
               width: width * 0.75,
-              height: height * 0.48,
+              height: height * 0.45,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
@@ -141,18 +121,44 @@ class FormBuilder extends StatelessWidget {
               ),
             ),
           ),
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SignInButton.mini(
+                  buttonType: ButtonType.google,
+                  onPressed: () {},
+                ),
+                SignInButton.mini(
+                  buttonType: ButtonType.facebook,
+                  onPressed: () {},
+                ),
+                Platform.isIOS
+                    ? SignInButton.mini(
+                        btnColor: Colors.black,
+                        buttonType: ButtonType.apple,
+                        onPressed: () {},
+                      )
+                    : Container(),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
                   text: 'Clicando, concordas com nossos',
-                  style: TextStyle(color: Colors.black, fontSize: 14.5),
+                  style: TextStyle(color: Colors.black, fontSize: 14),
                   children: <TextSpan>[
                     TextSpan(
                         text: ' Termos e Condições',
-                        style:
-                            TextStyle(color: Colors.blueAccent, fontSize: 14.5),
+                        style: TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
                         recognizer: TapGestureRecognizer()..onTap = termsTap)
                   ]),
             ),
@@ -188,7 +194,8 @@ class Tabs extends StatelessWidget {
                   physics: BouncingScrollPhysics(),
                   onTap: setIndex,
                   indicator: UnderlineTabIndicator(
-                      borderSide: BorderSide(width: 3.0, color: Colors.transparent),
+                      borderSide:
+                          BorderSide(width: 3.0, color: Colors.transparent),
                       insets: EdgeInsets.only(
                           left: currentIndex == 0 ? 40.0 : 62.0,
                           right: currentIndex == 0 ? 60.0 : 54.0)),
@@ -200,11 +207,12 @@ class Tabs extends StatelessWidget {
                       fontFamily: 'roboto',
                       fontWeight: FontWeight.bold),
                   tabs: [
+                    
+                    Container(height: 30.0, child: Tab(text: 'Login')),
                     Container(
                       height: 30.0,
                       child: Tab(text: 'Inscrever'),
                     ),
-                    Container(height: 30.0, child: Tab(text: 'Login')),
                   ],
                 ),
               )),
@@ -217,14 +225,7 @@ class Tabs extends StatelessWidget {
               child: TabBarView(
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(8),
-                              bottomRight: Radius.circular(8),
-                            )),
-                        child: signup),
+                    
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -235,7 +236,15 @@ class Tabs extends StatelessWidget {
                       child: Center(
                         child: login,
                       ),
-                    )
+                    ),
+                    Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            )),
+                        child: signup),
                   ]),
             ),
           )

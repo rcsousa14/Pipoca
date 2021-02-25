@@ -10,7 +10,7 @@ class SplashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<SplashViewModel>.nonReactive(
-        onModelReady: (model) => model.locationCheck(),
+       onModelReady: (model) => model.handleStartUpLogic(),
         builder: (context, model, child) {
       
      

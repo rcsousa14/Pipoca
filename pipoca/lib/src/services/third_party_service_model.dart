@@ -15,5 +15,5 @@ abstract class ThirdPartyServicesModule {
   @lazySingleton
   BottomSheetService get bottomSheetService;
 
- 
+
 }

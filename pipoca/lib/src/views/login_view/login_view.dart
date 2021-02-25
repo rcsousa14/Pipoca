@@ -45,34 +45,37 @@ class _SignUpForm extends HookViewModelWidget<LoginViewModel> {
 
   @override
   Widget buildViewModelWidget(BuildContext context, LoginViewModel model) {
-    var username = useTextEditingController();
-    var phone = useTextEditingController();
+    var email = useTextEditingController();
+    var password = useTextEditingController();
     return Form(
       child: Column(
         children: [
           NewFormTextField(
-            isPhone: false,
             keyboardType: TextInputType.text,
-            icon: FontAwesomeIcons.user,
-            text: 'Nome de Usuário',
-            controller: username,
+            icon: Icons.email_rounded,
+            text: 'Email',
+            controller: email,
             formater: FilteringTextInputFormatter.deny(RegExp('[<>]')),
-            validator: model.validateUsername,
+            validator: model.validateEmail,
             textCap: TextCapitalization.none,
             validate: AutovalidateMode.onUserInteraction,
           ),
           NewFormTextField(
-            isPhone: true,
-            keyboardType: TextInputType.number,
-            text: 'Telefone',
-            controller: phone,
-            formater: FilteringTextInputFormatter.digitsOnly,
-            validator: model.validatePhone,
+            isPassword: true,
+            icon: Icons.lock_rounded,
+            keyboardType: TextInputType.text,
+            text: 'Senha',
+            controller: password,
+            formater: FilteringTextInputFormatter.deny(RegExp('[<>]')),
+            validator: model.validatePass,
             textCap: TextCapitalization.none,
             validate: AutovalidateMode.onUserInteraction,
           ),
           BusyBtn(
-            tap: () => model.signup(username: username.text, phone: phone.text),
+            tap: () => model.access(
+                email: email.text,
+                password: password.text,
+                type: 'email/password'),
             busy: model.isBusy,
             color: orange,
             text: 'Inscrever-se',
@@ -84,26 +87,46 @@ class _SignUpForm extends HookViewModelWidget<LoginViewModel> {
 }
 
 class _LoginForm extends HookViewModelWidget<LoginViewModel> {
-  const _LoginForm({Key key}) : super(key: key);
+  const _LoginForm({Key key}) : super(key: key, reactive: true);
 
   @override
   Widget buildViewModelWidget(BuildContext context, LoginViewModel model) {
-    var phone = useTextEditingController();
+    var email = useTextEditingController();
+    var password = useTextEditingController();
     return Form(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           NewFormTextField(
-            isPhone: true,
-            keyboardType: TextInputType.number,
-            text: 'Telefone',
-            controller: phone,
-            formater: FilteringTextInputFormatter.digitsOnly,
-            validator: model.validatePhone,
+            keyboardType: TextInputType.text,
+            icon: Icons.email_rounded,
+            text: 'Email',
+            controller: email,
+            formater: FilteringTextInputFormatter.deny(RegExp('[<>]')),
+            validator: model.validateEmail,
             textCap: TextCapitalization.none,
             validate: AutovalidateMode.onUserInteraction,
           ),
+          NewFormTextField(
+            isPassword: true,
+            icon: Icons.lock_rounded,
+            keyboardType: TextInputType.text,
+            text: 'Senha',
+            controller: password,
+            formater: FilteringTextInputFormatter.deny(RegExp('[<>]')),
+            validator: model.validatePass,
+            textCap: TextCapitalization.none,
+            validate: AutovalidateMode.onUserInteraction,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20, top: 5),
+            child: Text('Esqueceu a senha?', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+          ),
           BusyBtn(
-            tap: () => model.login(phone: phone.text),
+            tap: () => model.access(
+                email: email.text,
+                password: password.text,
+                type: 'email/password'),
             busy: model.isBusy,
             color: orange,
             text: 'Login',

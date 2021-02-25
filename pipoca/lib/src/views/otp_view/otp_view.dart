@@ -8,31 +8,42 @@ class OtpView extends StatelessWidget {
   final String username;
   final String fcmToken;
   final String type;
-  const OtpView({Key key, @required this.phone, this.username, this.fcmToken , @required this.type}) : super(key: key);
+  const OtpView(
+      {Key key,
+      @required this.phone,
+      this.username,
+      this.fcmToken,
+      @required this.type})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<OtpViewModel>.reactive(
+    return ViewModelBuilder<OtpViewModel>.nonReactive(
+     // onModelReady: (model)=> model.launchURL(),
       builder: (context, model, child) {
+       
         return Scaffold(
           body: Stack(
-              fit: StackFit.expand,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomLeft,
-                      colors: [red, orange],
-                    ),
+            fit: StackFit.expand,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomLeft,
+                    colors: [red, orange],
                   ),
                 ),
-                
-              ],
-            ),
+              ),
+            ],
+          ),
         );
       },
-      viewModelBuilder: () => OtpViewModel(phone: phone, type: type, fcmToken: fcmToken, username: username),
+      viewModelBuilder: () => OtpViewModel(
+          phone: phone,
+          type: type,
+          fcmToken: fcmToken,
+          username: username),
     );
   }
 }

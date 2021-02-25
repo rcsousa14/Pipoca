@@ -81,6 +81,8 @@ class Router extends RouterBase {
           key: args.key,
           phone: args.phone,
           username: args.username,
+          fcmToken: args.fcmToken,
+          type: args.type,
         ),
         settings: data,
         transitionsBuilder: TransitionsBuilders.fadeIn,
@@ -98,5 +100,12 @@ class OtpViewArguments {
   final Key key;
   final String phone;
   final String username;
-  OtpViewArguments({this.key, @required this.phone, this.username});
+  final String fcmToken;
+  final String type;
+  OtpViewArguments(
+      {this.key,
+      @required this.phone,
+      this.username,
+      this.fcmToken,
+      @required this.type});
 }

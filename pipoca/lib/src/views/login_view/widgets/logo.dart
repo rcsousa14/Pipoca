@@ -21,14 +21,16 @@ class Logo extends StatelessWidget {
           ),
           child: Container(
               child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 160),
-                child: Image.asset('images/white.png'),
+              SafeArea(
+                              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 160, vertical: 20),
+                  child: Image.asset('images/white.png'),
+                ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8.5),
+                padding: const EdgeInsets.only(top: 2),
                 child: Text(
                   'Pipoca',
                   style: TextStyle(

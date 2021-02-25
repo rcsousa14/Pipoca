@@ -252,7 +252,7 @@ packages:
       name: firebase_analytics
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.3.0"
+    version: "7.0.1"
   firebase_analytics_platform_interface:
     dependency: transitive
     description:
@@ -267,41 +267,76 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1"
+  firebase_auth:
+    dependency: "direct main"
+    description:
+      name: firebase_auth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.20.1"
+  firebase_auth_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_auth_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
+  firebase_auth_web:
+    dependency: transitive
+    description:
+      name: firebase_auth_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.3"
   firebase_core:
     dependency: "direct main"
     description:
       name: firebase_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.3"
+    version: "0.7.0"
   firebase_core_platform_interface:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "3.0.1"
   firebase_core_web:
     dependency: transitive
     description:
       name: firebase_core_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1+1"
+    version: "0.2.1+3"
   firebase_dynamic_links:
     dependency: "direct main"
     description:
       name: firebase_dynamic_links
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.3"
+    version: "0.7.0+1"
   firebase_messaging:
     dependency: "direct main"
     description:
       name: firebase_messaging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.3"
+    version: "8.0.0-dev.15"
+  firebase_messaging_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_messaging_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0-dev.10"
+  firebase_messaging_web:
+    dependency: transitive
+    description:
+      name: firebase_messaging_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0-dev.6"
   fixnum:
     dependency: transitive
     description:
@@ -328,6 +363,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  flutter_facebook_auth:
+    dependency: "direct main"
+    description:
+      name: flutter_facebook_auth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  flutter_facebook_auth_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_facebook_auth_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
+  flutter_facebook_auth_web:
+    dependency: transitive
+    description:
+      name: flutter_facebook_auth_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   flutter_hooks:
     dependency: "direct main"
     description:
@@ -342,13 +398,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.6"
-  flutter_otp:
-    dependency: "direct main"
-    description:
-      name: flutter_otp
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.2"
   flutter_parsed_text:
     dependency: "direct main"
     description:
@@ -400,7 +449,7 @@ packages:
       name: get_it
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.4"
+    version: "5.0.6"
   glob:
     dependency: transitive
     description:
@@ -415,6 +464,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
+  google_sign_in:
+    dependency: "direct main"
+    description:
+      name: google_sign_in
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.5.9"
+  google_sign_in_platform_interface:
+    dependency: transitive
+    description:
+      name: google_sign_in_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.2"
+  google_sign_in_web:
+    dependency: transitive
+    description:
+      name: google_sign_in_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.2"
   graphs:
     dependency: transitive
     description:
@@ -681,13 +751,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
-  pin_code_fields:
-    dependency: "direct main"
-    description:
-      name: pin_code_fields
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.1.0"
   platform:
     dependency: transitive
     description:
@@ -751,6 +814,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.25.0"
+  service_worker:
+    dependency: transitive
+    description:
+      name: service_worker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.4"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -814,18 +884,18 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
+  sign_button:
+    dependency: "direct main"
+    description:
+      name: sign_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   sky_engine:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.99"
-  sms:
-    dependency: transitive
-    description:
-      name: sms
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.4"
   source_gen:
     dependency: transitive
     description:
