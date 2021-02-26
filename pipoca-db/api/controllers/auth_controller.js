@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
 const models = require("../models");
 const auth = require("../utils");
+const nodemailer = require('nodemailer');
+const ejs = require("ejs");
+const Email = require("email-templates");
+
 require('dotenv').config();
 
 
@@ -85,18 +89,48 @@ exports.social = async (req, res) => {
     }
 };
 
-exports.reset = async (req, res) => {
+exports.forgot = async (req, res) => {
     try {
         const { email } = req.body;
         const user = await models.user.findOne({ where: { email: email } });
-        const token = auth.jwtToken.createToken(user);
-        // send email with token as a query
-        // if (created || !created) {
-        //     return res.status(200).send({
-        //         message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
-        //         token,
-        //     });
-        // }
+
+        if (user) {
+            const token = auth.jwtToken.createToken(user);
+
+            const link = `https://pipoca-ao.herokuapp.com/reset-password?token=${token}`;
+
+            let transporter = nodemailer.createTransport({
+                host: "smtp.gmail.email",
+                port: 587,
+                secure: false, // true for 465, false for other ports
+                auth: {
+                    user: testAccount.user, // generated ethereal user
+                    pass: testAccount.pass, // generated ethereal password
+                },
+            });
+            const mail = new Email({
+                views: { root: "../../views/email", options: { extension: 'ejs' } },
+                message: {
+                    from: '"Ruben Sousa 👨🏾‍💻" <rcsousa@pipoca.ao>',
+                    
+                },
+                preview: true,
+                send: true,
+                transport: transporter
+            });
+            mail.send({
+                template: 'email',
+                message: {
+                     to: `${email}`
+                },
+                locals: {
+                    name: user.username,
+                    reset: link
+                }
+            });
+            return res.status(200).send({message: '📧Email Enviado! Verifique seu e-mail.'});
+        }
+        return res.status(400).send({message: '❎ Email não está em nosso banco de dados'})
     } catch (error) {
         return res.status(500).json({
             status: 500,
@@ -105,7 +139,7 @@ exports.reset = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+exports.reset = async (req, res) => {
     try {
         const { password, confirmation } = req.body;
         const token = req.query;
@@ -117,12 +151,12 @@ exports.update = async (req, res) => {
             if (password === confirmation) {
                 const hash = auth.hashPassword(password);
                 req.decoded = decoded;
-                await models.user.update({password: hash}, { where: { id: decoded.id } });
+                await models.user.update({ password: hash }, { where: { id: decoded.id } });
             }
 
 
         })
-        
+
     } catch (error) {
         return res.status(500).json({
             status: 500,
