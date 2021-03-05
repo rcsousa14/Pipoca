@@ -46,7 +46,7 @@ router.post('/v1/auth/forgot-password', limiter, speedLimiter, auth.forgot);
 router.get('/v1/auth/reset-password', limiter, speedLimiter, auth.reset); //needs a middleware to check if the token query exists
 router.post('/v1/auth/reset-password', limiter, speedLimiter, auth.send);
 //roles routes - this route only for admins set user roles for the
-router.post('/v1/admin/roles', limiter, speedLimiter, role.store); //☑️
+router.post('/v1/admin/roles', limiter, speedLimiter, adminMiddleware, role.store); //☑️
 router.delete('/v1/admin/roles/:id', authorizeMiddleware, adminMiddleware, role.destroy); //☑️
 router.get('/v1/admin/roles', speedLimiter, authorizeMiddleware, adminMiddleware, role.index); //☑️
 
