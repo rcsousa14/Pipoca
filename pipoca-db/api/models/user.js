@@ -44,6 +44,8 @@ module.exports = (sequelize, DataTypes) => {
     user.init({
         email: DataTypes.STRING,
         password: DataTypes.STRING(64),
+        reset_password_token: DataTypes.STRING,
+        reset_password_expiration: DataTypes.DATE,
         role_id: DataTypes.INTEGER,
         username: DataTypes.STRING(20),
         avatar: DataTypes.STRING,
@@ -51,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
         bio: DataTypes.STRING(124),
         fcm_token: DataTypes.STRING,
         type: DataTypes.STRING(20),
+        active: DataTypes.BOOLEAN
     }, {
         sequelize,
         modelName: 'user',

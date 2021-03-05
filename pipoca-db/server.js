@@ -4,21 +4,21 @@ const morgan = require('morgan');
 import helmet from 'helmet';
 import fs from 'fs';
 import path from 'path';
-import routes from './routes';
+import routes from './api/routes';
 import cors from 'cors';
 
 // import subdomain from 'express-subdomain';
 // import { ApolloServer, gql } from 'apollo-server-express';
 // import resolvers from './resolvers'
 // import typeDefs from './schema'
-require('./models');
+require('./api/models');
 
 const app = express();
 app.set('trust proxy', 1);
 const port = process.env.PORT || 3000;
 
 const accessLogStream = fs.createWriteStream(
-    path.join(__dirname, '../access.log'), { flags: 'a' }
+    path.join(__dirname, 'access.log'), { flags: 'a' }
 );
 
 /** 
@@ -29,7 +29,7 @@ const accessLogStream = fs.createWriteStream(
 
 
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname,'public')));
 app.use(helmet());
 app.use(cors());
 app.use(morgan('combined', { stream: accessLogStream }));

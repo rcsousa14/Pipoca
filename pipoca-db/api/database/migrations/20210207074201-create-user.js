@@ -20,6 +20,13 @@ module.exports = {
                 type: Sequelize.STRING(64),
                 is: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/i
             },
+            reset_password_token: {
+                type: Sequelize.STRING,
+                default: ''
+            },
+            reset_password_expiration: {
+                type: Sequelize.DATE,
+            },
             role_id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
@@ -50,6 +57,10 @@ module.exports = {
             type: {
                 type: Sequelize.STRING(20),
                 allowNull: false,
+            },
+            active: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false
             },
             created_at: {
                 allowNull: false,
