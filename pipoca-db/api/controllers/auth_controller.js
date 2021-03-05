@@ -39,7 +39,7 @@ exports.signup = async (req, res) => {
             const host = req.headers.host;
             const http = req.protocol;
             const logo = "./public/images/red.png";
-            const link = `${http}://localhost:4000/v1/auth/activate-account/${token}`
+            const link = `${http}://${host}/v1/auth/activate-account/${token}`
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
                 // host: process.env.RESET_HOST,
@@ -186,7 +186,7 @@ exports.forgot = async (req, res) => {
         const host = req.headers.host;
         const http = req.protocol;
         const logo = "/public/images/red.png";
-        const link = `${http}://localhost:4000/v1/auth/reset-password?token=${token}`;
+        const link = `${http}://${host}/v1/auth/reset-password?token=${token}`;
         let transporter = nodemailer.createTransport({
             service: 'gmail',
             // host: process.env.RESET_HOST,
