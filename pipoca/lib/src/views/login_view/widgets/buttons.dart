@@ -12,12 +12,12 @@ class BusyBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
      margin: EdgeInsets.only(top: 8, left: 20, right: 20),
-      child: RaisedButton(
-        color: color,
-        elevation: 0.8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
+      child: ElevatedButton(
+        // color: color,
+        // elevation: 0.8,
+        // shape: RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.circular(4),
+        // ),
         onPressed: tap,
         child: !busy
             ? Padding(

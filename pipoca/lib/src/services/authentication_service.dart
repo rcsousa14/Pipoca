@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
-import 'package:http/http.dart' as http;
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api/url.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';

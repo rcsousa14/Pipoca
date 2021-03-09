@@ -1,7 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api/url.dart';
-import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/constants/api/header.dart';
 import 'dart:convert';

@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
-import 'package:sign_button/sign_button.dart';
+
 
 class NewFormTextField extends StatelessWidget {
   final TextInputType keyboardType;
@@ -127,21 +124,7 @@ class FormBuilder extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SignInButton.mini(
-                  buttonType: ButtonType.google,
-                  onPressed: () {},
-                ),
-                SignInButton.mini(
-                  buttonType: ButtonType.facebook,
-                  onPressed: () {},
-                ),
-                Platform.isIOS
-                    ? SignInButton.mini(
-                        btnColor: Colors.black,
-                        buttonType: ButtonType.apple,
-                        onPressed: () {},
-                      )
-                    : Container(),
+               
               ],
             ),
           ),

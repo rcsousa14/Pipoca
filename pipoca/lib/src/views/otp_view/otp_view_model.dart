@@ -3,7 +3,6 @@ import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/models/auth_user_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:stacked/stacked.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class OtpViewModel extends BaseViewModel {
   final String phone;
@@ -18,19 +17,7 @@ class OtpViewModel extends BaseViewModel {
 
   final _authenticationService = locator<AuthenticationService>();
 
-  void launchURL() async {
-    var url = Uri(
-        scheme: 'sms',
-        path: '+244' + phone,
-        queryParameters: {'subject': 'Example Subject & Symbols are allowed!'});
-    if (await canLaunch(url.toString())) {
-      await launch(url.toString());
-    } else {
-      throw 'Could not launch $url';
-    }
-
-    // _otp.sendOtp(phone, 'esta é a sua senha de uso único (OTP) para Pipoca:', minNumber, maxNumber, '+244');
-  }
+  
 
   Future appAcess() async {
     // if (phone != null && phone.isNotEmpty) {

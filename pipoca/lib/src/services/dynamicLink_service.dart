@@ -11,8 +11,8 @@ class DynamicLinkService {
  
   Future handleDynamicLink() async {
     
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
+    // final PendingDynamicLinkData data =
+    //     await FirebaseDynamicLinks.instance.getInitialLink();
    
     //_handleDeepLinkStartup(data);
 

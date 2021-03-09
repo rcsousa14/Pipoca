@@ -2,20 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:pipoca/src/app/locator.dart';
-import 'package:pipoca/src/constants/routes/navigation.dart';
-import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
+
 import 'package:pipoca/src/models/youtube_model.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/social_share_service.dart';
 import 'package:pipoca/src/services/youtube_service.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_services/stacked_services.dart';
+
 
 class BagoCardViewModel extends BaseViewModel {
   final String text;
   final int points;
   BagoCardViewModel({@required this.text, @required this.points});
-  final NavigationService _navigationService = locator<NavigationService>();
+  //final NavigationService _navigationService = locator<NavigationService>();
   final CapturePngService _captureService = locator<CapturePngService>();
   final UrlLancherService _lancherService = locator<UrlLancherService>();
   final YoutubeService _youtubeService = locator<YoutubeService>();

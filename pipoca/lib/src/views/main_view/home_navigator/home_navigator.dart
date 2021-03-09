@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/routes/navigation.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
-import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view.dart';
-import 'package:pipoca/src/views/main_view/home_navigator/post_view/post_view.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class HomeNavigator extends StatefulWidget {

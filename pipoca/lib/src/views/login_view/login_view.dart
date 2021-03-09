@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/views/login_view/login_view_model.dart';
 import 'package:pipoca/src/views/login_view/widgets/buttons.dart';
@@ -9,6 +8,7 @@ import 'package:pipoca/src/views/login_view/widgets/form.dart';
 import 'package:pipoca/src/views/login_view/widgets/logo.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:pipoca/src/constants/widgets/network_sensitive.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({Key key}) : super(key: key);
@@ -17,20 +17,23 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<LoginViewModel>.reactive(
       builder: (context, model, child) {
-        return Scaffold(
-          body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Stack(
-              children: [
-                GestureDetector(onVerticalDragUpdate: (_) {}, child: Logo()),
-                FormBuilder(
-                  currentIndex: model.currentIndex,
-                  setIndex: model.setIndex,
-                  login: _LoginForm(),
-                  signup: _SignUpForm(),
-                  termsTap: () => print('hi'),
-                )
-              ],
+   
+        return NetworkSensitive(
+          child: Scaffold(
+            body: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Stack(
+                children: [
+                  GestureDetector(onVerticalDragUpdate: (_) {}, child: Logo()),
+                  FormBuilder(
+                    currentIndex: model.currentIndex,
+                    setIndex: model.setIndex,
+                    login: _LoginForm(),
+                    signup: _SignUpForm(),
+                    termsTap: () => print('hi'),
+                  )
+                ],
+              ),
             ),
           ),
         );
@@ -120,7 +123,10 @@ class _LoginForm extends HookViewModelWidget<LoginViewModel> {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 20, top: 5),
-            child: Text('Esqueceu a senha?', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+            child: Text(
+              'Esqueceu a senha?',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
           ),
           BusyBtn(
             tap: () => model.access(

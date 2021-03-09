@@ -10,12 +10,14 @@ class BusyBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      color: color,
-      elevation: 0.8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-      ),
+    return ElevatedButton(
+      // style: ButtonStyle(
+      //  color: color,
+      // elevation: 0.8,
+      // shape: RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.circular(4),
+      // ),
+      // ),
       onPressed: tap,
       child: !busy
           ? Padding(
@@ -57,12 +59,12 @@ class BusyBtnLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      color: color,
-      elevation: 0.8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-      ),
+    return ElevatedButton(
+     // color: color,
+      // elevation: 0.8,
+      // shape: RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.circular(4),
+      // ),
       onPressed: tap,
       child: !busy
           ? Padding(

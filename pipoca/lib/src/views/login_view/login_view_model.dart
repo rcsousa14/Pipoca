@@ -1,18 +1,24 @@
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
 import 'package:pipoca/src/models/auth_user_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
+import 'package:pipoca/src/services/connectivity_service.dart';
+import 'package:pipoca/src/services/location_service.dart';
 import 'package:pipoca/src/services/push_notification_service.dart';
 import 'package:pipoca/src/services/validation_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:pipoca/src/app/router.gr.dart';
+
 
 class LoginViewModel extends IndexTrackingViewModel {
+  
   final _authenticationService = locator<AuthenticationService>();
   final _dialogService = locator<DialogService>();
-  final _navigationService = locator<NavigationService>();
+  // final _navigationService = locator<NavigationService>();
   final _validationService = locator<ValidationService>();
   final _pushNotificationService = locator<PushNotificationService>();
+
 
   // validation
   String Function(String) get validateEmail => _validationService.validateEmail;
@@ -44,7 +50,7 @@ class LoginViewModel extends IndexTrackingViewModel {
           password: password,
           fcmToken: fcmToken,
           type: 'email/password');
-      var result = await _authenticationService.access(user: user, type: null);
+      await _authenticationService.access(user: user, type: null);
       setBusy(false);
     }
   }

@@ -11,6 +11,7 @@ import 'package:stacked_services/stacked_services.dart';
 import '../constants/api/header.dart';
 import '../services/authentication_service.dart';
 import '../services/capture_png_service.dart';
+import '../services/connectivity_service.dart';
 import '../services/dynamicLink_service.dart';
 import '../services/location_service.dart';
 import '../views/main_view/main_view_model.dart';
@@ -37,6 +38,7 @@ GetIt $initGetIt(
   gh.lazySingleton<BottomSheetService>(
       () => thirdPartyServicesModule.bottomSheetService);
   gh.lazySingleton<CapturePngService>(() => CapturePngService());
+  gh.lazySingleton<ConnectivityService>(() => ConnectivityService());
   gh.lazySingleton<DialogService>(() => thirdPartyServicesModule.dialogService);
   gh.lazySingleton<DynamicLinkService>(() => DynamicLinkService());
   gh.lazySingleton<LocationService>(() => LocationService());
