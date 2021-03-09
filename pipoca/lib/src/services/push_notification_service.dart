@@ -8,11 +8,15 @@ class PushNotificationService {
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   Future initialise() async {
-    if (Platform.isIOS) {
-      _firebaseMessaging.requestPermission();
-    }
-    final msg = await _firebaseMessaging.getInitialMessage();
-    print(msg.notification.body);
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
   }
 
   // void _navigate(Map<String, dynamic> message) {
