@@ -38,10 +38,13 @@ router.get('/v1', (req, res) => {
 
 
 //auth routes - this route gives you the access key
+
 router.post('/v1/auth/signup', limiter, speedLimiter, authMiddleware, auth.signup); //need to check email... send email
 router.get('/v1/auth/activate-account/:token', limiter, speedLimiter, auth.confirmation );
 router.post('/v1/auth/login', limiter, speedLimiter, authMiddleware, auth.login); //☑️
 router.post('/v1/auth/social', limiter, speedLimiter, authMiddleware, auth.social); //☑️
+router.post('/v1/auth/refresh-token', limiter, speedLimiter, auth.refresh );
+router.patch('/v1/auth/logout', limiter, speedLimiter,authorizeMiddleware, auth.logout);
 router.post('/v1/auth/forgot-password', limiter, speedLimiter, auth.forgot);
 router.get('/v1/auth/reset-password', limiter, speedLimiter, auth.reset); //needs a middleware to check if the token query exists
 router.post('/v1/auth/reset-password', limiter, speedLimiter, auth.send);

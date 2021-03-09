@@ -8,6 +8,10 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+            refresh_token: {
+                type: Sequelize.STRING,
+                default: ''
+            },
             email: {
                 type: Sequelize.STRING,
                 unique: true,

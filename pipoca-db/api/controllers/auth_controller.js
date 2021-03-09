@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 const models = require("../models");
+
 const auth = require("../utils");
 const nodemailer = require('nodemailer');
 const ejs = require("ejs");
-import fs from 'fs';
 import path from 'path';
 require('dotenv').config();
 const Sequelize = require('sequelize');
@@ -13,7 +13,8 @@ const Op = Sequelize.Op;
 exports.signup = async (req, res) => {
     try {
         const { fcm_token, email, password } = req.body;
-
+        const date = new Date.now();
+        const refreshToken = auth.jwtToken.refreshToken(date);
         const hash = auth.hashPassword(password);
 
         const checkname = await models.user.findOne({
@@ -26,16 +27,19 @@ exports.signup = async (req, res) => {
                 .status(409)
                 .send({ message: "😞 O nome de usuário já existe" });
         }
+
         const { id } = await models.role.findOne({ where: { role: "regular" } });
-        const newUser = await models.user.create({
+        const user = await models.user.create({
             fcm_token,
             email,
+            refresh_token: refreshToken,
             password: hash,
             role_id: id,
             type: 'email/password'
         });
-        if (newUser) {
-            const token = auth.jwtToken.createToken(newUser);
+        if (user) {
+
+            const token = auth.jwtToken.createToken(user);
             const host = req.headers.host;
             const http = req.protocol;
             const logo = "./public/images/red.png";
@@ -60,12 +64,12 @@ exports.signup = async (req, res) => {
                         to: email,
                         subject: 'Confirmação da Conta :: pipoca-v1.0.0',
                         text: link,
-                        // attachments: [{
-                        //     filename: 'red.png',
-                        //     path: './public/images/red.png',
-                        //     cid: 'logo'
+                        attachments: [{
+                            filename: 'red.png',
+                            path: './public/images/red.png',
+                            cid: 'logo'
 
-                        // }],
+                        }],
                         html: data
                     }
                     transporter.sendMail(mailOptions, function (err, data) {
@@ -99,15 +103,16 @@ exports.confirmation = async (req, res) => {
         const { token } = req.params
         if (token) {
             const decoded = auth.jwtToken.verifyToken(token);
+            console.log(decoded);
             const user = await models.user.findByPk(decoded.id);
             if (user.active == false) {
                 const update = await models.user.update({ active: true }, { where: { id: user.id } })
                 if (update) {
-                    res.render('reset', { msg: 'Conta activada com successo! Ja pode pipocar 🍿' })
+                    res.render('reset', { msg: 'Conta activada com successo! Ja pode pipocar 🍿', title: 'Confirmação da conta'})
                 }
             }
 
-            return res.render('reset', { msg: '422: token de redefinição de senha é inválido ou expirou 💩!' })
+            return res.render('reset', { msg: '422: token de redefinição de senha é inválido ou expirou 💩!',title: 'Confirmação da conta' })
         }
     } catch (error) {
         return res.status(500).json({
@@ -124,12 +129,21 @@ exports.login = async (req, res) => {
         const user = await models.user.findOne({
             where: { email: email }
         });
-        if (user) {
+        if (user && user.refresh_token != 'blocked') {
             if (password && passRegex.test(password) && auth.comparePassword(password, user.password)) {
                 const token = auth.jwtToken.createToken(user);
-                return res.status(200).send({
-                    message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
-                    token,
+                const date = new Date.now();
+                const refreshToken = auth.jwtToken.refreshToken(date);
+                const update = await models.user.update({ refresh_token: refreshToken }, { where: { id: user.id } });
+                if (update) {
+                    return res.status(200).send({
+                        message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
+                        token,
+                    });
+                }
+                return res.status(400).send({
+                    message: "Failed to update",
+
                 });
             }
             return res.status(400).send({ message: "senha incorrecta" });
@@ -147,18 +161,34 @@ exports.login = async (req, res) => {
 exports.social = async (req, res) => {
     try {
         const { email, avatar, type } = req.body;
+        const date = new Date.now();
+        const refreshToken = auth.jwtToken.refreshToken(date);
         const [user, created] = await models.user.findOrCreate({ email, avatar, type, active: true }, { where: { email: email } });
         const token = auth.jwtToken.createToken(user);
         if (created) {
-            return res.status(200).send({
-                message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
-                token,
+            if(user.refresh_token != 'blocked'){
+                return res.status(200).send({
+                    message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
+                    token,
+                });
+                
+            }
+            return res.status(401).send({
+                message: "You been blocked due to violation of usage!🙅🏾‍♀️ ",
+               
             });
+            
         }
-        return res.status(201).send({
-            message: "welcome to Pipoca 🍿 use the token to gain access!😄",
-            token,
-        });
+        const updated = await models.user.update({ refresh_token: refreshToken }, { where: { id: user.id } });
+        if(updated){
+            return res.status(201).send({
+                message: "welcome to Pipoca 🍿 use the token to gain access!😄",
+                token,
+            }); 
+        }
+        return res.status(401).send({
+            message:"unknown error"
+        })
 
     } catch (error) {
         return res.status(500).json({
@@ -167,6 +197,60 @@ exports.social = async (req, res) => {
         });
     }
 };
+
+exports.logout = async ({ decoded }, res) => {
+    try {
+        const update = await models.user.update({ refresh_token: '' }, { where: { id: decoded.id } });
+        if (update) {
+            return res.status(200).send({
+                message: "sucessfully logout",
+
+            });
+        }
+        return res.status(400).send({
+            message: "unknown error"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            status: 500,
+            message: error.message,
+        });
+    }
+}
+
+exports.refresh = async (req, res) => {
+    try {
+        const { token, id } = req.body;
+        const check = auth.jwtToken.verifyToken(token);
+        if(!check){
+            const user = await models.user.findByPk(id);
+            if(user && user.refresh_token !=null || user.refresh_token.length > 0){
+                const token = auth.jwtToken.createToken(user);
+                if(user.refresh_token == 'blocked'){
+                    return res.status(401).send({
+                        message: "You been blocked due to violation of usage!🙅🏾‍♀️ ",
+                       
+                    });
+                }
+                
+                return res.status(200).send({
+                    message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
+                    token,
+                });
+            }
+            return res.status(401).send({
+                message: "your are not sign in",
+               
+            });
+        }
+        return null;
+    } catch (error) {
+        return res.status(500).json({
+            status: 500,
+            message: error.message,
+        });
+    }
+}
 
 exports.forgot = async (req, res) => {
 
@@ -251,7 +335,11 @@ exports.reset = async (req, res) => {
 
         const { token } = req.query;
 
-        return res.render('reset', { token: token, msg: '' });
+        if(token){
+            return res.render('reset', { token: token, msg: '', title: 'Redefinição de senha'});
+        }
+
+        return res.status(401).send('401: Unauthorized 💩!');
 
 
 
@@ -274,22 +362,25 @@ exports.send = async (req, res) => {
 
             const user = await models.user.findOne({ where: { reset_password_token: token, reset_password_expiration: { [Op.gt]: Date.now() } } });
             if (!user) {
-                return res.render('reset', { msg: '422: token de redefinição de senha é inválido ou expirou 💩!' })
+                return res.render('reset', { msg: '422: token de redefinição de senha é inválido ou expirou 💩!', title: 'Redefinição de senha' })
             }
 
 
-            if (password === confirmation) {
-                const hash = auth.hashPassword(password);
+            if ( user.refresh_token != 'blocked') {
+                if(password === confirmation){
+                    const hash = auth.hashPassword(password);
                 const date = new Date(0);
                 const update = await models.user.update({ password: hash, reset_password_token: '', reset_password_expiration: date }, { where: { id: user.id } })
                 if (update) {
-                    return res.render('reset', { msg: 'Sua senha foi atualizada com sucesso!\n De volta a pipocar 🥳' })
+                    return res.render('reset', { msg: 'Sua senha foi atualizada com sucesso!\n De volta a pipocar 🥳', title: 'Redefinição de senha' })
                 }
-                return res.render('reset', { msg: 'Erro desconhecido' })
+                return res.render('reset', { msg: 'Erro desconhecido', title: 'Redefinição de senha' })
+                }
+                return null;
             }
 
 
-            return res.render('reset', { msg: 'Sua senha de confirmação não é a mesma que sua senha' })
+            return res.render('reset', { msg: 'You been blocked due to violation of usage!🙅🏾‍♀️', title: 'Redefinição de senha' })
 
         }
 

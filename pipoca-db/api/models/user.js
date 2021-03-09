@@ -42,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     };
     user.init({
+        refresh_token: DataTypes.STRING,
         email: DataTypes.STRING,
         password: DataTypes.STRING(64),
         reset_password_token: DataTypes.STRING,
