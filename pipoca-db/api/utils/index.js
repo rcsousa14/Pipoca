@@ -18,13 +18,7 @@ exports.jwtToken = {
         return jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     },
-    refreshToken({ date }) {
-        
-        return jwt.sign({ date }, process.env.JWT_SECRET_REFRESH);
-    },
-    verifyRefreshToken(token) {
-        return jwt.verify(token, process.env.JWT_SECRET_REFRESH);
-    },
+    
     passToken({ id }) {
         return jwt.sign({ id }, process.env.JWT_SECRET_PASS, {
             expiresIn: '10m'

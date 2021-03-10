@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 const models = require("../models");
-
+const randToken = require("rand-token");
 const auth = require("../utils");
 const nodemailer = require('nodemailer');
 const ejs = require("ejs");
@@ -13,11 +13,8 @@ const Op = Sequelize.Op;
 exports.signup = async(req, res) => {
     try {
         const { fcm_token, email, password } = req.body;
-        var d = new Date.now();
-        var stamp = {
-            date: d.toString()
-        };
-        const refreshToken = auth.jwtToken.refreshToken(stamp);
+        
+        const refreshToken = randToken.uid(16);
         const hash = auth.hashPassword(password);
 
         const checkname = await models.user.findOne({
@@ -135,8 +132,7 @@ exports.login = async(req, res) => {
         if (user && user.refresh_token != 'blocked') {
             if (password && passRegex.test(password) && auth.comparePassword(password, user.password)) {
                 const token = auth.jwtToken.createToken(user);
-                const date = new Date.now();
-                const refreshToken = auth.jwtToken.refreshToken(date);
+                const refreshToken = randToken.uid(16);
                 const update = await models.user.update({ refresh_token: refreshToken }, { where: { id: user.id } });
                 if (update) {
                     return res.status(200).send({
@@ -164,8 +160,8 @@ exports.login = async(req, res) => {
 exports.social = async(req, res) => {
     try {
         const { email, avatar, type } = req.body;
-        const date = new Date.now();
-        const refreshToken = auth.jwtToken.refreshToken(date);
+       
+        const refreshToken = randToken.uid(16);
         const [user, created] = await models.user.findOrCreate({ email, avatar, type, active: true }, { where: { email: email } });
         const token = auth.jwtToken.createToken(user);
         if (created) {
