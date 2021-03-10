@@ -15,7 +15,7 @@ exports.signup = async(req, res) => {
         const { fcm_token, email, password } = req.body;
         var d = new Date.now();
         var date = d.toString();
-        const refreshToken = auth.jwtToken.refreshToken(date);
+        const refreshToken = auth.jwtToken.refreshToken({date: date});
         const hash = auth.hashPassword(password);
 
         const checkname = await models.user.findOne({
