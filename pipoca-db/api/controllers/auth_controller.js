@@ -10,10 +10,11 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 
-exports.signup = async (req, res) => {
+exports.signup = async(req, res) => {
     try {
         const { fcm_token, email, password } = req.body;
-        const date = new Date.now();
+        var d = new Date.now();
+        var date = d.toString();
         const refreshToken = auth.jwtToken.refreshToken(date);
         const hash = auth.hashPassword(password);
 
@@ -54,7 +55,7 @@ exports.signup = async (req, res) => {
                     pass: process.env.RESET_PASSWORD, // generated ethereal password
                 },
             });
-            ejs.renderFile(path.join(__dirname, '../../views', 'email.ejs'), { name: '', link: link, logo: logo, confirmation: true, title: 'Confirmação da Conta' }, async function (err, data) {
+            ejs.renderFile(path.join(__dirname, '../../views', 'email.ejs'), { name: '', link: link, logo: logo, confirmation: true, title: 'Confirmação da Conta' }, async function(err, data) {
                 if (err) {
                     return res.status(400).send({ message: `Tenta novamente erro no link: ${err}` });
                 } else {
@@ -72,7 +73,7 @@ exports.signup = async (req, res) => {
                         }],
                         html: data
                     }
-                    transporter.sendMail(mailOptions, function (err, data) {
+                    transporter.sendMail(mailOptions, function(err, data) {
                         if (err) {
                             res.send({ message: `Tenta novamente : ${err} ` });
                         } else {
@@ -98,7 +99,7 @@ exports.signup = async (req, res) => {
     }
 };
 
-exports.confirmation = async (req, res) => {
+exports.confirmation = async(req, res) => {
     try {
         const { token } = req.params
         if (token) {
@@ -108,11 +109,11 @@ exports.confirmation = async (req, res) => {
             if (user.active == false) {
                 const update = await models.user.update({ active: true }, { where: { id: user.id } })
                 if (update) {
-                    res.render('reset', { msg: 'Conta activada com successo! Ja pode pipocar 🍿', title: 'Confirmação da conta'})
+                    res.render('reset', { msg: 'Conta activada com successo! Ja pode pipocar 🍿', title: 'Confirmação da conta' })
                 }
             }
 
-            return res.render('reset', { msg: '422: token de redefinição de senha é inválido ou expirou 💩!',title: 'Confirmação da conta' })
+            return res.render('reset', { msg: '422: token de redefinição de senha é inválido ou expirou 💩!', title: 'Confirmação da conta' })
         }
     } catch (error) {
         return res.status(500).json({
@@ -122,7 +123,7 @@ exports.confirmation = async (req, res) => {
     }
 }
 
-exports.login = async (req, res) => {
+exports.login = async(req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -158,7 +159,7 @@ exports.login = async (req, res) => {
     }
 };
 
-exports.social = async (req, res) => {
+exports.social = async(req, res) => {
     try {
         const { email, avatar, type } = req.body;
         const date = new Date.now();
@@ -166,28 +167,28 @@ exports.social = async (req, res) => {
         const [user, created] = await models.user.findOrCreate({ email, avatar, type, active: true }, { where: { email: email } });
         const token = auth.jwtToken.createToken(user);
         if (created) {
-            if(user.refresh_token != 'blocked'){
+            if (user.refresh_token != 'blocked') {
                 return res.status(200).send({
                     message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
                     token,
                 });
-                
+
             }
             return res.status(401).send({
                 message: "You been blocked due to violation of usage!🙅🏾‍♀️ ",
-               
+
             });
-            
+
         }
         const updated = await models.user.update({ refresh_token: refreshToken }, { where: { id: user.id } });
-        if(updated){
+        if (updated) {
             return res.status(201).send({
                 message: "welcome to Pipoca 🍿 use the token to gain access!😄",
                 token,
-            }); 
+            });
         }
         return res.status(401).send({
-            message:"unknown error"
+            message: "unknown error"
         })
 
     } catch (error) {
@@ -198,7 +199,7 @@ exports.social = async (req, res) => {
     }
 };
 
-exports.logout = async ({ decoded }, res) => {
+exports.logout = async({ decoded }, res) => {
     try {
         const update = await models.user.update({ refresh_token: '' }, { where: { id: decoded.id } });
         if (update) {
@@ -218,21 +219,21 @@ exports.logout = async ({ decoded }, res) => {
     }
 }
 
-exports.refresh = async (req, res) => {
+exports.refresh = async(req, res) => {
     try {
         const { token, id } = req.body;
         const check = auth.jwtToken.verifyToken(token);
-        if(!check){
+        if (!check) {
             const user = await models.user.findByPk(id);
-            if(user && user.refresh_token !=null || user.refresh_token.length > 0){
+            if (user && user.refresh_token != null || user.refresh_token.length > 0) {
                 const token = auth.jwtToken.createToken(user);
-                if(user.refresh_token == 'blocked'){
+                if (user.refresh_token == 'blocked') {
                     return res.status(401).send({
                         message: "You been blocked due to violation of usage!🙅🏾‍♀️ ",
-                       
+
                     });
                 }
-                
+
                 return res.status(200).send({
                     message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
                     token,
@@ -240,7 +241,7 @@ exports.refresh = async (req, res) => {
             }
             return res.status(401).send({
                 message: "your are not sign in",
-               
+
             });
         }
         return null;
@@ -252,7 +253,7 @@ exports.refresh = async (req, res) => {
     }
 }
 
-exports.forgot = async (req, res) => {
+exports.forgot = async(req, res) => {
 
 
     try {
@@ -282,7 +283,7 @@ exports.forgot = async (req, res) => {
             },
         });
 
-        ejs.renderFile(path.join(__dirname, '../../views', 'email.ejs'), { name: username, link: link, logo: logo, confirmation: false, title: 'Redefinição de senha' }, async function (err, data) {
+        ejs.renderFile(path.join(__dirname, '../../views', 'email.ejs'), { name: username, link: link, logo: logo, confirmation: false, title: 'Redefinição de senha' }, async function(err, data) {
             if (err) {
                 return res.status(400).send({ message: `Tenta novamente erro no link: ${err}` });
             } else {
@@ -300,7 +301,7 @@ exports.forgot = async (req, res) => {
                     }],
                     html: data
                 }
-                transporter.sendMail(mailOptions, function (err, data) {
+                transporter.sendMail(mailOptions, function(err, data) {
                     if (err) {
                         res.send({ message: `Tenta novamente : ${err} ` });
                     } else {
@@ -329,14 +330,14 @@ exports.forgot = async (req, res) => {
 
 
 };
-exports.reset = async (req, res) => {
+exports.reset = async(req, res) => {
     try {
 
 
         const { token } = req.query;
 
-        if(token){
-            return res.render('reset', { token: token, msg: '', title: 'Redefinição de senha'});
+        if (token) {
+            return res.render('reset', { token: token, msg: '', title: 'Redefinição de senha' });
         }
 
         return res.status(401).send('401: Unauthorized 💩!');
@@ -350,7 +351,7 @@ exports.reset = async (req, res) => {
         });
     }
 };
-exports.send = async (req, res) => {
+exports.send = async(req, res) => {
     try {
 
 
@@ -360,21 +361,28 @@ exports.send = async (req, res) => {
         if (token && verify) {
 
 
-            const user = await models.user.findOne({ where: { reset_password_token: token, reset_password_expiration: { [Op.gt]: Date.now() } } });
+            const user = await models.user.findOne({
+                where: {
+                    reset_password_token: token,
+                    reset_password_expiration: {
+                        [Op.gt]: Date.now()
+                    }
+                }
+            });
             if (!user) {
                 return res.render('reset', { msg: '422: token de redefinição de senha é inválido ou expirou 💩!', title: 'Redefinição de senha' })
             }
 
 
-            if ( user.refresh_token != 'blocked') {
-                if(password === confirmation){
+            if (user.refresh_token != 'blocked') {
+                if (password === confirmation) {
                     const hash = auth.hashPassword(password);
-                const date = new Date(0);
-                const update = await models.user.update({ password: hash, reset_password_token: '', reset_password_expiration: date }, { where: { id: user.id } })
-                if (update) {
-                    return res.render('reset', { msg: 'Sua senha foi atualizada com sucesso!\n De volta a pipocar 🥳', title: 'Redefinição de senha' })
-                }
-                return res.render('reset', { msg: 'Erro desconhecido', title: 'Redefinição de senha' })
+                    const date = new Date(0);
+                    const update = await models.user.update({ password: hash, reset_password_token: '', reset_password_expiration: date }, { where: { id: user.id } })
+                    if (update) {
+                        return res.render('reset', { msg: 'Sua senha foi atualizada com sucesso!\n De volta a pipocar 🥳', title: 'Redefinição de senha' })
+                    }
+                    return res.render('reset', { msg: 'Erro desconhecido', title: 'Redefinição de senha' })
                 }
                 return null;
             }
@@ -395,4 +403,3 @@ exports.send = async (req, res) => {
         });
     }
 };
-
