@@ -1,6 +1,5 @@
-
 const models = require("../models");
-const {v4: uuidv4} = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const auth = require("../utils");
 const nodemailer = require('nodemailer');
 const ejs = require("ejs");
@@ -13,7 +12,7 @@ const Op = Sequelize.Op;
 exports.signup = async(req, res) => {
     try {
         const { fcm_token, email, password } = req.body;
-        
+
         const refreshToken = uuidv4();
         const hash = auth.hashPassword(password);
 
@@ -130,7 +129,7 @@ exports.login = async(req, res) => {
             where: { email: email }
         });
         if (user && user.refresh_token != 'blocked') {
-            if (password && passRegex.test(password) && auth.comparePassword(password, user.password)) {
+            if (password && auth.comparePassword(password, user.password)) {
                 const token = auth.jwtToken.createToken(user);
                 const refreshToken = uuidv4();
                 const update = await models.user.update({ refresh_token: refreshToken }, { where: { id: user.id } });
@@ -160,7 +159,7 @@ exports.login = async(req, res) => {
 exports.social = async(req, res) => {
     try {
         const { email, avatar, type } = req.body;
-       
+
         const refreshToken = uuidv4();
         const [user, created] = await models.user.findOrCreate({ email, avatar, type, active: true }, { where: { email: email } });
         const token = auth.jwtToken.createToken(user);
