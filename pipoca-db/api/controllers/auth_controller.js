@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
+
 const models = require("../models");
-const randToken = require("rand-token");
+const {v4: uuidv4} = require("uuid");
 const auth = require("../utils");
 const nodemailer = require('nodemailer');
 const ejs = require("ejs");
@@ -14,7 +14,7 @@ exports.signup = async(req, res) => {
     try {
         const { fcm_token, email, password } = req.body;
         
-        const refreshToken = randToken.uid(16);
+        const refreshToken = uuidv4();
         const hash = auth.hashPassword(password);
 
         const checkname = await models.user.findOne({
@@ -132,7 +132,7 @@ exports.login = async(req, res) => {
         if (user && user.refresh_token != 'blocked') {
             if (password && passRegex.test(password) && auth.comparePassword(password, user.password)) {
                 const token = auth.jwtToken.createToken(user);
-                const refreshToken = randToken.uid(16);
+                const refreshToken = uuidv4();
                 const update = await models.user.update({ refresh_token: refreshToken }, { where: { id: user.id } });
                 if (update) {
                     return res.status(200).send({
@@ -161,7 +161,7 @@ exports.social = async(req, res) => {
     try {
         const { email, avatar, type } = req.body;
        
-        const refreshToken = randToken.uid(16);
+        const refreshToken = uuidv4();
         const [user, created] = await models.user.findOrCreate({ email, avatar, type, active: true }, { where: { email: email } });
         const token = auth.jwtToken.createToken(user);
         if (created) {
