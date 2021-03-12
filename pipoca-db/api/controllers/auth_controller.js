@@ -10,7 +10,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 
-const oAuth2Client = new google.auth.oAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
+const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
 oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
 exports.signup = async(req, res) => {
