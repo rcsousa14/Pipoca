@@ -1,6 +1,7 @@
 const models = require("../models");
 const { v4: uuidv4 } = require("uuid");
 const auth = require("../utils");
+const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
 const ejs = require("ejs");
 import path from 'path';
@@ -8,6 +9,9 @@ require('dotenv').config();
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
+
+const oAuth2Client = new google.auth.oAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
+oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
 exports.signup = async(req, res) => {
     try {
@@ -37,7 +41,7 @@ exports.signup = async(req, res) => {
             type: 'email/password'
         });
         if (user) {
-
+            const accessToken = await oAuth2Client.getAccessToken();
             const token = auth.jwtToken.createToken(user);
             const host = req.headers.host;
             const http = req.protocol;
@@ -49,8 +53,12 @@ exports.signup = async(req, res) => {
                 // port: process.env.RESET_PORT,
                 // secure: process.env.RESET_ISSECURE, // true for 465, false for other ports
                 auth: {
+                    type: 'OAuth2',
                     user: process.env.RESET_USERNAME, // generated ethereal user
-                    pass: process.env.RESET_PASSWORD, // generated ethereal password
+                    clientId: process.env.CLIENT_ID,
+                    clientSecret: process.env.CLIENT_SECRE,
+                    refreshToken: process.env.REFRESH_TOKEN,
+                    accessToken: accessToken
                 },
             });
             ejs.renderFile(path.join(__dirname, '../../views', 'email.ejs'), { name: '', link: link, logo: logo, confirmation: true, title: 'Confirmação da Conta' }, async function(err, data) {
@@ -59,7 +67,7 @@ exports.signup = async(req, res) => {
                 } else {
                     let mailOptions = {
 
-                        from: 'NO-REPLY@pipoca.ao',
+                        from: 'Ruben Sousa 😀 <coverxstories@gmail.com>',
                         to: email,
                         subject: 'Confirmação da Conta :: pipoca-v1.0.0',
                         text: link,
@@ -275,8 +283,12 @@ exports.forgot = async(req, res) => {
             // port: process.env.RESET_PORT,
             // secure: process.env.RESET_ISSECURE, // true for 465, false for other ports
             auth: {
+                type: 'OAuth2',
                 user: process.env.RESET_USERNAME, // generated ethereal user
-                pass: process.env.RESET_PASSWORD, // generated ethereal password
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRE,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken
             },
         });
 
@@ -286,7 +298,7 @@ exports.forgot = async(req, res) => {
             } else {
                 let mailOptions = {
 
-                    from: 'NO-REPLY@pipoca.ao',
+                    from: 'Ruben Sousa 😀 <coverxstories@gmail.com>',
                     to: email,
                     subject: 'Redefinição de senha :: pipoca-v1.0.0',
                     text: link,
