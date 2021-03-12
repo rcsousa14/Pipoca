@@ -1,8 +1,8 @@
 const models = require("../models");
 const { v4: uuidv4 } = require("uuid");
 const auth = require("../utils");
-const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
+const nodemailerSendgrid = require('nodemailer-sendgrid');
 const ejs = require("ejs");
 import path from 'path';
 require('dotenv').config();
@@ -10,8 +10,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 
-const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
-oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+
 
 exports.signup = async(req, res) => {
     try {
@@ -41,26 +40,17 @@ exports.signup = async(req, res) => {
             type: 'email/password'
         });
         if (user) {
-            const accessToken = await oAuth2Client.getAccessToken();
+
             const token = auth.jwtToken.createToken(user);
             const host = req.headers.host;
             const http = req.protocol;
             const logo = "./public/images/red.png";
             const link = `${http}://${host}/v1/auth/activate-account/${token}`
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                // host: process.env.RESET_HOST,
-                // port: process.env.RESET_PORT,
-                // secure: process.env.RESET_ISSECURE, // true for 465, false for other ports
-                auth: {
-                    type: 'OAuth2',
-                    user: process.env.RESET_USERNAME, // generated ethereal user
-                    clientId: process.env.CLIENT_ID,
-                    clientSecret: process.env.CLIENT_SECRE,
-                    refreshToken: process.env.REFRESH_TOKEN,
-                    accessToken: accessToken
-                },
-            });
+            let transporter = nodemailer.createTransport(
+                nodemailerSendgrid({
+                    apiKey: process.env.SEND_GRID
+                })
+            );
             ejs.renderFile(path.join(__dirname, '../../views', 'email.ejs'), { name: '', link: link, logo: logo, confirmation: true, title: 'Confirmação da Conta' }, async function(err, data) {
                 if (err) {
                     return res.status(400).send({ message: `Tenta novamente erro no link: ${err}` });
@@ -274,26 +264,17 @@ exports.forgot = async(req, res) => {
             return res.status(400).send({ message: '📧Email Enviado! Verifique seu e-mail.' });
         }
         const { username } = user;
-        const accessToken = await oAuth2Client.getAccessToken();
+
         const token = auth.jwtToken.passToken(user);
         const host = req.headers.host;
         const http = req.protocol;
         const logo = "/public/images/red.png";
         const link = `${http}://${host}/v1/auth/reset-password?token=${token}`;
-        let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            // host: process.env.RESET_HOST,
-            // port: process.env.RESET_PORT,
-            // secure: process.env.RESET_ISSECURE, // true for 465, false for other ports
-            auth: {
-                type: 'OAuth2',
-                user: process.env.RESET_USERNAME, // generated ethereal user
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRE,
-                refreshToken: process.env.REFRESH_TOKEN,
-                accessToken: accessToken
-            },
-        });
+        let transporter = nodemailer.createTransport(
+            nodemailerSendgrid({
+                apiKey: process.env.SEND_GRID
+            })
+        );
 
         ejs.renderFile(path.join(__dirname, '../../views', 'email.ejs'), { name: username, link: link, logo: logo, confirmation: false, title: 'Redefinição de senha' }, async function(err, data) {
             if (err) {
