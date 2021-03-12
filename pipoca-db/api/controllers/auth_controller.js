@@ -155,7 +155,9 @@ exports.login = async(req, res) => {
             return res.status(400).send({ message: "senha incorrecta" });
         }
 
-        return res.status(400).send({ message: "usuario nao existe!" });
+        return res.status(400).send({
+            message: "usuário não existe!"
+        });
     } catch (error) {
         return res.status(500).json({
             status: 500,
@@ -269,9 +271,10 @@ exports.forgot = async(req, res) => {
             where: { email: email }
         });
         if (!user) {
-            return res.status(400).send({ message: 'usuario nao existe!' });
+            return res.status(400).send({ message: '📧Email Enviado! Verifique seu e-mail.' });
         }
         const { username } = user;
+        const accessToken = await oAuth2Client.getAccessToken();
         const token = auth.jwtToken.passToken(user);
         const host = req.headers.host;
         const http = req.protocol;
