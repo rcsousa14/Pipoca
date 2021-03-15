@@ -158,17 +158,29 @@ exports.login = async(req, res) => {
 
 exports.social = async(req, res) => {
     try {
-        const { email, avatar, type } = req.body;
+        const { email, avatar, type, token } = req.body;
 
         const refreshToken = uuidv4();
-        const [user, created] = await models.user.findOrCreate({ email, avatar, type, active: true }, { where: { email: email } });
+        const [user, created] = await models.user.findOrCreate({
+            defaults: { email, avatar, type, active: true },
+            //test this out to see if it works
+            where: { email: email }
+        });
         const token = auth.jwtToken.createToken(user);
         if (created) {
             if (user.refresh_token != 'blocked') {
-                return res.status(200).send({
-                    message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
-                    token,
-                });
+
+                const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: token }, { where: { id: user.id } });
+                if (updated) {
+                    return res.status(200).send({
+                        message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
+                        token,
+                    });
+                }
+                return res.status(401).send({
+                    message: "unknown error"
+                })
+
 
             }
             return res.status(401).send({
@@ -177,7 +189,7 @@ exports.social = async(req, res) => {
             });
 
         }
-        const updated = await models.user.update({ refresh_token: refreshToken }, { where: { id: user.id } });
+        const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: token }, { where: { id: user.id } });
         if (updated) {
             return res.status(201).send({
                 message: "welcome to Pipoca 🍿 use the token to gain access!😄",
