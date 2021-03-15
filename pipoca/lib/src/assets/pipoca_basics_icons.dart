@@ -33,4 +33,5 @@ class PipocaBasics {
   static const IconData export = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData up_arrow = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData compare_arrows = IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData google = IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

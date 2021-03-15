@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
-
+import 'package:pipoca/src/constants/widgets/busy_btn_widget.dart';
 
 class NewFormTextField extends StatelessWidget {
   final TextInputType keyboardType;
@@ -49,16 +53,16 @@ class NewFormTextField extends StatelessWidget {
             fillColor: Colors.white,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey[200]),
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderRadius: BorderRadius.all(Radius.circular(35.0)),
             ),
             errorBorder: OutlineInputBorder(),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.blue[300]),
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderRadius: BorderRadius.all(Radius.circular(35.0)),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderSide: BorderSide(color: orange),
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderRadius: BorderRadius.all(Radius.circular(35.0)),
             ),
             prefixIcon: Icon(
               icon,
@@ -76,77 +80,103 @@ class NewFormTextField extends StatelessWidget {
 }
 
 class FormBuilder extends StatelessWidget {
-  final Widget signup;
-  final Widget login;
-  final int currentIndex;
-  final Function(int) setIndex;
+  final bool isBusy;
+  final Function fbTap;
+  final Function glTap;
+  final Function apTap;
+
   final Function termsTap;
   const FormBuilder(
-      {Key key,
-      this.currentIndex,
-      this.setIndex,
-      this.login,
-      this.signup,
-      this.termsTap})
+      {Key key, this.apTap, this.fbTap, this.glTap, this.isBusy, this.termsTap})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
-    return Positioned(
-      top: height * 0.315,
-      right: width * 0.15,
-      left: width * 0.15,
-      child: Column(
-        children: [
-          Material(
-            elevation: 4,
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: width * 0.75,
-              height: height * 0.45,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
+    
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        height: height * 0.5,
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 35, left: 60, right: 60),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomLeft,
+              colors: [red, orange],
+            ),
+            borderRadius:
+                BorderRadius.only(topRight: const Radius.circular(65))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: !Platform.isIOS? const EdgeInsets.only(top: 20, bottom: 30):const EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                'Login via mídia social',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w300),
               ),
-              child: Tabs(
-                currentIndex: currentIndex,
-                setIndex: setIndex,
-                signup: signup,
-                login: login,
+            ),
+            BusyBtnLogin(
+              busy: isBusy,
+              btnColor: facebookBtn,
+              icon: Icon(
+                FontAwesomeIcons.facebookF,
+                size: 22,
+              ),
+              text: 'Continua com Facebook',
+              tap: fbTap,
+            ),
+            BusyBtnLogin(
+              busy: isBusy,
+              btnColor: Colors.white,
+              txtColor: Colors.grey[700],
+              icon: SvgPicture.asset(
+                'images/google.svg',
+                width: 25,
+                height: 18,
+              ),
+              text: 'Continua com Google',
+              tap: glTap,
+            ),
+            !Platform.isIOS ? Container(
+              height: height * 0.06,
+            ):
+            BusyBtnLogin(
+              busy: isBusy,
+              btnColor: Colors.black,
+              icon: Icon(
+                FontAwesomeIcons.apple,
+                size: 22,
+              ),
+              text: 'Continua com Apple',
+              tap: apTap,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                    text: 'Clicando, concordas com nossos',
+                    style: TextStyle(color: Colors.white, fontSize: 13.5),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: ' Termos e Condições',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13.5,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.bold),
+                          recognizer: TapGestureRecognizer()..onTap = termsTap)
+                    ]),
               ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(top: 5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-               
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                  text: 'Clicando, concordas com nossos',
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: ' Termos e Condições',
-                        style: TextStyle(
-                            color: Colors.blueAccent,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold),
-                        recognizer: TapGestureRecognizer()..onTap = termsTap)
-                  ]),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -190,7 +220,6 @@ class Tabs extends StatelessWidget {
                       fontFamily: 'roboto',
                       fontWeight: FontWeight.bold),
                   tabs: [
-                    
                     Container(height: 30.0, child: Tab(text: 'Login')),
                     Container(
                       height: 30.0,
@@ -208,7 +237,6 @@ class Tabs extends StatelessWidget {
               child: TabBarView(
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,

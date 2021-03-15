@@ -1,51 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:pipoca/src/constants/themes/colors.dart';
+
 
 class Logo extends StatelessWidget {
   const Logo({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-     var height = MediaQuery.of(context).size.height;
-    return Column(
-    children: [
-      Container(
-          height: height * 0.5,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomLeft,
-              colors: [red, orange],
-            ),
-          ),
-          child: Container(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SafeArea(
-                              child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 160, vertical: 20),
-                  child: Image.asset('images/white.png'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Text(
+    var height = MediaQuery.of(context).size.height;
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: height * 0.35),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Image.asset(
+                    'images/red.png',
+                    width: 55,
+                    height: 55,
+                  ),
+                Text(
                   'Pipoca',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45),
                 ),
-              )
-            ],
-          ))),
-      Container(
-        height: height * 0.5,
-        color: Colors.white,
-      )
-    ],
-  );
+              ],
+            ),
+          ],
+        ));
   }
 }

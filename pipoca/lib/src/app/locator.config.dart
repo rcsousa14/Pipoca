@@ -20,6 +20,7 @@ import '../services/shared_local_storage_service.dart';
 import '../services/third_party_service_model.dart';
 import '../services/social_share_service.dart';
 import '../repositories/user/user_repository.dart';
+import '../repositories/user/user_manager.dart';
 import '../services/validation_service.dart';
 import '../services/youtube_service.dart';
 
@@ -50,6 +51,7 @@ GetIt $initGetIt(
       () => thirdPartyServicesModule.snackbarService);
   gh.lazySingleton<UrlLancherService>(() => UrlLancherService());
   gh.lazySingleton<UserApi>(() => UserApi());
+  gh.lazySingleton<UserManager>(() => UserManager());
   gh.lazySingleton<ValidationService>(() => ValidationService());
   gh.lazySingleton<YoutubeService>(() => YoutubeService());
 

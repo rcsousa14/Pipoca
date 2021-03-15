@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,6 +13,8 @@ import 'package:pipoca/src/constants/api/header.dart';
 import 'package:pipoca/src/services/shared_local_storage_service.dart';
 import 'dart:convert';
 
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
 @lazySingleton
 class AuthenticationService {
   final _localStorage = locator<SharedLocalStorageService>();
@@ -17,6 +22,7 @@ class AuthenticationService {
   final client = locator<ApiHeaders>().client;
   final _fb = FacebookAuth.instance;
   final _google = GoogleSignIn(scopes: ['profile', 'email']);
+  final _apple = SignInWithApple();
 
   //token setter to be use for all the api services
   String _currentToken;
@@ -24,7 +30,7 @@ class AuthenticationService {
 
   //method for fetching token. Endpoint could be login or signup
 
-  Future<bool> access({@required UserAuth user, @required String type}) async {
+  Future access({@required UserAuth user, @required String type}) async {
     try {
       var url = Uri.encodeFull('$heroku_url/auth/$type');
       var response = await client.post(
@@ -34,27 +40,42 @@ class AuthenticationService {
       );
       var parsed = json.decode(response.body);
       Token token = Token.fromJson(parsed);
-      if (token.token != null) {
-        await _localStorage.put('token', token.token).then((value) {
-          _currentToken = token.token;
-        });
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (token.token != null && token.token.isNotEmpty) {
+          await _localStorage.put('token', token.token).then((value) {
+            _currentToken = token.token;
+          });
+        }
+        return token != null;
+      } else {
+        return token.message;
       }
-      return token != null;
-    } catch (e) {
-      return e;
+    } on SocketException {
+      throw 'Sem conexão com a Internet';
+    } on TimeoutException catch (e) {
+      return e.message;
+    } on Error catch (e) {
+      return 'Falha na autenticação. Tente novamente! $e';
     }
   }
 
   Future facebook({String fcmToken}) async {
     try {
       AccessToken accessToken =
-          await _fb.login(loginBehavior: LoginBehavior.NATIVE_ONLY);
+          await _fb.login(loginBehavior: LoginBehavior.DIALOG_ONLY);
       if (accessToken != null) {
-        var userData =
-            await _fb.getUserData(fields: "email,picture.width(200)");
+        var data = await _fb.getUserData(fields: "email,picture.width(200)");
+        var userData = {
+          'email': data['email'],
+          'avatar': data['picture']['data']['url']
+        };
         userData['type'] = 'facebook';
         userData['fcm_token'] = fcmToken;
+
         UserAuth user = UserAuth.fromJson(userData);
+        if (userData['email'].isEmpty || userData['email'] == null) {
+          return 'Você precisa verificar sua conta do Facebook';
+        }
 
         var result = await access(user: user, type: 'social');
         return result;
@@ -71,10 +92,16 @@ class AuthenticationService {
           return "Falha na autenticação. Tente novamente!";
           break;
       }
+    } on SocketException {
+      throw 'Sem conexão com a Internet';
+    } on TimeoutException catch (e) {
+      return e.message;
+    } on Error catch (e) {
+      return 'Falha na autenticação. Tente novamente! $e';
     }
   }
 
-  Future google(String fcmToken) async {
+  Future google({String fcmToken}) async {
     try {
       GoogleSignInAccount google = await _google.signIn();
       if (google != null) {
@@ -88,8 +115,36 @@ class AuthenticationService {
             type: 'social');
         return result;
       }
-    } catch (e) {
-      return 'Falha na autenticação. Tente novamente!';
+    } on SocketException {
+      throw 'Sem conexão com a Internet';
+    } on TimeoutException catch (e) {
+      return e.message;
+    } on Error catch (e) {
+      return 'Falha na autenticação. Tente novamente! $e';
+    }
+  }
+
+  //platform IOS
+  Future apple({String fcmToken}) async {
+    try {
+      // S apple = await _apple.getAppleIDCredential;
+      // if (google != null) {
+      //   var result = await access(
+      //       user: UserAuth(
+      //         email: google.email,
+      //         avatar: google.photoUrl,
+      //         fcmToken: fcmToken,
+      //         type: 'google',
+      //       ),
+      //       type: 'social');
+      //   return result;
+      //}
+    } on SocketException {
+      throw 'Sem conexão com a Internet';
+    } on TimeoutException catch (e) {
+      return e.message;
+    } on Error catch (e) {
+      return 'Falha na autenticação. Tente novamente! $e';
     }
   }
 
@@ -102,8 +157,17 @@ class AuthenticationService {
 
   //logout for the current user
   Future signout() async {
-    await _localStorage.delete('token');
-    await _fb.logOut();
-    await _google.signOut();
+    var url = Uri.encodeFull('$heroku_url/auth/logout');
+    var response = await client.patch(
+      url,
+      headers: _header.setTokenHeaders(token: _currentToken),
+    );
+    if (response.statusCode == 200) {
+      await _localStorage.delete('token');
+      await _fb.logOut();
+      await _google.signOut();
+    } else {
+      return 'unknown error';
+    }
   }
 }

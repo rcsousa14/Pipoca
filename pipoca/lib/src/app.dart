@@ -18,10 +18,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<AppViewModel>.reactive(
-   
-      builder: (context, model, child) {
     
+    return ViewModelBuilder<AppViewModel>.reactive(
+      builder: (context, model, child) {
         return LifeCycleManager(
           child: MultiProvider(
             providers: [
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
               ),
               StreamProvider<Coordinates>.value(
                 initialData: Coordinates(latitude: 0.0, longitude: 0.0),
-                 value: locator<LocationService>().getStreamData,
+                value: locator<LocationService>().getStreamData,
               ),
             ],
             child: MaterialApp(
@@ -38,10 +37,10 @@ class MyApp extends StatelessWidget {
               locale: Locale('pt', 'AO'),
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
-                textTheme: GoogleFonts.robotoTextTheme(
+                textTheme: GoogleFonts.poppinsTextTheme(
                   Theme.of(context).textTheme,
                 ),
-                fontFamily: 'roboto',
+                fontFamily: 'poppins',
                 primarySwatch: Colors.red,
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),

@@ -18,7 +18,7 @@ class SplashViewModel extends BaseViewModel {
   Future handleStartUpLogic() async {
     Future.delayed(const Duration(seconds: 3), () async {
       //await _dynamicLinkService.handleDynamicLink();
-     // await _pushNotificationService.initialise();
+      await _pushNotificationService.initialise();
       var permission = await _currentLocation.location.hasPermission();
       if (permission == PermissionStatus.granted) {
         var hasLoggedInUser = await _authenticationService.isUserLoggedIn();

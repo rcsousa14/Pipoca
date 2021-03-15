@@ -9,10 +9,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
+import '../views/forgot_view/forgot_view.dart';
 import '../views/intro_view/intro_view.dart';
 import '../views/login_view/login_view.dart';
 import '../views/main_view/main_view.dart';
-import '../views/otp_view/otp_view.dart';
 import '../views/splash_view/splash_view.dart';
 
 class Routes {
@@ -20,13 +20,13 @@ class Routes {
   static const String introView = '/intro-view';
   static const String mainView = '/main-view';
   static const String loginView = '/login-view';
-  static const String otpView = '/otp-view';
+  static const String forgotView = '/forgot-view';
   static const all = <String>{
     splashView,
     introView,
     mainView,
     loginView,
-    otpView,
+    forgotView,
   };
 }
 
@@ -38,7 +38,7 @@ class Router extends RouterBase {
     RouteDef(Routes.introView, page: IntroView),
     RouteDef(Routes.mainView, page: MainView),
     RouteDef(Routes.loginView, page: LoginView),
-    RouteDef(Routes.otpView, page: OtpView),
+    RouteDef(Routes.forgotView, page: ForgotView),
   ];
   @override
   Map<Type, AutoRouteFactory> get pagesMap => _pagesMap;
@@ -74,38 +74,13 @@ class Router extends RouterBase {
         transitionsBuilder: TransitionsBuilders.fadeIn,
       );
     },
-    OtpView: (data) {
-      final args = data.getArgs<OtpViewArguments>(nullOk: false);
+    ForgotView: (data) {
       return PageRouteBuilder<dynamic>(
-        pageBuilder: (context, animation, secondaryAnimation) => OtpView(
-          key: args.key,
-          phone: args.phone,
-          username: args.username,
-          fcmToken: args.fcmToken,
-          type: args.type,
-        ),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const ForgotView(),
         settings: data,
         transitionsBuilder: TransitionsBuilders.fadeIn,
       );
     },
   };
-}
-
-/// ************************************************************************
-/// Arguments holder classes
-/// *************************************************************************
-
-/// OtpView arguments holder class
-class OtpViewArguments {
-  final Key key;
-  final String phone;
-  final String username;
-  final String fcmToken;
-  final String type;
-  OtpViewArguments(
-      {this.key,
-      @required this.phone,
-      this.username,
-      this.fcmToken,
-      @required this.type});
 }

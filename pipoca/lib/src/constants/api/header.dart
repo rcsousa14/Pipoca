@@ -8,8 +8,7 @@ class ApiHeaders {
   Client get client => _client;
 
   setTokenHeaders({String token}) => {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
+        
         'Authorization': 'Bearer $token',
       };
       

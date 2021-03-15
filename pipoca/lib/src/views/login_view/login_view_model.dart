@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/app/router.gr.dart';
 import 'package:pipoca/src/models/auth_user_model.dart';
@@ -13,58 +14,33 @@ class LoginViewModel extends IndexTrackingViewModel {
   final _navigationService = locator<NavigationService>();
   final _validationService = locator<ValidationService>();
   final _pushNotificationService = locator<PushNotificationService>();
+  final _snackbarService = locator<SnackbarService>();
 
-  // validation
-  String Function(String) get validateEmail => _validationService.validateEmail;
-
-  String Function(String) get validatePass => _validationService.validatePass;
-
-  Future<dynamic> access({String email, String password, String type}) async {
+  Future<dynamic> access({String type, BuildContext context}) async {
     setBusy(true);
+
     var fcmToken = await _pushNotificationService.token();
-    var validatedEmail = validateEmail(email);
-    var validatedPass = validatePass(password);
-    if (validatedEmail != null || email.isEmpty) {
-      await _dialogService.showDialog(
-        title: 'Erro ao Inscrever',
-        description: 'Digite o Email correctamente. \n\n tente novamente!',
-        buttonTitle: 'ok',
-      );
-      setBusy(false);
-    } else if (validatedPass != null || password.isEmpty) {
-      await _dialogService.showDialog(
-        title: 'Erro ao Inscrever',
-        description: 'Digite a senha correctamente. Tente novamente!',
-        buttonTitle: 'ok',
-      );
-      setBusy(false);
-    } else {
-      UserAuth user = UserAuth(
-          email: email,
-          password: password,
-          fcmToken: fcmToken,
-          type: 'email/password');
-      var result = await _authenticationService.access(user: user, type: type);
-      if (result is bool) {
-        if (result) {
-          await _navigationService.replaceWith(Routes.mainView);
-        } else {
-          await _dialogService.showDialog(
-            title: 'Login',
-            description:
-                'Ocorreu um erro na função de login, tente novamente! \n\n Verifique sua conexão de internet',
-            buttonTitle: 'ok',
-          );
-          setBusy(false);
-        }
+    await Future.delayed(Duration(milliseconds: 900));
+    var result = type == 'facebook'? await _authenticationService.facebook(fcmToken: fcmToken) : await _authenticationService.google(fcmToken: fcmToken);
+    if (result is bool) {
+      if (result) {
+        await _navigationService.replaceWith(Routes.mainView);
       } else {
         await _dialogService.showDialog(
           title: 'Login',
           description:
-              'Ocorreu um erro na função de login, tente novamente! \n\n $result',
+              'Ocorreu um erro na função de login, tente novamente! \n\n Verifique sua conexão de internet',
           buttonTitle: 'ok',
         );
+        setBusy(false);
       }
+    } else {
+      await _dialogService.showDialog(
+        title: 'Login',
+        description:
+            'Ocorreu um erro na função de login, tente novamente! \n\n $result',
+        buttonTitle: 'ok',
+      );
       setBusy(false);
     }
     setBusy(false);

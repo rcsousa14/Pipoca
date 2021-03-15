@@ -58,7 +58,8 @@ class IntroView extends StatelessWidget {
                   width: width * 0.55,
                   child: BusyBtn(
                     text: 'FIXE!',
-                    color: Colors.white,
+                    btnColor: Colors.white,
+                    txtColor: Colors.black,
                     tap: () => model.locationCheck(),
                     busy: model.isBusy,
                   ))

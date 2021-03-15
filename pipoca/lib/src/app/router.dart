@@ -1,9 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:auto_route/auto_route_annotations.dart';
+import 'package:pipoca/src/views/forgot_view/forgot_view.dart';
 import 'package:pipoca/src/views/intro_view/intro_view.dart';
 import 'package:pipoca/src/views/login_view/login_view.dart';
 import 'package:pipoca/src/views/main_view/main_view.dart';
-import 'package:pipoca/src/views/otp_view/otp_view.dart';
+
 import 'package:pipoca/src/views/splash_view/splash_view.dart';
 
 
@@ -29,9 +30,9 @@ import 'package:pipoca/src/views/splash_view/splash_view.dart';
     path: '/login-view',
   ),
   CustomRoute(
-    page: OtpView,
+    page: ForgotView,
     transitionsBuilder: TransitionsBuilders.fadeIn,
-    path: '/otp-view',
+    path: '/forgot-view',
   ),
  
 ])

@@ -1,5 +1,5 @@
-import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:injectable/injectable.dart';
 
@@ -8,6 +8,7 @@ class PushNotificationService {
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   Future initialise() async {
+    await Firebase.initializeApp();
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       announcement: false,
