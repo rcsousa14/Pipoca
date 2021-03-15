@@ -467,3 +467,8 @@
 ::1 - - [12/Mar/2021:15:01:12 +0000] "POST /v1/admin/roles HTTP/1.1" 201 137 "-" "PostmanRuntime/7.26.8"
 ::1 - - [12/Mar/2021:15:01:23 +0000] "POST /v1/admin/roles HTTP/1.1" 201 139 "-" "PostmanRuntime/7.26.8"
 ::1 - - [12/Mar/2021:15:01:34 +0000] "POST /v1/auth/signup HTTP/1.1" 201 278 "-" "PostmanRuntime/7.26.8"
+::1 - - [15/Mar/2021:18:53:02 +0000] "POST /v1/auth/social HTTP/1.1" 201 261 "-" "PostmanRuntime/7.26.8"
+::1 - - [15/Mar/2021:18:59:10 +0000] "POST /v1/auth/social HTTP/1.1" 500 110 "-" "PostmanRuntime/7.26.8"
+::1 - - [15/Mar/2021:19:00:41 +0000] "POST /v1/auth/social HTTP/1.1" 200 282 "-" "PostmanRuntime/7.26.8"
+::1 - - [15/Mar/2021:19:01:43 +0000] "POST /v1/auth/social HTTP/1.1" 201 277 "-" "PostmanRuntime/7.26.8"
+::1 - - [15/Mar/2021:19:06:25 +0000] "POST /v1/auth/social HTTP/1.1" 401 75 "-" "PostmanRuntime/7.26.8"
