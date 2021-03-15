@@ -168,6 +168,11 @@ exports.social = async(req, res) => {
         });
         const token = auth.jwtToken.createToken(user);
         if (!created) {
+            if(user.type != type){
+                return res.status(401).send({
+                    message: "seu e-mail está associado a uma conta diferente!🤔"
+                })
+            }
             if (user.refresh_token != 'blocked') {
 
                 const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcm_token, active: true }, { where: { id: user.id } });
