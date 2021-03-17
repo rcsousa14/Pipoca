@@ -158,24 +158,25 @@ exports.login = async(req, res) => {
 
 exports.social = async(req, res) => {
     try {
-        const { email, avatar, type, fcm_token } = req.body;
+        const { email, avatar, type, fcm_token, } = req.body;
         const { id } = await models.role.findOne({ where: { role: "regular" } });
         const refreshToken = uuidv4();
         const [user, created] = await models.user.findOrCreate({
-            defaults: { email, avatar, type, role_id: id  },
+            defaults: { email, avatar, type, role_id: id },
             //test this out to see if it works
             where: { email: email }
         });
         const token = auth.jwtToken.createToken(user);
+        const username = `user${user.id}`;
         if (!created) {
-            if(user.type != type){
+            if (user.type != type) {
                 return res.status(401).send({
                     message: "seu e-mail está associado a uma conta diferente!🤔"
                 })
             }
             if (user.refresh_token != 'blocked') {
 
-                const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcm_token, active: true }, { where: { id: user.id } });
+                const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcm_token, active: true, username: username }, { where: { id: user.id } });
                 if (updated) {
                     return res.status(200).send({
                         message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
@@ -194,7 +195,7 @@ exports.social = async(req, res) => {
             });
 
         }
-        const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcm_token, active: true }, { where: { id: user.id } });
+        const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcm_token, active: true, username: username }, { where: { id: user.id } });
         if (updated) {
             return res.status(201).send({
                 message: "welcome to Pipoca 🍿 use the token to gain access!😄",
@@ -242,7 +243,7 @@ exports.refresh = async(req, res) => {
             if (user && user.refresh_token != null || user.refresh_token.length > 0) {
                 const token = auth.jwtToken.createToken(user);
                 if (user.refresh_token == 'blocked') {
-                    return res.status(401).send({
+                    return res.status(403).send({
                         message: "You been blocked due to violation of usage!🙅🏾‍♀️ ",
 
                     });
