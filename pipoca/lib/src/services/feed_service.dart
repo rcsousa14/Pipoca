@@ -77,6 +77,7 @@ class FeedService extends IstoppableService {
   void stop() {
     super.stop();
     _infoController?.close();
-    _streamSubscription?.cancel();
+    _infoController = BehaviorSubject<FeedInfo>();
+    _streamSubscription?.pause();
   }
 }
