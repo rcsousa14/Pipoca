@@ -1,65 +1,56 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:pipoca/src/app/locator.dart';
-// import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
-// import 'package:pipoca/src/models/post_model.dart';
-// import 'package:pipoca/src/services/authentication_service.dart';
-// import 'package:pipoca/src/services/firestore_service.dart';
-// import 'package:stacked/stacked.dart';
-// import 'package:stacked_services/stacked_services.dart';
+import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
+import 'package:pipoca/src/services/authentication_service.dart';
+import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 
-// class PostViewModel extends BaseViewModel {
-//   final double lat;
-//   final double lng;
-//   PostViewModel({this.lat, this.lng});
-//   final NavigationService _navigationService = locator<NavigationService>();
-//   final FirestoreService _firestoreService = locator<FirestoreService>();
-//   final SnackbarService _snackbarService = locator<SnackbarService>();
-//   final DialogService _dialogService = locator<DialogService>();
-//   final AuthenticationService _authenticationService =
-//       locator<AuthenticationService>();
+class PostViewModel extends BaseViewModel {
+  final double lat;
+  final double lng;
+  PostViewModel({this.lat, this.lng});
+  final NavigationService _navigationService = locator<NavigationService>();
+  
+  final SnackbarService _snackbarService = locator<SnackbarService>();
+  final DialogService _dialogService = locator<DialogService>();
+  final AuthenticationService _authenticationService =
+      locator<AuthenticationService>();
  
-//   String _text = '';
-//   String get text => _text;
+  String _text = '';
+  String get text => _text;
 
-//   // RegExp _tag = RegExp(r"\B(\#[a-zA-Z]+\b)(?!;)");
-//   // RegExp _link = RegExp(
-//   //     r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}");
-//   void updateString(String value) {
-//     _text = value;
+  // RegExp _tag = RegExp(r"\B(\#[a-zA-Z]+\b)(?!;)");
+  // RegExp _link = RegExp(
+  //     r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}");
+  void updateString(String value) {
+    _text = value;
 
-//     notifyListeners();
-//   }
+    notifyListeners();
+  }
 
-//   void deleteString() {
-//     _text = '';
-//     notifyListeners();
-//   }
+  void deleteString() {
+    _text = '';
+    notifyListeners();
+  }
 
-//   Future addPost(NavChoice choice) async {
-//     setBusy(true);
+  Future addPost(NavChoice choice) async {
+    setBusy(true);
     
-//       var result = await _firestoreService.addPost(Post(
-//         userId: _authenticationService.currentUser.id,
-//         createdDate: DateTime.now().toString(),
-//         geopoint: GeoPoint(lat, lng),
-//         commentsTotal: 0,
-//         post: _text,
-//       ));
+      
 
-//       if (result is String) {
-//         await _dialogService.showDialog(
-//             title: 'Não foi possível criar Bago', description: result);
-//       } else {
-//         _snackbarService.showSnackbar(message: 'seu Bago foi enviado');
-//         await goBack(choice);
-//       }
+      // if (result is String) {
+      //   await _dialogService.showDialog(
+      //       title: 'Não foi possível criar Bago', description: result);
+      // } else {
+      //   _snackbarService.showSnackbar(message: 'seu Bago foi enviado');
+      //   await goBack(choice);
+      // }
     
 
-//     setBusy(false);
-//   }
+    setBusy(false);
+  }
 
-//   Future<dynamic> goBack(NavChoice choice) {
-//     return _navigationService.navigateTo(choice.initialPageRoute(),
-//         id: choice.nestedKeyValue());
-//   }
-// }
+  Future<dynamic> goBack(NavChoice choice) {
+    return _navigationService.navigateTo(choice.initialPageRoute(),
+        id: choice.nestedKeyValue());
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:battery/battery.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pipoca/src/app/lifecycle_manager.dart';
@@ -5,6 +6,7 @@ import 'package:pipoca/src/app/router.gr.dart' as myRouter;
 import 'package:pipoca/src/app_view_model.dart';
 import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
+import 'package:pipoca/src/services/battery_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return ViewModelBuilder<AppViewModel>.reactive(
       builder: (context, model, child) {
         return LifeCycleManager(
@@ -27,6 +28,11 @@ class MyApp extends StatelessWidget {
               StreamProvider<ConnectivityStatus>(
                 create: (_) => locator<ConnectivityService>().getStreamData,
               ),
+              StreamProvider<BatteryState>(
+                create: (_) =>
+                    locator<BatteryService>().batteryController.stream,
+              ),
+             
               StreamProvider<Coordinates>.value(
                 initialData: Coordinates(latitude: 0.0, longitude: 0.0),
                 value: locator<LocationService>().getStreamData,
@@ -37,10 +43,10 @@ class MyApp extends StatelessWidget {
               locale: Locale('pt', 'AO'),
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
-                textTheme: GoogleFonts.poppinsTextTheme(
+                textTheme: GoogleFonts.robotoTextTheme(
                   Theme.of(context).textTheme,
                 ),
-                fontFamily: 'poppins',
+                fontFamily: 'roboto',
                 primarySwatch: Colors.red,
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),

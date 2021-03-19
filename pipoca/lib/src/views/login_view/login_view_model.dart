@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/app/router.gr.dart';
-import 'package:pipoca/src/models/auth_user_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/push_notification_service.dart';
-import 'package:pipoca/src/services/validation_service.dart';
+import 'package:pipoca/src/services/user_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -12,9 +11,9 @@ class LoginViewModel extends IndexTrackingViewModel {
   final _authenticationService = locator<AuthenticationService>();
   final _dialogService = locator<DialogService>();
   final _navigationService = locator<NavigationService>();
-  final _validationService = locator<ValidationService>();
   final _pushNotificationService = locator<PushNotificationService>();
-  final _snackbarService = locator<SnackbarService>();
+  final _userService = locator<UserService>();
+
 
   Future<dynamic> access({String type, BuildContext context}) async {
     setBusy(true);
@@ -24,6 +23,7 @@ class LoginViewModel extends IndexTrackingViewModel {
     var result = type == 'facebook'? await _authenticationService.facebook(fcmToken: fcmToken) : await _authenticationService.google(fcmToken: fcmToken);
     if (result is bool) {
       if (result) {
+       await _userService.getUser();
         await _navigationService.replaceWith(Routes.mainView);
       } else {
         await _dialogService.showDialog(

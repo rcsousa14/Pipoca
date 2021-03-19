@@ -22,7 +22,7 @@ class AuthenticationService {
   final client = locator<ApiHeaders>().client;
   final _fb = FacebookAuth.instance;
   final _google = GoogleSignIn(scopes: ['profile', 'email']);
-  final _apple = SignInWithApple();
+  final _apple = SignInWithApple;
 
   //token setter to be use for all the api services
   String _currentToken;
@@ -127,7 +127,13 @@ class AuthenticationService {
   //platform IOS
   Future apple({String fcmToken}) async {
     try {
-      // S apple = await _apple.getAppleIDCredential;
+    //  final apple = await _apple.getAppleIDCredential(
+    //    scopes: [
+    //     AppleIDAuthorizationScopes.email,
+    //     AppleIDAuthorizationScopes.fullName,
+           
+    //   ],
+    //  );
       // if (google != null) {
       //   var result = await access(
       //       user: UserAuth(
@@ -155,6 +161,46 @@ class AuthenticationService {
     return _currentToken != null;
   }
 
+  Future refreshToken({String currentToken, int id}) async {
+    try {
+      var url = Uri.encodeFull('$heroku_url/auth/refresh-token');
+      var response = await client.post(url,
+          body: {'token': currentToken, 'id': id},
+          headers: _header.setHeaders());
+      var parsed = json.decode(response.body);
+      Token token = Token.fromJson(parsed);
+      if (response.statusCode == 200) {
+        if (token.token != null && token.token.isNotEmpty) {
+          await _localStorage.delete('token');
+          await _localStorage.put('token', token.token).then((value) {
+            _currentToken = token.token;
+          });
+        }
+        return token != null;
+      } else {
+        return token.message; 
+      }
+    } on SocketException {
+      throw 'Sem conexão com a Internet';
+    } on TimeoutException catch (e) {
+      return e;
+    } on Error catch (e) {
+      return 'Falha na autenticação. Tente novamente! $e';
+    }
+  }
+
+  Future passReset({String email}) async {
+    try {
+      var url = Uri.encodeFull('$heroku_url/auth/forgot-password');
+      var response = await client.post(url,
+          headers: _header.setHeaders(), body: jsonEncode({'email': email}));
+    
+      return response.body;
+    } catch (e) {
+      return e;
+    }
+  }
+
   //logout for the current user
   Future signout() async {
     var url = Uri.encodeFull('$heroku_url/auth/logout');
@@ -163,7 +209,7 @@ class AuthenticationService {
       headers: _header.setTokenHeaders(token: _currentToken),
     );
     if (response.statusCode == 200) {
-      await _localStorage.delete('token');
+      await _localStorage.clear();
       await _fb.logOut();
       await _google.signOut();
     } else {

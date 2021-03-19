@@ -4,6 +4,7 @@ import 'package:pipoca/src/app/router.gr.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:pipoca/src/services/push_notification_service.dart';
+import 'package:pipoca/src/services/user_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -13,6 +14,7 @@ class SplashViewModel extends BaseViewModel {
   final _authenticationService = locator<AuthenticationService>();
   final _currentLocation = locator<LocationService>();
   final _pushNotificationService = locator<PushNotificationService>();
+  final _userService = locator<UserService>();
   // final _dynamicLinkService = locator<DynamicLinkService>();
 
   Future handleStartUpLogic() async {
@@ -23,6 +25,7 @@ class SplashViewModel extends BaseViewModel {
       if (permission == PermissionStatus.granted) {
         var hasLoggedInUser = await _authenticationService.isUserLoggedIn();
         if (hasLoggedInUser) {
+          await _userService.getUser();
           return _navigationService.replaceWith(Routes.mainView);
         } else {
           return _navigationService.replaceWith(Routes.loginView);

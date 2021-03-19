@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:pipoca/src/app/locator.dart';
-
 import 'package:pipoca/src/models/youtube_model.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/social_share_service.dart';
@@ -12,8 +9,11 @@ import 'package:stacked/stacked.dart';
 
 class BagoCardViewModel extends BaseViewModel {
   final String text;
-  final int points;
-  BagoCardViewModel({@required this.text, @required this.points});
+  final int  page;
+ 
+  
+  
+  BagoCardViewModel({ @required this.text,  @required this.page });
   //final NavigationService _navigationService = locator<NavigationService>();
   final CapturePngService _captureService = locator<CapturePngService>();
   final UrlLancherService _lancherService = locator<UrlLancherService>();
@@ -51,33 +51,16 @@ class BagoCardViewModel extends BaseViewModel {
     }
   }
 
-  bool _up = false;
-  bool _down = false;
-
-  int _response = Random().nextInt(80);
-
-  bool get up => _up;
-  bool get down => _down;
-  int _newCount = 0;
-  int get newCount => _newCount;
-  int get response => _response;
+ 
 
   void upVote() {
-    _newCount = points;
-    _up = true;
-    _down = false;
-    _newCount++;
-    notifyListeners();
-
+    
+  //TODO: post on db
     // post in the db
   }
 
   void downVote() {
-    _newCount = points;
-    _up = false;
-    _down = true;
-    _newCount--;
-    notifyListeners();
+    
     // post in the db
   }
 

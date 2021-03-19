@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 
@@ -6,20 +7,21 @@ class HomeAppBar extends StatelessWidget {
   final String image;
   final Function drawer;
   final Function filter;
-  const HomeAppBar({Key key, this.image, this.drawer, this.filter})
+  final bool isFilter; 
+  const HomeAppBar({Key key, this.image, this.drawer, this.filter, this.isFilter})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      actionsIconTheme: IconThemeData(color: red),
+      actionsIconTheme: IconThemeData(color: isFilter? red: Colors.black),
       elevation: 0.8,
       backgroundColor: Colors.white,
       centerTitle: true,
       leading: GestureDetector(
         onTap: drawer,
         child: Container(
-          margin: EdgeInsets.all(8.5),
+          margin: EdgeInsets.all(7),
           decoration: BoxDecoration(
             color: Colors.grey[350],
             shape: BoxShape.circle,
@@ -32,8 +34,8 @@ class HomeAppBar extends StatelessWidget {
       ),
       title: Text(
         'Pipoca',
-        style: TextStyle(
-            fontSize: 23, fontWeight: FontWeight.w500, color: Colors.grey[900]),
+        style: GoogleFonts.poppins(
+            fontSize: 23, fontWeight: FontWeight.bold, color: Colors.grey[900]),
       ),
       actions: <Widget>[
         GestureDetector(
@@ -45,7 +47,7 @@ class HomeAppBar extends StatelessWidget {
             decoration: BoxDecoration(shape: BoxShape.circle),
             child: Center(
               child: Icon(
-                PipocaBasics.popcorn_1,
+                PipocaBasics.popcorn,
                 size: 28,
               ),
             ),
@@ -57,7 +59,7 @@ class HomeAppBar extends StatelessWidget {
 }
 
 class HomeFloatingAction extends StatelessWidget {
-  final Function action; 
+  final Function action;
   const HomeFloatingAction({Key key, this.action}) : super(key: key);
 
   @override
@@ -67,6 +69,7 @@ class HomeFloatingAction extends StatelessWidget {
       height: 48,
       child: FittedBox(
         child: FloatingActionButton(
+          backgroundColor: red,
           elevation: 1,
           onPressed: action,
           child: Icon(

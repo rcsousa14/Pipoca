@@ -22,9 +22,8 @@ class Usuario {
 class User {
   int id;
   String username;
+  String email;
   String bio;
-  String phoneNumber;
-  String phoneCarrier;
   String avatar;
   String birthday;
   String fcmToken;
@@ -37,9 +36,8 @@ class User {
   User(
       {this.id,
       this.username,
+      this.email,
       this.bio,
-      this.phoneNumber,
-      this.phoneCarrier,
       this.avatar,
       this.birthday,
       this.fcmToken,
@@ -52,9 +50,8 @@ class User {
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     username = json['username'];
+    email = json['email'];
     bio = json['bio'];
-    phoneNumber = json['phone_number'];
-    phoneCarrier = json['phone_carrier'];
     avatar = json['avatar'];
     birthday = json['birthday'];
     fcmToken = json['fcm_token'];
@@ -71,9 +68,8 @@ class User {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['username'] = this.username;
+    data['email'] = this.email;
     data['bio'] = this.bio;
-    data['phone_number'] = this.phoneNumber;
-    data['phone_carrier'] = this.phoneCarrier;
     data['avatar'] = this.avatar;
     data['birthday'] = this.birthday;
     data['fcm_token'] = this.fcmToken;

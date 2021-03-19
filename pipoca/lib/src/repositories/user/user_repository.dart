@@ -4,27 +4,33 @@ import 'package:pipoca/src/constants/api/url.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/constants/api/header.dart';
 import 'dart:convert';
-
 import 'package:pipoca/src/services/authentication_service.dart';
-import 'package:pipoca/src/services/connectivity_service.dart';
+import 'package:pipoca/src/services/shared_local_storage_service.dart';
 
 @lazySingleton
-class UserApi {
+class UserRepository {
+
   final _header = locator<ApiHeaders>();
   final client = locator<ApiHeaders>().client;
-  final token = locator<AuthenticationService>().currentToken;
-  final _conn = locator<ConnectivityService>().status;
+  final _authenticationService = locator<AuthenticationService>();
+  final _localStorage = locator<SharedLocalStorageService>();
+
   //USER CRUD
-  //TODO: use the _conn for ping timer
+
   Future<Usuario> getUser() async {
     try {
       var url = Uri.encodeFull('$heroku_url/users');
       var response = await client.get(
         url,
-        headers: _header.setTokenHeaders(token: token),
+        headers:
+            _header.setTokenHeaders(token: _authenticationService.currentToken),
       );
+
       var parsed = json.decode(response.body);
       Usuario user = Usuario.fromJson(parsed);
+   
+      await _localStorage.put('id', user.user.id);
+
       return user;
     } catch (e) {
       return e;
@@ -35,7 +41,8 @@ class UserApi {
     try {
       var url = Uri.encodeFull('$heroku_url/users');
       var response = await client.patch(url,
-          headers: _header.setTokenHeaders(token: token),
+          headers: _header.setTokenHeaders(
+              token: _authenticationService.currentToken),
           body: {'fcm_token': fcmToken});
       var parsed = json.decode(response.body);
       Usuario user = Usuario.fromJson(parsed);
@@ -44,15 +51,24 @@ class UserApi {
       return e;
     }
   }
-
-  Future passReset({String email}) async {
-    try {
-      var url = Uri.encodeFull('$heroku_url/auth/forgot-password');
-      var response = await client.post(url, headers: _header.setHeaders(), body: jsonEncode({'email': email}));
-      print(response.statusCode);
-      return response.body;
-    } catch (e) {
-      return e;
-    }
-  }
 }
+
+
+// if (user == null) {
+      //   int id = await _localStorage.recieve('id');
+      //   var result = await _authenticationService.refreshToken(
+      //       currentToken: _authenticationService.currentToken, id: id);
+      //   if (result is bool) {
+      //     if (result) {
+      //       var response = await client.get(
+      //         url,
+      //         headers: _header.setTokenHeaders(
+      //             token: _authenticationService.currentToken),
+      //       );
+      //       var parsed = json.decode(response.body);
+      //       Usuario user = Usuario.fromJson(parsed);
+      //       await _localStorage.put('id', user.user.id);
+      //       return user;
+      //     }
+      //   }
+      // }

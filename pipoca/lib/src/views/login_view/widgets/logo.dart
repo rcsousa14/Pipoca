@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 class Logo extends StatelessWidget {
@@ -23,7 +24,7 @@ class Logo extends StatelessWidget {
                   ),
                 Text(
                   'Pipoca',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45),
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 45),
                 ),
               ],
             ),

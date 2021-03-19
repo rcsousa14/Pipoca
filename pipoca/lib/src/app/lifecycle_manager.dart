@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/interfaces/stoppable_interface.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
+import 'package:pipoca/src/services/battery_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';
+import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
+import 'package:pipoca/src/services/shared_local_storage_service.dart';
 
 import 'locator.dart';
 
@@ -17,9 +22,13 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
     with WidgetsBindingObserver {
   List<IstoppableService> services = [
     locator<LocationService>(),
-    locator<ConnectivityService>()
+    locator<ConnectivityService>(),
+    locator<BatteryService>(),
+    locator<FeedService>(),
   ];
-
+  final feedService = locator<FeedService>();
+  final location = locator<LocationService>();
+  final storage = locator<SharedLocalStorageService>();
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -35,14 +44,14 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    services.forEach((service) {
+    services.forEach((service)  {
       if (state == AppLifecycleState.resumed) {
+      
+         
         service.start();
-        print(state);
       }
       if (state == AppLifecycleState.paused ||
           state == AppLifecycleState.inactive) {
-        print(state);
         service.stop();
       }
     });

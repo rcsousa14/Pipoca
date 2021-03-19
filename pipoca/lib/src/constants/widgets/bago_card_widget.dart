@@ -10,13 +10,11 @@ import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/constants/widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
-
 class BagoCard extends StatelessWidget {
-  final int bagoIndex;
-  final String text;
-  final String date;
   final NavChoice choice;
-  final int points;
+  final bool isVoted;
+  final int points, bagoIndex, commentsTotal, page, vote;
+  final String creator, image, text, date;
   const BagoCard({
     Key key,
     this.bagoIndex,
@@ -24,6 +22,12 @@ class BagoCard extends StatelessWidget {
     @required this.text,
     @required this.date,
     @required this.points,
+    @required this.creator,
+    @required this.image,
+    @required this.commentsTotal,
+    @required this.vote,
+    @required this.page,
+    @required this.isVoted,
   }) : super(key: key);
 
   @override
@@ -61,8 +65,13 @@ class BagoCard extends StatelessWidget {
                                 height: 32,
                                 width: 32,
                                 decoration: BoxDecoration(
-                                    color: Colors.grey[350],
-                                    shape: BoxShape.circle),
+                                  color: Colors.grey[350],
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: NetworkImage(image),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                               Padding(
                                 padding:
@@ -71,7 +80,7 @@ class BagoCard extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text('Simone90',
+                                    Text(creator,
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 13)),
@@ -379,7 +388,7 @@ class BagoCard extends StatelessWidget {
                                   PipocaBasics.up_arrow,
                                   size: 20,
                                   color:
-                                      model.up == true ? red : Colors.grey[600],
+                                      isVoted == true && vote == 1 ? red : Colors.grey[600],
                                 ),
                               ),
                             ),
@@ -387,9 +396,9 @@ class BagoCard extends StatelessWidget {
                               width: 5,
                             ),
                             Center(
-                              child: Text('${model.newCount}',
+                              child: Text('$points',
                                   style: TextStyle(
-                                      color: model.newCount >= 1
+                                      color: points >= 1
                                           ? red
                                           : Colors.grey[600],
                                       fontSize: 13,
@@ -405,7 +414,7 @@ class BagoCard extends StatelessWidget {
                                 child: Icon(
                                   PipocaBasics.down_arrow,
                                   size: 20,
-                                  color: model.down == true
+                                  color: isVoted == true && vote == -1
                                       ? Colors.black
                                       : Colors.grey[600],
                                 ),
@@ -418,7 +427,7 @@ class BagoCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('${model.response}',
+                          Text('$commentsTotal',
                               style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
@@ -463,7 +472,7 @@ class BagoCard extends StatelessWidget {
           ),
         );
       },
-      viewModelBuilder: () => BagoCardViewModel(text: text, points: points),
+      viewModelBuilder: () => BagoCardViewModel(text: text, page: page),
     );
   }
 }

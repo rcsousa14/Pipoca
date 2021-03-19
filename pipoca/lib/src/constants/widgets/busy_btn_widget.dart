@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BusyBtn extends StatelessWidget {
   final Function tap;
@@ -87,8 +88,8 @@ class BusyBtnLogin extends StatelessWidget {
                   ),
                   Text(
                     text,
-                    style: TextStyle(
-                        color: txtColor != null ? txtColor : Colors.white, fontWeight: FontWeight.w500),
+                    
+                    style: GoogleFonts.poppins(color: txtColor != null ? txtColor : Colors.white, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),

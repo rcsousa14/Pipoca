@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
+import 'package:pipoca/src/views/main_view/home_navigator/home_navigator.dart';
 import 'package:pipoca/src/views/main_view/main_view_model.dart';
+import 'package:pipoca/src/views/main_view/widgets/main_drawer_view.dart';
 import 'package:stacked/stacked.dart';
 
 class MainView extends StatelessWidget {
@@ -9,33 +12,38 @@ class MainView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-   
     // var height = MediaQuery.of(context).size.height;
     // var width = MediaQuery.of(context).size.width;
+     final GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
     return ViewModelBuilder<MainViewModel>.reactive(
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
+   
       builder: (context, model, child) {
+        
         return WillPopScope(
           onWillPop: () async => false,
           child: Scaffold(
+            key: _key,
+            drawer: MainDrawerView(),
             body: IndexedStack(
               index: model.currentIndex,
               children: [
+                HomeNavigator(),
                 Container(
                   color: Colors.orange,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(model.token),
-                      TextButton(onPressed: ()=> model.logout(), child: Text('logout'))
+                      // TextButton(
+                      //     onPressed: () => model.logout(),
+                      //     child: Text('logout')),
+                      
                     ],
                   ),
                 ),
-                Container(
-                  color: Colors.red,
-                ),
+              
                 Container(
                   color: Colors.yellow,
                 ),
@@ -44,24 +52,17 @@ class MainView extends StatelessWidget {
                 )
               ],
             ),
-            bottomNavigationBar: Container(
-              height: 52,
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(color: Colors.grey[350], width: 0.3))),
-              child: BottomNavigationBar(
-                elevation: 0.8,
-                currentIndex: model.currentIndex,
-                items: model.availableItems,
-                onTap: model.setIndex,
-                backgroundColor: Colors.white,
-                selectedIconTheme: const IconThemeData(size: 21, color: red),
-                unselectedIconTheme:
-                    const IconThemeData(size: 21, color: Colors.black),
-                showSelectedLabels: false,
-                showUnselectedLabels: false,
-                type: BottomNavigationBarType.fixed,
-              ),
+            bottomNavigationBar: BottomNavigationBar(
+              elevation: 0.8,
+              currentIndex: model.currentIndex,
+              items: model.availableItems,
+              onTap: model.setIndex,
+              backgroundColor: Colors.white,
+              selectedIconTheme: const IconThemeData(color: red),
+              unselectedIconTheme: const IconThemeData(color: Colors.black),
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              type: BottomNavigationBarType.fixed,
             ),
           ),
         );
