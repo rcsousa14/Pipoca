@@ -6,7 +6,7 @@ import authorizeMiddleware from '../middleware/authorize';
 import postauthMiddleware from '../middleware/post_auth';
 import adminMiddleware from '../middleware/admin_auth';
 import voteMiddleware from '../middleware/vote_auth';
-import { validatePassword } from '../middleware/password_auth';
+
 const user = require('../controllers/user_controller');
 const auth = require('../controllers/auth_controller');
 const role = require('../controllers/role_controller');
@@ -37,6 +37,8 @@ router.get('/v1', (req, res) => {
 })
 
 
+
+
 //auth routes - this route gives you the access key
 
 router.post('/v1/auth/signup', limiter, speedLimiter, authMiddleware, auth.signup); //need to check email... send email
@@ -65,12 +67,12 @@ router.post('/v1/comment/votes', limiter, authorizeMiddleware, voteMiddleware, c
 router.post('/v1/sub_comment/votes', limiter, authorizeMiddleware, voteMiddleware, sub_comment_vote.store); //☑️
 
 //post routes
-router.get('/v1/feed', speedLimiter, authorizeMiddleware, post.index); //❎ this will be a search with where like need to think about it more
+//router.get('/v1/feed', speedLimiter, authorizeMiddleware, post.index); //❎ this will be a search with where like need to think about it more
 router.get('/v1/posts/:id', speedLimiter, authorizeMiddleware, post.show); //☑️❎ cache data with redis
 
 // user posts routes
 router.post('/v1/posts', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_posts.store); //☑️❎ cache data and check if is the samething as before for spam 
-router.get('/v1/user/feed', speedLimiter, authorizeMiddleware, user_posts.index); //☑️❎ checkout the pipocar filter maybe last 3 days & cache data with redis
+router.get('/v1/user/feed',  limiter, speedLimiter, authorizeMiddleware, user_posts.index); //☑️❎ checkout the pipocar filter maybe last 3 days & cache data with redis
 router.get('/v1/posts', speedLimiter, authorizeMiddleware, user_posts.show); //☑️ ❎ cache data with redis
 router.patch('/v1/posts/:id', limiter, speedLimiter, speedLimiter, authorizeMiddleware, user_posts.soft); //☑️
 

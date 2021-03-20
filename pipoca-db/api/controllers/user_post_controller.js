@@ -59,6 +59,7 @@ exports.index = async({ query, decoded }, res) => {
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 9;
+     
 
         let search;
         let order = [];
@@ -157,9 +158,9 @@ exports.index = async({ query, decoded }, res) => {
 
 
         ];
-        const model = models.post;
-        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
-
+         const model = models.post;
+         const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
+        
         const data = { message: '🍿 Todos os Bagos proximo de ti 🥳', posts };
         cache.set(`user_feed_${decoded.id}`, data);
 
