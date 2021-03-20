@@ -21,6 +21,7 @@ exports.store = async({ body, decoded }, res) => {
         var point = {
             type: 'Point',
             coordinates: [longitude, latitude],
+            crs: { type: 'name', properties: { name: 'EPSG:4326'} }
 
         };
 
