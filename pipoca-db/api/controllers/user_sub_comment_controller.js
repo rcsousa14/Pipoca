@@ -61,7 +61,6 @@ exports.index = async({ params, query, decoded }, res) => {
         let attributes = [
             'id',
             'content',
-            'links',
             'flags',
             'is_flagged',
             'is_deleted',
@@ -140,7 +139,6 @@ exports.show = async({ query, decoded }, res) => {
         let attributes = [
             'id',
             'content',
-            'links',
             'flags',
             'is_flagged',
             'is_deleted',

@@ -21,7 +21,7 @@ exports.store = async({ body, decoded }, res) => {
         var point = {
             type: 'Point',
             coordinates: [longitude, latitude],
-            crs: { type: 'name', properties: { name: 'EPSG:4326'} }
+            crs: { type: 'name', properties: { name: 'EPSG:4326' } }
 
         };
 
@@ -60,7 +60,7 @@ exports.index = async({ query, decoded }, res) => {
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 9;
-     
+
 
         let search;
         let order = [];
@@ -129,7 +129,6 @@ exports.index = async({ query, decoded }, res) => {
         let attributes = [
             'id',
             'content',
-            'links',
             'flags',
             'is_flagged',
             'is_deleted',
@@ -159,9 +158,9 @@ exports.index = async({ query, decoded }, res) => {
 
 
         ];
-         const model = models.post;
-         const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
-        
+        const model = models.post;
+        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
+
         const data = { message: '🍿 Todos os Bagos proximo de ti 🥳', posts };
         cache.set(`user_feed_${decoded.id}`, data);
 
@@ -215,7 +214,6 @@ exports.show = async({ query, decoded }, res) => {
         let attributes = [
             'id',
             'content',
-            'links',
             'flags',
             'is_flagged',
             'is_deleted',

@@ -82,7 +82,6 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "post": {
                 "id": row.id,
                 "content": row.content,
-                "links": row.links,
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "comments_total": row.comments_total,
                 "flags": row.flags,
@@ -99,7 +98,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "comment": {
                 "id": row.id,
                 "content": row.content,
-                "links": row.links,
+
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "sub_comments_total": row.comments_total,
                 "flags": row.flags,
@@ -116,7 +115,6 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "sub_comment": {
                 "id": row.id,
                 "content": row.content,
-                "links": row.links,
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "flags": row.flags,
                 "is_flagged": row.is_flagged,
