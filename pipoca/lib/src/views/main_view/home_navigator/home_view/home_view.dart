@@ -1,11 +1,10 @@
-import 'dart:convert';
+
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
+
 import 'package:pipoca/src/constants/widgets/bago_card_widget.dart';
 import 'package:pipoca/src/constants/widgets/feed_caller.dart';
-import 'package:pipoca/src/models/list_data_model.dart';
+
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_model.dart';
@@ -34,7 +33,7 @@ class HomeView extends StatelessWidget {
             ),
             body: _Bago(),
             floatingActionButton: HomeFloatingAction(
-              action: () => model.goToPost(model.choice),
+              action: () =>   model.goToPost(model.choice),
             ));
       },
       viewModelBuilder: () => HomeViewModel(),
@@ -92,7 +91,7 @@ class _Bago extends ViewModelWidget<HomeViewModel> {
                         return BagoCard(
                           page: model.currentIndex,
                           choice: model.choice,
-                          bagoIndex: index,
+                          bagoIndex: posts.data[index].post.id,
                           text: posts.data[index].post.content,
                           date: posts.data[index].post.createdAt,
                           points: posts.data[index].post.votesTotal,

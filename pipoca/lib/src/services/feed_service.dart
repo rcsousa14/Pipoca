@@ -5,7 +5,6 @@ import 'package:pipoca/src/interfaces/stoppable_interface.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/repositories/feed/feed_repository.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
-import 'package:pipoca/src/services/location_service.dart';
 import 'package:pipoca/src/services/shared_local_storage_service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -18,7 +17,7 @@ class FeedService extends IstoppableService {
   String _error;
   String get error => _error;
 
-  final BehaviorSubject<FeedInfo> _infoController = BehaviorSubject<FeedInfo>();
+   BehaviorSubject<FeedInfo> _infoController = BehaviorSubject<FeedInfo>();
   Sink<FeedInfo> get feedInfo => _infoController.sink;
 
   // this will get the feed

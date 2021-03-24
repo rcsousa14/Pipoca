@@ -1,8 +1,7 @@
-import 'dart:convert';
+
 
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/app/router.gr.dart';
-import 'package:pipoca/src/repositories/user/user_repository.dart';
 import 'package:pipoca/src/services/validation_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -10,7 +9,7 @@ import 'package:stacked_services/stacked_services.dart';
 class ForgotViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   final _validationService = locator<ValidationService>();
-  final _userApi = locator<UserRepository>();
+  //final _userApi = locator<UserRepository>();
 
   // validation
   String Function(String) get validateEmail => _validationService.validateEmail;

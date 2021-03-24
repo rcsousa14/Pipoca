@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api/url.dart';
@@ -22,6 +24,7 @@ class FeedRepository {
       };
       String queryString = Uri(queryParameters: queryParams).query;
       var url = Uri.encodeFull('$heroku_url/user/feed?$queryString');
+
       var response = await client.get(
         url,
         headers:
@@ -29,10 +32,12 @@ class FeedRepository {
       );
 
       var parsed = json.decode(response.body);
+
       Feed feed = Feed.fromJson(parsed);
+   
       return feed;
     } catch (e) {
-      return e;
+      throw e;
     }
   }
 }

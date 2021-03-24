@@ -45,7 +45,7 @@ class CallerService {
   }
 
   Future battery(int level, Future<Feed> caller) async {
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(Duration(minutes: 10));
     switch (_battery.batteryState) {
       case BatteryState.charging:
       case BatteryState.discharging:

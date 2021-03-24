@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/interfaces/stoppable_interface.dart';
-import 'package:pipoca/src/models/user_feed_model.dart';
-import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/battery_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';

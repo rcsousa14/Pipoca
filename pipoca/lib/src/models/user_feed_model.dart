@@ -52,7 +52,7 @@ class Posts {
     total = json['total'];
     limit = json['limit'];
     if (json['data'] != null) {
-      data = new List<Data>();
+      data = <Data>[];
       json['data'].forEach((v) {
         data.add(new Data.fromJson(v));
       });
@@ -103,7 +103,6 @@ class Data {
 class Post {
   int id;
   String content;
-  List<String> links;
   int votesTotal;
   int commentsTotal;
   int flags;
@@ -115,7 +114,6 @@ class Post {
   Post(
       {this.id,
       this.content,
-      this.links,
       this.votesTotal,
       this.commentsTotal,
       this.flags,
@@ -127,7 +125,6 @@ class Post {
   Post.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];
-    links = json['links'].cast<String>();
     votesTotal = json['votes_total'];
     commentsTotal = json['comments_total'];
     flags = json['flags'];
@@ -142,7 +139,6 @@ class Post {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['content'] = this.content;
-    data['links'] = this.links;
     data['votes_total'] = this.votesTotal;
     data['comments_total'] = this.commentsTotal;
     data['flags'] = this.flags;

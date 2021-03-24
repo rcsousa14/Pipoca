@@ -17,7 +17,7 @@ class HomeAppBar extends StatelessWidget {
       actionsIconTheme: IconThemeData(color: isFilter? red: Colors.black),
       elevation: 0.8,
       backgroundColor: Colors.white,
-      brightness: Brightness.dark, //Brightness.light
+      brightness:  Brightness.light,
       centerTitle: true,
       leading: GestureDetector(
         onTap: drawer,

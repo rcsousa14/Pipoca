@@ -13,7 +13,7 @@ import 'package:pipoca/src/constants/api/header.dart';
 import 'package:pipoca/src/services/shared_local_storage_service.dart';
 import 'dart:convert';
 
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+//import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 @lazySingleton
 class AuthenticationService {
@@ -22,7 +22,7 @@ class AuthenticationService {
   final client = locator<ApiHeaders>().client;
   final _fb = FacebookAuth.instance;
   final _google = GoogleSignIn(scopes: ['profile', 'email']);
-  final _apple = SignInWithApple;
+  //final _apple = SignInWithApple;
 
   //token setter to be use for all the api services
   String _currentToken;

@@ -1,4 +1,4 @@
-import 'package:injectable/injectable.dart';
+
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/routes/navigation.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
@@ -24,7 +24,7 @@ class HomeViewModel extends StreamViewModel<Feed> {
   final _callerService = locator<CallerService>();
 
   final NavigationService _navigationService = locator<NavigationService>();
-  final DialogService _dialogService = locator<DialogService>();
+ // final DialogService _dialogService = locator<DialogService>();
 
   int _currentIndex = 1;
   int get currentIndex => _currentIndex;

@@ -16,6 +16,8 @@ class SplashView extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               backgroundColor: red,
+              brightness: Brightness.dark,
+              elevation: 0,
             ),
             body: Stack(
               fit: StackFit.expand,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:visibility_detector/visibility_detector.dart';
+
 
 class FeedCaller extends StatefulWidget {
   final Function caller;
@@ -20,7 +20,7 @@ class _FeedCallerState extends State<FeedCaller> {
     super.initState();
 
     if (widget.caller != null) {
-      _timer = Timer.periodic(Duration(seconds: 20), (timer) => widget.caller());
+      _timer = Timer.periodic(Duration(minutes: 20), (timer) => widget.caller());
     }
   }
 

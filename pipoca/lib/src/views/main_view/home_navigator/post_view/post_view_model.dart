@@ -1,6 +1,5 @@
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
-import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -10,10 +9,10 @@ class PostViewModel extends BaseViewModel {
   PostViewModel({this.lat, this.lng});
   final NavigationService _navigationService = locator<NavigationService>();
   
-  final SnackbarService _snackbarService = locator<SnackbarService>();
-  final DialogService _dialogService = locator<DialogService>();
-  final AuthenticationService _authenticationService =
-      locator<AuthenticationService>();
+  // final SnackbarService _snackbarService = locator<SnackbarService>();
+  // final DialogService _dialogService = locator<DialogService>();
+  // final AuthenticationService _authenticationService =
+  //     locator<AuthenticationService>();
  
   String _text = '';
   String get text => _text;
