@@ -9,7 +9,7 @@ export default ({ body }, res, next) => {
     for (var link of links) {
 
         isPorn(link, function(error, status) {
-            if (!error) return res.send({ message: status });
+            if (!error) return res.send({ message: status, link: link });
         });
     }
 
