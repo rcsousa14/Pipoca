@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/interfaces/local_storage_interface.dart';
 
 
-@singleton
+@lazySingleton
 class SharedLocalStorageService implements ILocalStorage {
   @override
   Future clear() async {

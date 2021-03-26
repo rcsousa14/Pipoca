@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pipoca/src/constants/themes/colors.dart';
+
 
 class Content extends StatefulWidget {
   final ImageProvider<Object> image;
@@ -23,14 +23,11 @@ class _ContentState extends State<Content> {
     super.didChangeDependencies();
   }
 
-  @override
-  void dispose() {
-    imageCache.clear();
-    super.dispose();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
+   
     return Container(
       constraints: BoxConstraints(
           minHeight: 190, minWidth: double.infinity, maxHeight: widget.isLink
@@ -94,4 +91,6 @@ class _ContentState extends State<Content> {
       ),
     );
   }
+
+ 
 }

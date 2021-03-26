@@ -1,0 +1,12 @@
+{
+    "name": "project-pipoca",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/rcsousa14/Pipoca.git",
+    "author": "rcsousa <rcsousa14@hotmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "push": "git subtree push --prefix pipoca-db heroku main"
+    },
+    "dependencies": {}
+}

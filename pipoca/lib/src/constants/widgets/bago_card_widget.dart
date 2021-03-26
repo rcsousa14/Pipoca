@@ -1,16 +1,15 @@
-import 'dart:math';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gifimage/flutter_gifimage.dart';
+
 import 'package:flutter_link_preview/flutter_link_preview.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:loading_gifs/loading_gifs.dart';
+
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/constants/widgets/content_gif.dart';
-import 'package:pipoca/src/constants/widgets/gif_image.dart';
+
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
@@ -40,12 +39,12 @@ class BagoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GlobalKey key = GlobalKey();
-   
+
     return ViewModelBuilder<BagoCardViewModel>.nonReactive(
-      onModelReady: (model) => model.linkCheck(),
+      onModelReady: (model) => model.linkCheck(text: text),
       fireOnModelReadyOnce: true,
-      initialiseSpecialViewModelsOnce: true,
       disposeViewModel: false,
+      initialiseSpecialViewModelsOnce: true,
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
         final time = DateTime.parse(date);
@@ -102,7 +101,7 @@ class BagoCard extends StatelessWidget {
           ),
         );
       },
-      viewModelBuilder: () => BagoCardViewModel(text: text, page: page),
+      viewModelBuilder: () => BagoCardViewModel(),
     );
   }
 }
@@ -144,7 +143,7 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
         child: Icon(
           PipocaBasics.menu,
           size: 12,
-          color: Colors.grey[900],
+          color: Colors.grey[600],
         ),
       ),
     );
@@ -222,10 +221,31 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       )
                     : FlutterLinkPreview(
                         url: model.url,
+                        useMultithread: true,
                         cache: Duration(seconds: 5),
                         titleStyle: TextStyle(fontWeight: FontWeight.bold),
                         builder: (info) {
-                          if (info == null) return const SizedBox();
+                          if (info == null)
+                            return Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                constraints: BoxConstraints(
+                                    minHeight: 190,
+                                    minWidth: double.infinity,
+                                    maxHeight: 250),
+                                width: double.infinity,
+                                margin: EdgeInsets.only(bottom: 30),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: Platform.isIOS
+                                        ? CupertinoActivityIndicator()
+                                        : CircularProgressIndicator(),
+                                  ),
+                                ));
                           if (info is WebImageInfo) {
                             return Content(
                               isLink: false,

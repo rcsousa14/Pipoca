@@ -1,14 +1,15 @@
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/social_share_service.dart';
 import 'package:stacked/stacked.dart';
 
-class BagoCardViewModel extends BaseViewModel {
-  final String text;
-  final int page;
 
-  BagoCardViewModel({@required this.text, @required this.page});
+class BagoCardViewModel extends BaseViewModel {
+ 
+
+
   //final NavigationService _navigationService = locator<NavigationService>();
   final CapturePngService _captureService = locator<CapturePngService>();
   final UrlLancherService _lancherService = locator<UrlLancherService>();
@@ -24,34 +25,46 @@ class BagoCardViewModel extends BaseViewModel {
 
   RegExp _link = RegExp(
       r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}");
-  Future linkCheck() async {
-   
+  Future linkCheck({String text}) async {
     bool check = _link.hasMatch(text);
     if (check) {
       _hasLink = true;
-     
+
       var links = _link.allMatches(text);
-      if(links.length >= 0){
+      if (links.length >= 0) {
         var link = _link.firstMatch(text);
         _url = text.substring(link.start, link.end);
 
-      String _new = _url.substring(_url.indexOf('//') + 2, _url.length);
-      if (_new.contains('www')) {
-        var u = _url.substring(_new.indexOf(".") + 1, _new.length);
+        RegExp urlLink = RegExp(r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)");
+        var u = urlLink.firstMatch(_url);
+       String _new = _url.substring( u.end, _url.length);
 
-        if (u.indexOf('/') != null) {
-          _newUrl = u.substring(0, u.indexOf('/'));
-        } else {
-          if (_new.lastIndexOf('/') != null) {
-        _newUrl = _new.substring(0, _url.indexOf('/'));
+      if(_new.indexOf('/') != null){
+        _newUrl = _new.substring(0, _new.indexOf('/'));
+      } else {
+        _newUrl = _new; 
       }
-        }
-      }
+      
 
-      //https://stackoverflow.com/questions/59763793/flutter-remove-string-after-certain-character
-      _newText = text.replaceAll(_link, "").trim();
+        // if (_new.contains('www')) {
+        //   String u = _url.substring(_new.indexOf("."), _new.length);
+        //   _newUrl = u;
+        // if (u.indexOf('/') != null) {
+        //   _newUrl = u.substring(0, u.indexOf('/'));
+        //   notifyListeners();
+        // }
 
-      notifyListeners();
+        //else {
+        //     if (_new.lastIndexOf('/') != null) {
+        //   _newUrl = _new.substring(0, _url.indexOf('/'));
+        // }
+        //   }
+        // }
+
+        //https://stackoverflow.com/questions/59763793/flutter-remove-string-after-certain-character
+        _newText = text.replaceAll(_link, "").trim();
+
+        notifyListeners();
       }
       notifyListeners();
     } else {

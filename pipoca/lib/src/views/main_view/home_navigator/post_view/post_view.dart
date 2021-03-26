@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
@@ -8,35 +9,39 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 
 class PostView extends StatelessWidget {
-  final NavChoice choice;
+  final PageController controller;
 
-  const PostView({Key key, this.choice}) : super(key: key);
+  const PostView({Key key, this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     return ViewModelBuilder<PostViewModel>.reactive(
+      onModelReady: (model)=> SystemChannels.textInput.invokeMethod('TextInput.show'),
       builder: (context, model, child) {
 
         return Column(
           children: <Widget>[
             _AppBarNewPost(
-              choice: choice,
+            
             ),
-            _StringTextField(),
+            new _StringTextField(),
           ],
         );
       },
-      viewModelBuilder: () => PostViewModel(),
+      viewModelBuilder: () => PostViewModel( controller: controller,),
     );
   }
 }
 
 class _StringTextField extends HookViewModelWidget<PostViewModel> {
-  const _StringTextField({Key key}) : super(key: key, reactive: true);
+ 
+  const _StringTextField({Key key,}) : super(key: key, reactive: true);
+
 
   @override
   Widget buildViewModelWidget(BuildContext context, PostViewModel model) {
+    final focusNode = useFocusNode();
     var text = useTextEditingController();
     return Container(
       color: Colors.white,
@@ -47,11 +52,12 @@ class _StringTextField extends HookViewModelWidget<PostViewModel> {
               padding: EdgeInsets.only(left: 15, right: 16, top: 15),
               height: MediaQuery.of(context).size.height * .3489993,
               child: TextField(
+                focusNode: focusNode,
                 cursorColor: red,
                 controller: text,
                 maxLength: 200,
                 maxLines: null,
-                autofocus: true,
+               // autofocus: true,
                 onChanged: model.updateString,
                 decoration: InputDecoration(
                   border: InputBorder.none,
@@ -102,8 +108,8 @@ class _StringTextField extends HookViewModelWidget<PostViewModel> {
 }
 
 class _AppBarNewPost extends HookViewModelWidget<PostViewModel> {
-  final NavChoice choice;
-  const _AppBarNewPost({Key key, this.choice})
+  
+  const _AppBarNewPost({Key key})
       : super(key: key, reactive: false);
 
   @override
@@ -112,7 +118,7 @@ class _AppBarNewPost extends HookViewModelWidget<PostViewModel> {
         elevation: 0,
         automaticallyImplyLeading: false,
         leading: GestureDetector(
-          onTap: () => model.goBack(choice),
+          onTap: () => model.goBack(),
           child: Container(
             child: Icon(Icons.clear, size: 27),
           ),
@@ -124,7 +130,7 @@ class _AppBarNewPost extends HookViewModelWidget<PostViewModel> {
           GestureDetector(
             onTap: () {
               if (!model.isBusy) {
-                model.addPost(choice);
+                model.addPost();
               }
             },
             child: Container(

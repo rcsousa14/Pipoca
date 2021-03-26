@@ -1,0 +1,43 @@
+{
+  url: "https://www.youtube.com/watch?v=MejbOFk7H6c",
+  title: "OK Go - Needing/Getting - Official Video - YouTube",
+  siteName: "YouTube",
+  description: "Buy the video on iTunes: https://itunes.apple.com/us/album/needing-getting-bundle-ep/id508124847 See more about the guitars at: http://www.gretschguitars.com...",
+  images: ["https://i.ytimg.com/vi/MejbOFk7H6c/maxresdefault.jpg"],
+  mediaType: "video.other",
+  contentType: "text/html; charset=utf-8",
+  videos: [],
+  favicons:["https://www.youtube.com/yts/img/favicon_32-vflOogEID.png","https://www.youtube.com/yts/img/favicon_48-vflVjB_Qk.png","https://www.youtube.com/yts/img/favicon_96-vflW9Ec0w.png","https://www.youtube.com/yts/img/favicon_144-vfliLAfaB.png","https://s.ytimg.com/yts/img/favicon-vfl8qSV2F.ico"]
+}
+
+
+id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      url: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+       title: {
+        type: Sequelize.STRING,
+      },
+       content_type: {
+        type: Sequelize.STRING,
+      },
+      images : {
+          type: Sequelize.ARRAY(Sequelize.STRING)
+      }
+      favicons : {
+          type: Sequelize.ARRAY(Sequelize.STRING)
+      }
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }

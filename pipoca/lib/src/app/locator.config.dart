@@ -55,6 +55,8 @@ GetIt $initGetIt(
   gh.lazySingleton<NavigationService>(
       () => thirdPartyServicesModule.navigationService);
   gh.lazySingleton<PushNotificationService>(() => PushNotificationService());
+  gh.lazySingleton<SharedLocalStorageService>(
+      () => SharedLocalStorageService());
   gh.lazySingleton<SnackbarService>(
       () => thirdPartyServicesModule.snackbarService);
   gh.lazySingleton<UrlLancherService>(() => UrlLancherService());
@@ -62,9 +64,6 @@ GetIt $initGetIt(
   gh.lazySingleton<UserService>(() => UserService());
   gh.lazySingleton<ValidationService>(() => ValidationService());
   gh.lazySingleton<YoutubeService>(() => YoutubeService());
-
-  // Eager singletons must be registered in the right order
-  gh.singleton<SharedLocalStorageService>(SharedLocalStorageService());
   return get;
 }
 

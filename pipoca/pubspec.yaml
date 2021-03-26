@@ -33,6 +33,7 @@ dependencies:
   firebase_dynamic_links: ^0.7.0+1
   battery: ^1.0.11
   shimmer: ^1.1.2
+  giphy_get: ^1.1.2+1
   flutter_hooks: ^0.15.0
   google_sign_in: ^4.5.9
   sign_in_with_apple: ^2.5.4

@@ -16,8 +16,6 @@ class MainView extends StatelessWidget {
     // var width = MediaQuery.of(context).size.width;
      final GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
     return ViewModelBuilder<MainViewModel>.reactive(
-      disposeViewModel: false,
-      initialiseSpecialViewModelsOnce: true,
    
       builder: (context, model, child) {
         
@@ -36,10 +34,7 @@ class MainView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(model.token),
-                      // TextButton(
-                      //     onPressed: () => model.logout(),
-                      //     child: Text('logout')),
-                      
+                     
                     ],
                   ),
                 ),
