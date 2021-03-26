@@ -60,6 +60,7 @@ export default ({ body }, res, next) => {
         "Xoxota",
         "Xana",
         "Xaninha",
+        "liveleaks"
 
 
 
@@ -67,10 +68,12 @@ export default ({ body }, res, next) => {
 
     if (nsfws.some((nsfw) => links[0].includes(nsfw))) {
         return res.status(403).send({
-            message: "Desculpe,você não pode postar conteúdo adulto"
+            message: "Desculpe,você não pode postar conteúdo adulto",
+            word: nsfw
         })
     }
     getLinkPreview(links[0]).then((data) =>
         res.send(data));
+    next();
 
 };
