@@ -11,12 +11,13 @@ export default ({ body }, res, next) => {
 
 
     isPorn(links[0], function(error, status) {
-        isStatus = status == null ? error : status;
+        if (!error) return res.send(status)
+        return res.send(error)
     });
-    getLinkPreview(links[0]).then((data) => urlData = data);
+    // getLinkPreview(links[0]).then((data) => urlData = data);
 
 
-    return res.send({ status: isStatus, data: urlData })
+
 
 
 
