@@ -6,7 +6,7 @@ export default ({ body }, res, next) => {
     if (!Array.isArray(links) || !links.length) {
         next();
     }
-    var gif = "giphy";
+
     var nsfws = [
         "porn",
         "porno",
@@ -73,10 +73,10 @@ export default ({ body }, res, next) => {
 
         })
     }
-    if (links.some((link) => link.includes(gif))) {
+    if (links.some((link) => link.includes("giphy"))) {
 
-        //let index = links.indexOf(links.some((link) => link.includes(gif)));
-        getLinkPreview(links.find(gif)).then((data) =>
+        let index = links.indexOf(links.find("giphy"));
+        getLinkPreview(links[index]).then((data) =>
             res.send(data));
         //next();
     }
