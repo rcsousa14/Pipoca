@@ -7,9 +7,11 @@ export default ({ body }, res, next) => {
         next();
     }
 
-    getLinkPreview(links[0]).then((data) => res.json(data));
+    var data = getLinkPreview(links[0]);
 
-
+    if (data) {
+        res.send(data);
+    }
 
 
 }
