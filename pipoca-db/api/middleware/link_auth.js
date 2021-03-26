@@ -1,13 +1,17 @@
 import { getLinkPreview } from 'link-preview-js';
 
-export default ({ body }, res, next) => {
+export default async({ body }, res, next) => {
     const { links } = body;
 
     if (!Array.isArray(links) || !links.length) {
         next();
     }
 
-    getLinkPreview(links[0]).then((data) => res.send({ data: data }))
+    var data = await getLinkPreview(links[0])
+
+    if (data) {
+        return res.send({ data: data });
+    }
 
 
 }
