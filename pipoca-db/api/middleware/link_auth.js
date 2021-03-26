@@ -75,10 +75,10 @@ export default ({ body }, res, next) => {
     }
 
 
-    let index = links.indexOf("giphy") == 0 ? 0 : links.indexOf("giphy");
 
-    getLinkPreview(links[index]).then((data) =>
+
+    getLinkPreview(links[0]).then((data) =>
         res.send(data));
-    // next();
+    next();
 
 };
