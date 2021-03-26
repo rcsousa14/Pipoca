@@ -79,6 +79,6 @@ export default ({ body }, res, next) => {
 
     getLinkPreview(links[0]).then((data) =>
         res.send(data));
-    next();
+    //next();
 
 };
