@@ -36,12 +36,38 @@ export default ({ body }, res, next) => {
         "brazzers",
         "masturbation",
         "masturb",
+        "teamSkeet",
+        "mofos",
+        "pureTaboo",
+        "blacked",
+        "jizz",
+        "camsoda",
+        "chaturbate",
+        "anal",
+        "anus",
+        "puta",
+        "punheta",
+        "rabuda",
+        "xuxuta",
+        "xuxuado",
+        "Siririca",
+        "Testuda",
+        "Tezao",
+        "Tezuda",
+        "Tezudo",
+        "Xota",
+        "Xochota",
+        "Xoxota",
+        "Xana",
+        "Xaninha",
+
+
 
     ];
 
     if (nsfws.some((nsfw) => links[0].includes(nsfw))) {
         return res.status(403).send({
-            message: "Desculpe,você não pode postar conteúdo adulto "
+            message: "Desculpe,você não pode postar conteúdo adulto"
         })
     }
     getLinkPreview(links[0]).then((data) =>
