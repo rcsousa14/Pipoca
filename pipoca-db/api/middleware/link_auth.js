@@ -1,4 +1,4 @@
-const isPorn = require('is-porn');
+import { getLinkPreview } from 'link-preview-js';
 
 export default ({ body }, res, next) => {
     const { links } = body;
@@ -7,14 +7,7 @@ export default ({ body }, res, next) => {
         next();
     }
 
-
-    isPorn(links[0], function(error, status) {
-        if (!error) {
-            return res.send({ message: status, link: link });
-        }
-        return res.send({ message: 'we good' });
-
-    });
+    getLinkPreview(links[0]).then((data) => res.send({ data: data }))
 
 
 }
