@@ -38,7 +38,7 @@ exports.store = async({ body, decoded }, res) => {
         }
 
         cachePost.set(`user_post_${decoded.id}`, post.content);
-        cache.del(`user_feed_${decoded.id}`);
+
         cache.del(`user_posts_${decoded.id}`);
         return res.status(201).send({ message: '🍿 Bago criado com sucesso! 🥳' });
 
@@ -51,10 +51,9 @@ exports.store = async({ body, decoded }, res) => {
 //feed shows all posts that are near by you can sort it for posts with higher points
 exports.index = async({ query, decoded }, res) => {
     try {
-        const result = cache.get(`user_feed_${decoded.id}`);
-        if (result) {
-            return res.status(200).json(result);
-        }
+
+
+
         const filtro = 'post';
         const { lat, lng } = query;
         const id = decoded.id;
@@ -162,7 +161,7 @@ exports.index = async({ query, decoded }, res) => {
         const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
 
         const data = { message: '🍿 Todos os Bagos proximo de ti 🥳', posts };
-        cache.set(`user_feed_${decoded.id}`, data);
+
 
         return res.status(200).send(data);
 
@@ -184,7 +183,7 @@ exports.soft = async({ params, decoded }, res) => {
                     user_id: decoded.id
                 }
             });
-            cache.del(`user_feed_${decoded.id}`);
+
             cache.del(`user_posts_${decoded.id}`);
             return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
         } catch (error) {

@@ -18,13 +18,13 @@ exports.store = async({ body, decoded }, res, ) => {
                 where: { id: vote.id },
             });
             cache.del(`post_${decoded.id}`);
-            cache.del(`user_feed_${decoded.id}`);
+
             cache.del(`user_posts_${decoded.id}`);
             return res.status(200).send({ message: "updated", updated_vote });
         }
         const add_vote = await models.post_vote.create({ user_id: decoded.id, post_id, voted });
         cache.del(`post_${decoded.id}`);
-        cache.del(`user_feed_${decoded.id}`);
+
         cache.del(`user_posts_${decoded.id}`);
         return res.status(201).send({ message: 'added', add_vote });
 

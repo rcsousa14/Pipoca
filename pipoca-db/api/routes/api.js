@@ -6,6 +6,7 @@ import authorizeMiddleware from '../middleware/authorize';
 import postauthMiddleware from '../middleware/post_auth';
 import adminMiddleware from '../middleware/admin_auth';
 import voteMiddleware from '../middleware/vote_auth';
+import linkMiddleware from '../middleware/link_auth';
 
 const user = require('../controllers/user_controller');
 const auth = require('../controllers/auth_controller');
@@ -42,14 +43,15 @@ router.get('/v1', (req, res) => {
 //auth routes - this route gives you the access key
 
 router.post('/v1/auth/signup', limiter, speedLimiter, authMiddleware, auth.signup); //need to check email... send email
-router.get('/v1/auth/activate-account/:token', limiter, speedLimiter, auth.confirmation );
+router.get('/v1/auth/activate-account/:token', limiter, speedLimiter, auth.confirmation);
 router.post('/v1/auth/login', limiter, speedLimiter, authMiddleware, auth.login); //☑️
 router.post('/v1/auth/social', limiter, speedLimiter, authMiddleware, auth.social); //☑️
-router.post('/v1/auth/refresh-token', limiter, speedLimiter, auth.refresh );
-router.patch('/v1/auth/logout', limiter, speedLimiter,authorizeMiddleware, auth.logout);
+router.post('/v1/auth/refresh-token', limiter, speedLimiter, auth.refresh);
+router.patch('/v1/auth/logout', limiter, speedLimiter, authorizeMiddleware, auth.logout);
 router.post('/v1/auth/forgot-password', limiter, speedLimiter, auth.forgot);
 router.get('/v1/auth/reset-password', limiter, speedLimiter, auth.reset); //needs a middleware to check if the token query exists
 router.post('/v1/auth/reset-password', limiter, speedLimiter, auth.send);
+
 //roles routes - this route only for admins set user roles for the
 router.post('/v1/admin/roles', limiter, speedLimiter, role.store); //☑️
 router.delete('/v1/admin/roles/:id', authorizeMiddleware, adminMiddleware, role.destroy); //☑️
@@ -71,8 +73,8 @@ router.post('/v1/sub_comment/votes', limiter, authorizeMiddleware, voteMiddlewar
 router.get('/v1/posts/:id', speedLimiter, authorizeMiddleware, post.show); //☑️❎ cache data with redis
 
 // user posts routes
-router.post('/v1/posts', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_posts.store); //☑️❎ cache data and check if is the samething as before for spam 
-router.get('/v1/user/feed',  limiter, speedLimiter, authorizeMiddleware, user_posts.index); //☑️❎ checkout the pipocar filter maybe last 3 days & cache data with redis
+router.post('/v1/posts', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, linkMiddleware); //☑️❎ cache data and check if is the samething as before for spam 
+router.get('/v1/user/feed', limiter, speedLimiter, authorizeMiddleware, user_posts.index); //☑️❎ checkout the pipocar filter maybe last 3 days & cache data with redis
 router.get('/v1/posts', speedLimiter, authorizeMiddleware, user_posts.show); //☑️ ❎ cache data with redis
 router.patch('/v1/posts/:id', limiter, speedLimiter, speedLimiter, authorizeMiddleware, user_posts.soft); //☑️
 
