@@ -6,6 +6,7 @@ export default ({ body }, res, next) => {
     if (!Array.isArray(links) || !links.length) {
         next();
     }
+    var gif = "giphy";
     var nsfws = [
         "porn",
         "porno",
@@ -69,11 +70,18 @@ export default ({ body }, res, next) => {
     if (nsfws.some((nsfw) => links[0].includes(nsfw))) {
         return res.status(403).send({
             message: "Desculpe,você não pode postar conteúdo adulto",
-            word: nsfw
+
         })
+    }
+    if (links.some((link) => link.includes(gif))) {
+
+        //let index = links.indexOf(links.some((link) => link.includes(gif)));
+        getLinkPreview(links.find(gif)).then((data) =>
+            res.send(data));
+        //next();
     }
     getLinkPreview(links[0]).then((data) =>
         res.send(data));
-    next();
+    // next();
 
 };
