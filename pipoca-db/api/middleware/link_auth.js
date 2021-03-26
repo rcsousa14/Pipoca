@@ -75,7 +75,7 @@ export default ({ body }, res, next) => {
     }
     if (links.some((link) => link.includes("giphy"))) {
 
-        let index = links.indexOf(links.find("giphy"));
+        let index = links.indexOf(links.some((link) => link.includes("giphy")));
         getLinkPreview(links[index]).then((data) =>
             res.send(data));
         //next();
