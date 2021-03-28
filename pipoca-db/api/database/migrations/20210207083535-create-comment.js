@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -18,7 +18,7 @@ module.exports = {
         onUpdate: 'RESTRICT',
         onDelete: 'SET NULL'
       },
-      post_id: {
+      postId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -36,7 +36,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
-      is_flagged: {
+      isFlagged: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
@@ -44,15 +44,15 @@ module.exports = {
         type: Sequelize.GEOMETRY('POINT'),
         allowNull: false
       },
-      is_deleted: {
+      isDeleted: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }

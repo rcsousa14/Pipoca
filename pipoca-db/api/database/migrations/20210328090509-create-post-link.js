@@ -1,29 +1,17 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('sub_comments', {
+    await queryInterface.createTable('post_links', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      postId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
-          model: 'users', 
-          key: 'id'
-        },
-        onUpdate: 'RESTRICT',
-        onDelete: 'SET NULL'
-      
-      },
-      replyToId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'users', 
+          model: 'posts', 
           key: 'id'
         },
         onUpdate: 'RESTRICT',
@@ -32,33 +20,24 @@ module.exports = {
       },
       commentId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
           model: 'comments', 
           key: 'id'
         },
         onUpdate: 'RESTRICT',
         onDelete: 'SET NULL'
-      
       },
-      content: {
-        type: Sequelize.STRING(200)
-      },
-      flags: {
+      subCommentId: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        references: {
+          model: 'sub_comments', 
+          key: 'id'
+        },
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       },
-      isFlagged: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
-      coordinates: {
-        type: Sequelize.GEOMETRY('POINT'),
-        allowNull: false
-      },
-      isDeleted: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
+      linkId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -71,6 +50,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('sub_comments');
+    await queryInterface.dropTable('post_links');
   }
 };

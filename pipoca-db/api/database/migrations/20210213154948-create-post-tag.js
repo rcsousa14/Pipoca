@@ -8,31 +8,49 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      post_id: {
+      postId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'posts', 
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       
       },
-      tag_id: {
+      commentId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'comments', 
+          key: 'id'
+        },
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
+      },
+      subCommentId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'sub_comments', 
+          key: 'id'
+        },
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
+      },
+      tagId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'tags', 
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }

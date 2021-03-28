@@ -13,19 +13,19 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.user,{
         as: 'user_comment_vote',
-        foreignKey: 'user_id'
+        foreignKey: 'userId'
       });
       this.belongsTo(models.comment,{
         as: 'post_comment_vote',
-        foreignKey: 'comment_id'
+        foreignKey: 'commentId'
         
 
       });
     }
   };
   comment_vote.init({
-    user_id: DataTypes.INTEGER,
-    comment_id: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER,
+    commentId: DataTypes.INTEGER,
     voted: DataTypes.INTEGER
   }, {
     sequelize,

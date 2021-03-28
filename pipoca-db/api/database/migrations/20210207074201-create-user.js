@@ -8,7 +8,7 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            refresh_token: {
+            refreshToken: {
                 type: Sequelize.STRING,
                 default: ''
             },
@@ -24,14 +24,14 @@ module.exports = {
                 type: Sequelize.STRING(64),
                 is: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/i
             },
-            reset_password_token: {
+            resetPasswordToken: {
                 type: Sequelize.STRING,
                 default: ''
             },
-            reset_password_expiration: {
+            resetPasswordExpiration: {
                 type: Sequelize.DATE,
             },
-            role_id: {
+            roleId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
@@ -54,7 +54,7 @@ module.exports = {
             bio: {
                 type: Sequelize.STRING(124)
             },
-            fcm_token: {
+            fcmToken: {
                 type: Sequelize.STRING,
 
             },
@@ -66,11 +66,11 @@ module.exports = {
                 type: Sequelize.BOOLEAN,
                 defaultValue: false
             },
-            created_at: {
+            createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            updated_at: {
+            updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             }

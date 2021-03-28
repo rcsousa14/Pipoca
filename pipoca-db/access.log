@@ -34,3 +34,6 @@
 ::1 - - [20/Mar/2021:15:43:08 +0000] "GET /v1/user/posts HTTP/1.1" 404 308 "-" "PostmanRuntime/7.26.8"
 ::1 - - [20/Mar/2021:15:43:20 +0000] "GET /v1/posts? HTTP/1.1" 500 41 "-" "PostmanRuntime/7.26.8"
 ::1 - - [20/Mar/2021:15:43:27 +0000] "GET /v1/posts?page=1 HTTP/1.1" 200 140 "-" "PostmanRuntime/7.26.8"
+::1 - - [28/Mar/2021:10:49:34 +0000] "POST /v1/auth/social HTTP/1.1" 201 261 "-" "PostmanRuntime/7.26.8"
+::1 - - [28/Mar/2021:10:57:19 +0000] "POST /v1/posts HTTP/1.1" 404 308 "-" "PostmanRuntime/7.26.8"
+::1 - - [28/Mar/2021:11:02:03 +0000] "POST /v1/posts HTTP/1.1" 201 48 "-" "PostmanRuntime/7.26.8"

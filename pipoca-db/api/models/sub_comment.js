@@ -13,29 +13,32 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.user,{
         as: 'creator',
-        foreignKey: 'user_id'
+        foreignKey: 'userId'
+      });
+      this.belongsTo(models.user,{
+        as: 'replyTo',
+        foreignKey: 'userId'
       });
       this.belongsTo(models.comment,{
         as: 'comment_sub_comment',
-        foreignKey: 'comment_id'
+        foreignKey: 'commentId'
       });
       this.hasMany(models.sub_comment_vote, {
         as: 'sub_comment_votes',
-        foreignKey: 'sub_comment_id'
+        foreignKey: 'subCommentId'
       });
       
     }
   };
   sub_comment.init({
-    user_id: DataTypes.INTEGER,
-    comment_id: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER,
+    commentId: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
     flags: DataTypes.INTEGER,
-    reply_to: DataTypes.STRING(50),
-    reply_to_fcm_token:  DataTypes.STRING,
-    is_flagged: DataTypes.BOOLEAN,
+    replyToId: DataTypes.INTEGER,
+    isFlagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
-    is_deleted: DataTypes.BOOLEAN
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'sub_comment',

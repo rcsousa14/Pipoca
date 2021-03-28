@@ -11,6 +11,24 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsToMany(models.post, {
+        as: 'posts',
+        foreignKey: 'linkId',
+        through: 'post_links'
+
+      });
+      this.belongsToMany(models.comment, {
+        as: 'comments',
+        foreignKey: 'linkId',
+        through: 'post_links'
+
+      });
+      this.belongsToMany(models.sub_comment, {
+        as: 'sub_comments',
+        foreignKey: 'linkId',
+        through: 'post_links'
+
+      });
     }
   };
   link.init({
@@ -19,8 +37,8 @@ module.exports = (sequelize, DataTypes) => {
     siteName: DataTypes.STRING,
     description: DataTypes.STRING,
     images: DataTypes.ARRAY(DataTypes.STRING),
-    media_type: DataTypes.STRING,
-    content_type: DataTypes.STRING,
+    mediaType: DataTypes.STRING,
+    contentType: DataTypes.STRING,
     videos: DataTypes.ARRAY(DataTypes.STRING),
     favicons: DataTypes.ARRAY(DataTypes.STRING)
   }, {

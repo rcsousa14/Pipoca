@@ -1,4 +1,4 @@
-import { getLinkPreview } from "link-preview-js";
+
 
 export default ({ body }, res, next) => {
     const { links } = body;
@@ -69,16 +69,11 @@ export default ({ body }, res, next) => {
 
     if (nsfws.some((nsfw) => links[0].includes(nsfw))) {
         return res.status(403).send({
-            message: "Desculpe,você não pode postar conteúdo adulto",
+            message: "Desculpe, não pode postar conteúdo adulto",
 
         })
     }
-
-
-
-
-    getLinkPreview(links[0]).then((data) =>
-        res.send(data));
-    //next();
+   
+    next();
 
 };

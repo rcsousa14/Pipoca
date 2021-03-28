@@ -23,10 +23,10 @@ module.exports = {
       images: {
         type: Sequelize.ARRAY(Sequelize.STRING)
       },
-      media_type: {
+      mediaType: {
         type: Sequelize.STRING
       },
-      content_type: {
+      contentType: {
         type: Sequelize.STRING
       },
       videos: {
@@ -35,11 +35,11 @@ module.exports = {
       favicons: {
         type:Sequelize.ARRAY(Sequelize.STRING)
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }

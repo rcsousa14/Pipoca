@@ -1,4 +1,5 @@
 import CacheService from '../utils/cache';
+import { getLinkPreview } from "link-preview-js";
 const { paginate } = require('../utils/paginate');
 const models = require('../models');
 const Sequelize = require('sequelize');
@@ -34,6 +35,17 @@ exports.store = async({ body, decoded }, res) => {
 
                 await post.addTag(tag);
             }
+        if(links){
+            getLinkPreview(links[0]).then((data) => 
+            {
+                const[link] =  models.link.findOrCreate({
+                    where: {url: data.url}
+                })
+                console.log(link);
+                 post.addLink(link);
+
+            });
+        }
 
         }
 
