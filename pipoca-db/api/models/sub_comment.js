@@ -30,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.INTEGER,
     comment_id: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
-    links: DataTypes.ARRAY(DataTypes.STRING),
     flags: DataTypes.INTEGER,
     reply_to: DataTypes.STRING(50),
     reply_to_fcm_token:  DataTypes.STRING,

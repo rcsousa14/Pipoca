@@ -32,9 +32,6 @@ module.exports = {
         type: Sequelize.STRING(200),
         allowNull: false
       },
-      links: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
       flags: {
         type: Sequelize.INTEGER,
         defaultValue: 0

@@ -33,10 +33,6 @@ module.exports = {
       content: {
         type: Sequelize.STRING(200)
       },
-     
-      links: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
       flags: {
         type: Sequelize.INTEGER,
         defaultValue: 0

@@ -34,7 +34,6 @@ module.exports = (sequelize, DataTypes) => {
   post.init({
     user_id: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
-    links: DataTypes.ARRAY(DataTypes.STRING),
     flags: DataTypes.INTEGER,
     is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
