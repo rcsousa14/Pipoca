@@ -14,7 +14,7 @@ const Op = Sequelize.Op;
 
 exports.signup = async(req, res) => {
     try {
-        const { fcm_token, email, password } = req.body;
+        const { fcmToken, email, password } = req.body;
 
         const refreshToken = uuidv4();
         const hash = auth.hashPassword(password);
@@ -32,7 +32,7 @@ exports.signup = async(req, res) => {
 
         const { id } = await models.role.findOne({ where: { role: "regular" } });
         const user = await models.user.create({
-            fcm_token,
+            fcm_token: fcmToken,
             email,
             refresh_token: refreshToken,
             password: hash,
@@ -158,7 +158,7 @@ exports.login = async(req, res) => {
 
 exports.social = async(req, res) => {
     try {
-        const { email, avatar, type, fcm_token, } = req.body;
+        const { email, avatar, type, fcmToken, } = req.body;
         const { id } = await models.role.findOne({ where: { role: "regular" } });
         const refreshToken = uuidv4();
         const [user, created] = await models.user.findOrCreate({
@@ -176,7 +176,7 @@ exports.social = async(req, res) => {
             }
             if (user.refresh_token != 'blocked') {
 
-                const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcm_token, active: true, username: username }, { where: { id: user.id } });
+                const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcmToken, active: true, username: username }, { where: { id: user.id } });
                 if (updated) {
                     return res.status(200).send({
                         message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
@@ -195,7 +195,7 @@ exports.social = async(req, res) => {
             });
 
         }
-        const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcm_token, active: true, username: username }, { where: { id: user.id } });
+        const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcmToken, active: true, username: username }, { where: { id: user.id } });
         if (updated) {
             return res.status(201).send({
                 message: "welcome to Pipoca 🍿 use the token to gain access!😄",

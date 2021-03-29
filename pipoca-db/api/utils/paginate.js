@@ -59,7 +59,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
 
             where = {
                 user_id: id,
-                sub_comment_id: row.id
+                subComment_id: row.id
             }
         }
 
@@ -82,6 +82,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "post": {
                 "id": row.id,
                 "content": row.content,
+                "links": row.links,
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "comments_total": row.comments_total,
                 "flags": row.flags,

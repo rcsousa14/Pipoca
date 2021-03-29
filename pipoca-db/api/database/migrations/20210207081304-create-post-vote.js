@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -18,7 +18,7 @@ module.exports = {
         onUpdate: 'RESTRICT',
         onDelete: 'SET NULL'
       },
-      postId: {
+      post_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -33,11 +33,11 @@ module.exports = {
         allowNull: false,
        
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

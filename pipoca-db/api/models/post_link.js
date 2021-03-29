@@ -14,10 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   post_link.init({
-    postId: DataTypes.INTEGER,
-    commentId: DataTypes.INTEGER,
-    subCommentId: DataTypes.INTEGER,
-    linkId: DataTypes.INTEGER
+    post_id: DataTypes.INTEGER,
+    comment_id: DataTypes.INTEGER,
+    sub_comment_id: DataTypes.INTEGER,
+    link_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'post_link',

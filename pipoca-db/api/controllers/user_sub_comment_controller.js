@@ -6,23 +6,44 @@ const ttl = 10;
 const cache = new CacheService(ttl);
 const cachePost = new CacheService(60);
 
-exports.store = async({ params, body, decoded }, res) => {
+exports.store = async ({ params, body, decoded }, res) => {
     try {
-        const { comment_id } = params;
-        const { content, links, reply_to, reply_to_fcm_token, longitude, latitude } = body;
+        const { commentId } = params;
+        const { content, links, hashes, reply_to_id,  longitude, latitude } = body;
 
         const result = cachePost.get(`user_sub_comment_${decoded.id}`);
         if (result && result == content) {
-            console.log(result)
+            
             return res.status(550).json({ message: '🖐🏾 Eh mano ninguem gosta de spam 👾' });
         }
         var point = {
             type: 'Point',
             coordinates: [longitude, latitude],
+            crs: { type: 'name', properties: { name: 'EPSG:4326' } }
 
         };
 
-        const sub_comment = await models.sub_comment.create({ user_id: decoded.id, reply_to, reply_to_fcm_token, comment_id, content, links, coordinates: point });
+        const sub_comment = await models.sub_comment.create({ userId: decoded.id, reply_to_id, comment_id: commentId, content,  coordinates: point });
+
+        if (hashes) {
+            for (var hash of hashes) {
+                const [tag] = await models.tag.findOrCreate({
+                    where: { hash: hash }
+                });
+
+                await models.post_tag.create({sub_comment_id: sub_comment.id, tag_id: tag.id});
+            }
+        }
+        if (links) {
+
+            getLinkData({ url: links[0] });
+            const link = await models.link.findOne({where: {url: links[0]}})
+  
+            await models.post_link.create({sub_comment_id: sub_comment.id,  link_id: link.id});
+           
+               
+           }
+
         cachePost.set(`user_sub_comment_${decoded.id}`, sub_comment.content);
         cache.del(`user_sub_comments_feed_${decoded.id}`);
         cache.del(`user_sub_comments_${decoded.id}`);
@@ -34,26 +55,26 @@ exports.store = async({ params, body, decoded }, res) => {
     }
 }
 
-exports.index = async({ params, query, decoded }, res) => {
+exports.index = async ({ params, query, decoded }, res) => {
     try {
         const result = cache.get(`user_sub_comments_feed_${decoded.id}`);
         if (result) {
             return res.status(200).json(result);
         }
         const filtro = 'sub';
-        const { comment_id } = params;
+        const { commentId } = params;
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 4;
         let group = ['sub_comment.id', 'creator.id'];
         let search = {
-            where: { comment_id: comment_id },
+            where: { comment_id: commentId },
         }
         let order = [];
 
         order.push(
-            [Sequelize.literal('votes_total ASC')],
+            [Sequelize.literal('votesTotal ASC')],
 
         );
 
@@ -63,27 +84,26 @@ exports.index = async({ params, query, decoded }, res) => {
             'content',
             'flags',
             'is_flagged',
-            'is_deleted',
             'createdAt',
             'coordinates', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`), 'votes_total'],
         ];
         let include = [{
-                model: models.user,
-                as: 'creator',
-                attributes: {
-                    exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "password",
-                    ]
-                }
-            },
+            model: models.user,
+            as: 'creator',
+            attributes: {
+                exclude: [
+                    "createdAt",
+                    "updatedAt",
+                    "birthday",
+                    "reset_password_token",
+                    "reset_password_expiration",
+                    "refresh_token",
+                    "role_id",
+                    "bio",
+                    "password",
+                ]
+            }
+        },
 
         ];
         const model = models.sub_comment;
@@ -99,14 +119,14 @@ exports.index = async({ params, query, decoded }, res) => {
     }
 }
 
-exports.soft = async({ params, decoded }, res) => {
+exports.soft = async ({ params, decoded }, res) => {
     try {
 
         await models.sub_comment.update({
-            is_deleted: true
+            isDeleted: true
         }, {
             where: {
-                user_id: decoded.id,
+                userId: decoded.id,
                 id: params.id
             }
         });
@@ -120,7 +140,7 @@ exports.soft = async({ params, decoded }, res) => {
     }
 }
 
-exports.show = async({ query, decoded }, res) => {
+exports.show = async ({ query, decoded }, res) => {
     try {
         const result = cache.get(`user_sub_comments_${decoded.id}`);
         if (result) {
@@ -140,7 +160,6 @@ exports.show = async({ query, decoded }, res) => {
             'id',
             'content',
             'flags',
-            'is_flagged',
             'is_deleted',
             'createdAt',
             'coordinates',
@@ -148,22 +167,22 @@ exports.show = async({ query, decoded }, res) => {
             [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`), 'votes_total'],
         ];
         let include = [{
-                model: models.user,
-                as: 'creator',
-                attributes: {
-                    exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "password",
-                    ]
-                }
-            },
+            model: models.user,
+            as: 'creator',
+            attributes: {
+                exclude: [
+                    "createdAt",
+                    "updatedAt",
+                    "birthday",
+                    "reset_password_token",
+                    "reset_password_expiration",
+                    "refresh_token",
+                    "role_id",
+                    "bio",
+                    "password",
+                ]
+            }
+        },
 
 
 

@@ -14,10 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   post_tag.init({
-    postId: DataTypes.INTEGER,
-    tagId: DataTypes.INTEGER,
-    commentId: DataTypes.INTEGER,
-    subCommentId: DataTypes.INTEGER,
+    post_id: DataTypes.INTEGER,
+    comment_id: DataTypes.INTEGER,
+    sub_comment_id: DataTypes.INTEGER,
+    tag_id: DataTypes.INTEGER,
+    
   }, {
     sequelize,
     modelName: 'post_tag',

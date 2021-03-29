@@ -8,8 +8,8 @@ const cachePost = new CacheService(60);
 
 exports.store = async({ params, body, decoded }, res) => {
     try {
-        const { post_id } = params;
-        const { content, links, longitude, latitude } = body;
+        const { postId } = params;
+        const { content, links, hashes, longitude, latitude } = body;
         const result = cachePost.get(`user_comment_${decoded.id}`);
         if (result && result == content) {
             console.log(result)
@@ -18,10 +18,30 @@ exports.store = async({ params, body, decoded }, res) => {
         var point = {
             type: 'Point',
             coordinates: [longitude, latitude],
+            crs: { type: 'name', properties: { name: 'EPSG:4326' } }
 
         };
 
-        const comment = await models.comment.create({ user_id: decoded.id, post_id, content, links, coordinates: point });
+        const comment = await models.comment.create({ user_id: decoded.id, post_id: postId, content, coordinates: point });
+
+        if (hashes) {
+            for (var hash of hashes) {
+                const [tag] = await models.tag.findOrCreate({
+                    where: { hash: hash }
+                });
+
+                await models.post_tag.create({post_id: post.id, type: 'comment', tag_id: tag.id});
+            }
+        }
+        if (links) {
+
+            getLinkData({ url: links[0] });
+            const link = await models.link.findOne({where: {url: links[0]}})
+            
+            await models.post_link.create({post_id: post.id, type: 'comment', link_id: link.id});
+           
+               
+           }
         cachePost.set(`user_comment_${decoded.id}`, comment.content);
         cache.del(`user_comments_feed_${decoded.id}`);
         cache.del(`user_comments_${decoded.id}`);
@@ -40,12 +60,12 @@ exports.index = async({ params, query, decoded }, res) => {
             return res.status(200).json(result);
         }
         const filtro = 'comment';
-        const { post_id } = params;
+        const { postId } = params;
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
-        const limit = 9;
-        let search = { post_id: post_id };
+        const limit = 15;
+        let search = { post_id: postId };
 
         let order = [];
         let group = ['comment.id', 'creator.id'];
@@ -81,7 +101,7 @@ exports.index = async({ params, query, decoded }, res) => {
                         "updatedAt",
                         "birthday",
                         "reset_password_token",
-                        "reset_password_expiration",
+                        "reset_assword_expiration",
                         "refresh_token",
                         "role_id",
                         "bio",

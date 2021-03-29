@@ -13,50 +13,50 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             user.belongsTo(models.role, {
                 as: 'role',
-                foreignKey: 'roleId'
+                foreignKey: 'role_id'
             });
             user.hasMany(models.post, {
                 as: 'posts',
-                foreignKey: 'userId'
+                foreignKey: 'user_id'
             });
             user.hasMany(models.post_vote, {
                 as: 'post_votes',
-                foreignKey: 'userId'
+                foreignKey: 'user_id'
             });
             user.hasMany(models.comment_vote, {
                 as: 'comment_votes',
-                foreignKey: 'userId'
+                foreignKey: 'user_id'
             });
             user.hasMany(models.comment, {
                 as: 'comments',
-                foreignKey: 'userId'
+                foreignKey: 'user_id'
             });
             user.hasMany(models.sub_comment, {
                 as: 'sub_comments',
-                foreignKey: 'userId'
+                foreignKey: 'user_id'
             });
             user.hasMany(models.sub_comment, {
                 as: 'sub_comment_replys',
-                foreignKey: 'replyToId'
+                foreignKey: 'reply_to_id'
             });
             user.hasMany(models.sub_comment_vote, {
                 as: 'sub_comment_votes',
-                foreignKey: 'userId'
+                foreignKey: 'user_id'
             })
         }
     };
     user.init({
-        refreshToken: DataTypes.STRING,
+        refresh_token: DataTypes.STRING,
         email: DataTypes.STRING,
         password: DataTypes.STRING(64),
-        resetPasswordToken: DataTypes.STRING,
-        resetPasswordExpiration: DataTypes.DATE,
-        roleId: DataTypes.INTEGER,
+        reset_password_token: DataTypes.STRING,
+        reset_password_expiration: DataTypes.DATE,
+        role_id: DataTypes.INTEGER,
         username: DataTypes.STRING(20),
         avatar: DataTypes.STRING,
         birthday: DataTypes.STRING(15),
         bio: DataTypes.STRING(124),
-        fcmToken: DataTypes.STRING,
+        fcm_token: DataTypes.STRING,
         type: DataTypes.STRING(20),
         active: DataTypes.BOOLEAN
     }, {

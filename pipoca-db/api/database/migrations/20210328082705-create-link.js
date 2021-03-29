@@ -9,43 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       url: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
-      title: {
-        type: Sequelize.STRING
-      },
-      siteName: {
-        type: Sequelize.STRING
-      },
-      description: {
-        type: Sequelize.STRING
-      },
-      images: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
-      mediaType: {
-        type: Sequelize.STRING
-      },
-      contentType: {
-        type: Sequelize.STRING
-      },
-      videos: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
-      favicons: {
-        type:Sequelize.ARRAY(Sequelize.STRING)
-      },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('post_links');
+    await queryInterface.dropTable('links');
   }
 };

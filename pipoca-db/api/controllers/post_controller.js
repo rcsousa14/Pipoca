@@ -65,14 +65,14 @@ exports.show = async({ params, query, decoded }, res) => {
 
                 [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'total'],
 
-                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'INT'), 'votes_total'],
+                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'INT'), 'votesTotal'],
             ],
             include: [{
                     model: models.user,
                     as: "creator",
                     attributes: {
                         exclude: [
-                            "createdAt",
+                        "createdAt",
                         "updatedAt",
                         "birthday",
                         "reset_password_token",
@@ -112,12 +112,12 @@ exports.show = async({ params, query, decoded }, res) => {
 
         const votes = await models.post_vote.findOne({
             raw: true,
-            where: { user_id: decoded.id, post_id: posts.id },
+            where: { userId: decoded.id, post_id: posts.id },
             attributes: {
                 exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
             },
         });
-        const { votes_total } = posts;
+        const { votesTotal } = posts;
         const isVoted = votes ? true : false;
 
 
@@ -132,10 +132,10 @@ exports.show = async({ params, query, decoded }, res) => {
                 content: posts.content,
                 links: posts.links,
                 comments_total: posts.total,
-                votes_total: votes_total == null ? 0 : votes_total, // == null ? 0 : posts.votes_total,
+                votes_total: votesTotal == null ? 0 : votesTotal, // == null ? 0 : posts.votes_total,
                 flags: posts.flags,
-                is_flagged: posts.is_flagged,
-                is_deleted: posts.is_deleted,
+                is_flagged: posts.isFlagged,
+                is_deleted: posts.isDeleted,
                 created_at: posts.createdAt,
                 creator: posts.creator
 

@@ -13,32 +13,46 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.user,{
         as: 'creator',
-        foreignKey: 'userId'
+        foreignKey: 'user_id'
       });
       this.belongsTo(models.user,{
         as: 'replyTo',
-        foreignKey: 'userId'
+        foreignKey: 'user_id'
       });
       this.belongsTo(models.comment,{
         as: 'comment_sub_comment',
-        foreignKey: 'commentId'
+        foreignKey: 'comment_id'
       });
       this.hasMany(models.sub_comment_vote, {
         as: 'sub_comment_votes',
-        foreignKey: 'subCommentId'
+        foreignKey: 'subComment_id'
+      });
+      this.belongsToMany(models.link, {
+        as: 'links',
+        foreignKey: 'post_id',
+        otherKey: 'link_id',
+        through: 'post_links'
+
+      });
+      this.belongsToMany(models.tag, {
+        as: 'tags',
+        foreignKey: 'post_id',
+        otherKey: 'tag_id',
+        through: 'post_tags'
+
       });
       
     }
   };
   sub_comment.init({
-    userId: DataTypes.INTEGER,
-    commentId: DataTypes.INTEGER,
+    user_id: DataTypes.INTEGER,
+    comment_id: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
     flags: DataTypes.INTEGER,
-    replyToId: DataTypes.INTEGER,
-    isFlagged: DataTypes.BOOLEAN,
+    reply_to_id: DataTypes.INTEGER,
+    is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
-    isDeleted: DataTypes.BOOLEAN
+    is_deleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'sub_comment',

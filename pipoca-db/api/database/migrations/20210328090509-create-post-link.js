@@ -8,18 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      postId: {
+      post_id: {
         type: Sequelize.INTEGER,
+   
         references: {
           model: 'posts', 
           key: 'id'
         },
         onUpdate: 'RESTRICT',
         onDelete: 'SET NULL'
-      
       },
-      commentId: {
+      comment_id: {
         type: Sequelize.INTEGER,
+        
         references: {
           model: 'comments', 
           key: 'id'
@@ -27,8 +28,9 @@ module.exports = {
         onUpdate: 'RESTRICT',
         onDelete: 'SET NULL'
       },
-      subCommentId: {
+      sub_comment_id: {
         type: Sequelize.INTEGER,
+
         references: {
           model: 'sub_comments', 
           key: 'id'
@@ -36,14 +38,21 @@ module.exports = {
         onUpdate: 'RESTRICT',
         onDelete: 'SET NULL'
       },
-      linkId: {
-        type: Sequelize.INTEGER
+      link_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'links', 
+          key: 'id'
+        },
+        onUpdate: 'RESTRICT',
+        onDelete: 'SET NULL'
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

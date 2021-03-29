@@ -13,19 +13,22 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsToMany(models.post, {
         as: 'posts',
-        foreignKey: 'tagId',
+        foreignKey: 'tag_id',
+        otherKey: 'post_id',
         through: 'post_tags'
 
       });
       this.belongsToMany(models.comment, {
         as: 'comments',
-        foreignKey: 'tagId',
+        foreignKey: 'tag_id',
+        otherKey: 'comment_id',
         through: 'post_tags'
 
       });
       this.belongsToMany(models.sub_comment, {
         as: 'sub_comments',
-        foreignKey: 'tagId',
+        foreignKey: 'tag_id',
+        otherKey: 'sub_comment_id',
         through: 'post_tags'
 
       });

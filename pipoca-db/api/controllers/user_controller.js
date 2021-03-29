@@ -181,8 +181,8 @@ exports.destroy = async({ decoded }, res) => {
 exports.update = async({ body, decoded }, res) => {
     try {
         // figure out how to patch instead
-        const { username, avatar, birthday, bio, fcm_token, password } = body;
-        const user = await models.user.update({ password, username, avatar, birthday, bio, fcm_token }, {
+        const { username, avatar, birthday, bio, fcmToken, password } = body;
+        const user = await models.user.update({ password, username, avatar, birthday, bio, fcm_token: fcmToken }, {
             where: {
                 id: decoded.id
             },

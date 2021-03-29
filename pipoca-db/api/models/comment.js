@@ -13,32 +13,45 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       comment.belongsTo(models.user,{
         as: 'creator',
-        foreignKey: 'userId'
+        foreignKey: 'user_id'
       });
       comment.belongsTo(models.post,{
         as: 'post_comment',
-        foreignKey: 'postId'
+        foreignKey: 'post_id'
       });
       comment.hasMany(models.comment_vote, {
         as: 'comment_votes',
-        foreignKey: 'commentId',
+        foreignKey: 'comment_id',
        
       });
       comment.hasMany(models.sub_comment, {
         as: 'comment_sub_comments',
-        foreignKey: 'commentId'
+        foreignKey: 'comment_id'
+      });
+      this.belongsToMany(models.link, {
+        as: 'links',
+        foreignKey: 'comment_id',
+        otherKey: 'link_id',
+        through: 'post_links'
+
+      });
+      this.belongsToMany(models.tag, {
+        as: 'tags',
+        foreignKey: 'comment_id',
+        otherKey: 'tag_id',
+        through: 'post_tags'
       });
       
     }
   };
   comment.init({
-    userId: DataTypes.INTEGER,
-    postId: DataTypes.INTEGER,
+    user_id: DataTypes.INTEGER,
+    post_id: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
     flags: DataTypes.INTEGER,
-    isFlagged: DataTypes.BOOLEAN,
+    is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
-    isDeleted: DataTypes.BOOLEAN
+    is_deleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'comment',

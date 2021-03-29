@@ -13,19 +13,22 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsToMany(models.post, {
         as: 'posts',
-        foreignKey: 'linkId',
+        foreignKey: 'link_id',
+        otherKey: 'post_id',
         through: 'post_links'
 
       });
       this.belongsToMany(models.comment, {
         as: 'comments',
-        foreignKey: 'linkId',
+        foreignKey: 'link_id',
+        otherKey: 'comment_id',
         through: 'post_links'
 
       });
       this.belongsToMany(models.sub_comment, {
         as: 'sub_comments',
-        foreignKey: 'linkId',
+        foreignKey: 'link_id',
+        otherKey: 'sub_comment_id',
         through: 'post_links'
 
       });
@@ -33,14 +36,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   link.init({
     url: DataTypes.STRING,
-    title: DataTypes.STRING,
-    siteName: DataTypes.STRING,
-    description: DataTypes.STRING,
-    images: DataTypes.ARRAY(DataTypes.STRING),
-    mediaType: DataTypes.STRING,
-    contentType: DataTypes.STRING,
-    videos: DataTypes.ARRAY(DataTypes.STRING),
-    favicons: DataTypes.ARRAY(DataTypes.STRING)
+    
   }, {
     sequelize,
     modelName: 'link',

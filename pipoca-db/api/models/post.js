@@ -13,37 +13,39 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       post.belongsTo(models.user, {
         as: 'creator',
-        foreignKey: 'userId'
+        foreignKey: 'user_id'
       });
       post.hasMany(models.post_vote, {
         as: 'post_votes',
-        foreignKey: 'postId'
+        foreignKey: 'post_id'
       });
       post.hasMany(models.comment, {
         as: 'post_comments',
-        foreignKey: 'postId'
+        foreignKey: 'post_id'
       });
       this.belongsToMany(models.tag, {
         as: 'tags',
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
+        otherKey: 'tag_id',
         through: 'post_tags'
 
       });
       this.belongsToMany(models.link, {
         as: 'links',
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
+        otherKey: 'link_id',
         through: 'post_links'
 
       });
     }
   };
   post.init({
-    userId: DataTypes.INTEGER,
+    user_id: DataTypes.INTEGER,
     content: DataTypes.STRING(200),
     flags: DataTypes.INTEGER,
-    isFlagged: DataTypes.BOOLEAN,
+    is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
-    isDeleted: DataTypes.BOOLEAN
+    is_deleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'post',
