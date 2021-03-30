@@ -1,9 +1,7 @@
 export default ({ body }, res, next) => {
     const { links } = body;
     if (links) {
-        if (!Array.isArray(links) || !links.length) {
-            next();
-        }
+        
 
         var nsfws = [
             "porn",
