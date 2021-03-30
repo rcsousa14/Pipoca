@@ -1,6 +1,6 @@
 export default ({ body }, res, next) => {
     const { links } = body;
-    if (!links.lenght == 0) {
+    if (links && !links.lenght == 0 && links.lenght > 0) {
         
 
         var nsfws = [
@@ -74,7 +74,7 @@ export default ({ body }, res, next) => {
 
         next();
 
-    }
+    }  
     next();
 
 };
