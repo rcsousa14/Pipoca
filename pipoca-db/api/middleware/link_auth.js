@@ -1,6 +1,6 @@
 export default ({ body }, res, next) => {
     const { links } = body;
-    if (links) {
+    if (!links.lenght == 0) {
         
 
         var nsfws = [
