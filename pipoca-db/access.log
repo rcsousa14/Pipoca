@@ -148,3 +148,4 @@
 ::1 - - [30/Mar/2021:08:36:41 +0000] "POST /v1/auth/social HTTP/1.1" 500 63 "-" "PostmanRuntime/7.26.8"
 ::1 - - [30/Mar/2021:08:39:54 +0000] "POST /v1/auth/social HTTP/1.1" 500 63 "-" "PostmanRuntime/7.26.8"
 ::1 - - [30/Mar/2021:08:41:36 +0000] "POST /v1/auth/social HTTP/1.1" 201 261 "-" "PostmanRuntime/7.26.8"
+::1 - - [30/Mar/2021:09:00:11 +0000] "POST /v1/auth/social HTTP/1.1" 201 261 "-" "PostmanRuntime/7.26.8"

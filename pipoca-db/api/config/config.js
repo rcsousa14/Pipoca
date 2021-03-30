@@ -11,8 +11,7 @@ module.exports = {
         define: {
             timestamps: true,
             underscored: true,
-            createdAt: 'created_at',
-            updatedAt: 'updated_at'
+           
         }
     },
     production: {
@@ -20,6 +19,7 @@ module.exports = {
         dialect: 'postgres',
         define: {
             timestamps: true,
+            underscored: true,
 
         },
         dialectOptions: {
