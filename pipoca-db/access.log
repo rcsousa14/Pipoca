@@ -142,3 +142,5 @@
 ::1 - - [29/Mar/2021:13:42:52 +0000] "GET /v1/user/feed?lat=-8.838333&lng=13.234444&filter=pipocar&page=1 HTTP/1.1" 200 1361 "-" "PostmanRuntime/7.26.8"
 ::1 - - [29/Mar/2021:13:44:59 +0000] "GET /v1/users HTTP/1.1" 500 51 "-" "PostmanRuntime/7.26.8"
 ::1 - - [29/Mar/2021:13:45:35 +0000] "GET /v1/users HTTP/1.1" 200 419 "-" "PostmanRuntime/7.26.8"
+::1 - - [29/Mar/2021:13:52:17 +0000] "GET /v1/user/feed?lat=-8.838333&lng=13.234444&filter=pipocar&page=1 HTTP/1.1" 200 1361 "-" "PostmanRuntime/7.26.8"
+::1 - - [29/Mar/2021:13:56:04 +0000] "GET /v1/link-info HTTP/1.1" 200 1402 "-" "PostmanRuntime/7.26.8"
