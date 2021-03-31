@@ -38,6 +38,7 @@ class AuthenticationService {
         headers: _header.setHeaders(),
         body: json.encode(user.toJson()),
       );
+
       var parsed = json.decode(response.body);
       Token token = Token.fromJson(parsed);
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -127,13 +128,13 @@ class AuthenticationService {
   //platform IOS
   Future apple({String fcmToken}) async {
     try {
-    //  final apple = await _apple.getAppleIDCredential(
-    //    scopes: [
-    //     AppleIDAuthorizationScopes.email,
-    //     AppleIDAuthorizationScopes.fullName,
-           
-    //   ],
-    //  );
+      //  final apple = await _apple.getAppleIDCredential(
+      //    scopes: [
+      //     AppleIDAuthorizationScopes.email,
+      //     AppleIDAuthorizationScopes.fullName,
+
+      //   ],
+      //  );
       // if (google != null) {
       //   var result = await access(
       //       user: UserAuth(
@@ -178,7 +179,7 @@ class AuthenticationService {
         }
         return token != null;
       } else {
-        return token.message; 
+        return token.message;
       }
     } on SocketException {
       throw 'Sem conexão com a Internet';
@@ -194,7 +195,7 @@ class AuthenticationService {
       var url = Uri.encodeFull('$heroku_url/auth/forgot-password');
       var response = await client.post(url,
           headers: _header.setHeaders(), body: jsonEncode({'email': email}));
-    
+
       return response.body;
     } catch (e) {
       return e;

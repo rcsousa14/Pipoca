@@ -9,7 +9,6 @@ import 'package:pipoca/src/services/shared_local_storage_service.dart';
 
 @lazySingleton
 class UserRepository {
-
   final _header = locator<ApiHeaders>();
   final client = locator<ApiHeaders>().client;
   final _authenticationService = locator<AuthenticationService>();
@@ -25,14 +24,15 @@ class UserRepository {
         headers:
             _header.setTokenHeaders(token: _authenticationService.currentToken),
       );
-
+ 
       var parsed = json.decode(response.body);
       Usuario user = Usuario.fromJson(parsed);
-   
-      await _localStorage.put('id', user.user.id);
 
+      await _localStorage.put('id', user.user.id);
+  
       return user;
     } catch (e) {
+
       return e;
     }
   }
@@ -53,22 +53,21 @@ class UserRepository {
   }
 }
 
-
 // if (user == null) {
-      //   int id = await _localStorage.recieve('id');
-      //   var result = await _authenticationService.refreshToken(
-      //       currentToken: _authenticationService.currentToken, id: id);
-      //   if (result is bool) {
-      //     if (result) {
-      //       var response = await client.get(
-      //         url,
-      //         headers: _header.setTokenHeaders(
-      //             token: _authenticationService.currentToken),
-      //       );
-      //       var parsed = json.decode(response.body);
-      //       Usuario user = Usuario.fromJson(parsed);
-      //       await _localStorage.put('id', user.user.id);
-      //       return user;
-      //     }
-      //   }
-      // }
+//   int id = await _localStorage.recieve('id');
+//   var result = await _authenticationService.refreshToken(
+//       currentToken: _authenticationService.currentToken, id: id);
+//   if (result is bool) {
+//     if (result) {
+//       var response = await client.get(
+//         url,
+//         headers: _header.setTokenHeaders(
+//             token: _authenticationService.currentToken),
+//       );
+//       var parsed = json.decode(response.body);
+//       Usuario user = Usuario.fromJson(parsed);
+//       await _localStorage.put('id', user.user.id);
+//       return user;
+//     }
+//   }
+// }

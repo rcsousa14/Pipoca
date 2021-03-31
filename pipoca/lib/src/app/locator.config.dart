@@ -17,6 +17,7 @@ import '../services/connectivity_service.dart';
 import '../services/dynamicLink_service.dart';
 import '../repositories/feed/feed_repository.dart';
 import '../services/feed_service.dart';
+import '../repositories/feed/link_repository.dart';
 import '../services/location_service.dart';
 import '../views/main_view/main_view_model.dart';
 import '../services/push_notification_service.dart';
@@ -50,6 +51,7 @@ GetIt $initGetIt(
   gh.lazySingleton<DynamicLinkService>(() => DynamicLinkService());
   gh.lazySingleton<FeedRepository>(() => FeedRepository());
   gh.lazySingleton<FeedService>(() => FeedService());
+  gh.lazySingleton<LinkRepository>(() => LinkRepository());
   gh.lazySingleton<LocationService>(() => LocationService());
   gh.lazySingleton<MainViewModel>(() => MainViewModel());
   gh.lazySingleton<NavigationService>(

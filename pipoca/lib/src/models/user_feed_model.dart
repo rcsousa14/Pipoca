@@ -103,6 +103,7 @@ class Data {
 class Post {
   int id;
   String content;
+  List<Links> links;
   int votesTotal;
   int commentsTotal;
   int flags;
@@ -114,6 +115,7 @@ class Post {
   Post(
       {this.id,
       this.content,
+      this.links,
       this.votesTotal,
       this.commentsTotal,
       this.flags,
@@ -125,6 +127,12 @@ class Post {
   Post.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];
+    if (json['links'] != null) {
+      links = <Links>[];
+      json['links'].forEach((v) {
+        links.add(new Links.fromJson(v));
+      });
+    }
     votesTotal = json['votes_total'];
     commentsTotal = json['comments_total'];
     flags = json['flags'];
@@ -139,6 +147,9 @@ class Post {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['content'] = this.content;
+    if (this.links != null) {
+      data['links'] = this.links.map((v) => v.toJson()).toList();
+    }
     data['votes_total'] = this.votesTotal;
     data['comments_total'] = this.commentsTotal;
     data['flags'] = this.flags;
@@ -148,6 +159,22 @@ class Post {
     if (this.creator != null) {
       data['creator'] = this.creator.toJson();
     }
+    return data;
+  }
+}
+
+class Links {
+  String url;
+
+  Links({this.url});
+
+  Links.fromJson(Map<String, dynamic> json) {
+    url = json['url'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['url'] = this.url;
     return data;
   }
 }

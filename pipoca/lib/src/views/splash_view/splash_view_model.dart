@@ -4,12 +4,14 @@ import 'package:pipoca/src/app/router.gr.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:pipoca/src/services/push_notification_service.dart';
+import 'package:pipoca/src/services/shared_local_storage_service.dart';
 import 'package:pipoca/src/services/user_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class SplashViewModel extends BaseViewModel {
   /* LOCATOR */
+  final _localStorage = locator<SharedLocalStorageService>();
   final _navigationService = locator<NavigationService>();
   final _authenticationService = locator<AuthenticationService>();
   final _currentLocation = locator<LocationService>();
@@ -34,5 +36,10 @@ class SplashViewModel extends BaseViewModel {
         return _navigationService.replaceWith(Routes.introView);
       }
     });
+  }
+
+  Future logout() async {
+    await _localStorage.clear();
+    print('ok');
   }
 }

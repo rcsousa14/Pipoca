@@ -1,15 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_link_preview/flutter_link_preview.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
-
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/constants/widgets/content_gif.dart';
-
+import 'package:pipoca/src/constants/widgets/link_caller.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
@@ -19,6 +18,7 @@ import 'package:stacked/stacked.dart';
 class BagoCard extends StatelessWidget {
   final NavChoice choice;
   final bool isVoted;
+  final List<Links> links;
   final int points, bagoIndex, commentsTotal, page, vote;
   final String creator, image, text, date;
   const BagoCard({
@@ -26,6 +26,7 @@ class BagoCard extends StatelessWidget {
     this.bagoIndex,
     @required this.choice,
     @required this.text,
+    this.links,
     @required this.date,
     @required this.points,
     @required this.creator,
@@ -168,10 +169,6 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
-    // String url =
-    //    model.url.isNotEmpty || model.url !=null? model.url.substring(model.url.indexOf('//') + 2, model.url.length): '' ;
-    // print(url);
-
     return Expanded(
       flex: 14,
       child: Container(
@@ -211,144 +208,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                   ],
                 )),
 
-            model.hasLink == true
-                ? model.url.contains('giphy')
-                    ? Content(
-                        isLink: false,
-                        url: model.url,
-                        image: CachedNetworkImageProvider(model.url,
-                            cacheKey: '$index'),
-                      )
-                    : FlutterLinkPreview(
-                        url: model.url,
-                        useMultithread: true,
-                        cache: Duration(seconds: 5),
-                        titleStyle: TextStyle(fontWeight: FontWeight.bold),
-                        builder: (info) {
-                          if (info == null)
-                            return Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                constraints: BoxConstraints(
-                                    minHeight: 190,
-                                    minWidth: double.infinity,
-                                    maxHeight: 250),
-                                width: double.infinity,
-                                margin: EdgeInsets.only(bottom: 30),
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 25,
-                                    height: 25,
-                                    child: Platform.isIOS
-                                        ? CupertinoActivityIndicator()
-                                        : CircularProgressIndicator(),
-                                  ),
-                                ));
-                          if (info is WebImageInfo) {
-                            return Content(
-                              isLink: false,
-                              url: model.url,
-                              image: CachedNetworkImageProvider(info.image,
-                                  cacheKey: '$index'),
-                            );
-                          }
-
-                          final WebInfo webInfo = info;
-                          if (!WebAnalyzer.isNotEmpty(webInfo.title))
-                            return const SizedBox();
-                          return Container(
-                            margin: EdgeInsets.only(bottom: 30),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                if (WebAnalyzer.isNotEmpty(webInfo.image)) ...[
-                                  Content(
-                                    isLink: true,
-                                    url: model.url,
-                                    image: CachedNetworkImageProvider(
-                                        webInfo.image,
-                                        cacheKey: '$index- ${model.url}'),
-                                  )
-                                ],
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 6),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey[200],
-                                      ),
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(10),
-                                          bottomRight: Radius.circular(10))),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          CachedNetworkImage(
-                                            imageUrl: webInfo.icon ?? "",
-                                            imageBuilder:
-                                                (context, imageProvider) {
-                                              return Image(
-                                                image: imageProvider,
-                                                fit: BoxFit.contain,
-                                                width: 30,
-                                                height: 30,
-                                                errorBuilder: (context, error,
-                                                    stackTrace) {
-                                                  return const Icon(Icons.link);
-                                                },
-                                              );
-                                            },
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  webInfo.title,
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 13.5,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                ),
-                                                SizedBox(height: 2),
-                                                Text(
-                                                  model.newUrl,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 13,
-                                                      color: Colors.grey),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        })
-                : Container(),
-            //TODO: add stuff here
+            model.hasLink == true ? LinkCaller(url: model.url, index: index) : Container(),
+         
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -14,20 +14,21 @@ class MainView extends StatelessWidget {
   Widget build(BuildContext context) {
     // var height = MediaQuery.of(context).size.height;
     // var width = MediaQuery.of(context).size.width;
-     final GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
+     final GlobalKey<ScaffoldState> scafoldkey = new GlobalKey<ScaffoldState>();
     return ViewModelBuilder<MainViewModel>.reactive(
-   
+      disposeViewModel: false,
+    
       builder: (context, model, child) {
         
         return WillPopScope(
           onWillPop: () async => false,
           child: Scaffold(
-            key: _key,
+            key: scafoldkey,
             drawer: MainDrawerView(),
             body: IndexedStack(
               index: model.currentIndex,
               children: [
-                HomeNavigator(),
+                HomeNavigator( scaffoldKey: scafoldkey),
                 Container(
                   color: Colors.orange,
                   child: Column(

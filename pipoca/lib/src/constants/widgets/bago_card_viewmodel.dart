@@ -1,23 +1,23 @@
-import 'package:flutter/foundation.dart';
-import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/models/link_info_model.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:pipoca/src/repositories/feed/link_repository.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/social_share_service.dart';
 import 'package:stacked/stacked.dart';
 
-
 class BagoCardViewModel extends BaseViewModel {
- 
-
-
   //final NavigationService _navigationService = locator<NavigationService>();
   final CapturePngService _captureService = locator<CapturePngService>();
   final UrlLancherService _lancherService = locator<UrlLancherService>();
+  final _linkRepo = locator<LinkRepository>();
 
   bool _hasLink = false;
   String _url = '';
   String _newText = '';
   String _newUrl = '';
+  LinkInfo _info;
+  LinkInfo get info => _info;
   String get newText => _newText;
   bool get hasLink => _hasLink;
   String get url => _url;
@@ -35,33 +35,17 @@ class BagoCardViewModel extends BaseViewModel {
         var link = _link.firstMatch(text);
         _url = text.substring(link.start, link.end);
 
-        RegExp urlLink = RegExp(r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)");
+        RegExp urlLink =
+            RegExp(r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)");
         var u = urlLink.firstMatch(_url);
-       String _new = _url.substring( u.end, _url.length);
+        String _new = _url.substring(u.end, _url.length);
 
-      if(_new.indexOf('/') != null){
-        _newUrl = _new.substring(0, _new.indexOf('/'));
-      } else {
-        _newUrl = _new; 
-      }
-      
+        if (_new.indexOf('/') != null) {
+          _newUrl = _new.substring(0, _new.indexOf('/'));
+        } else {
+          _newUrl = _new;
+        }
 
-        // if (_new.contains('www')) {
-        //   String u = _url.substring(_new.indexOf("."), _new.length);
-        //   _newUrl = u;
-        // if (u.indexOf('/') != null) {
-        //   _newUrl = u.substring(0, u.indexOf('/'));
-        //   notifyListeners();
-        // }
-
-        //else {
-        //     if (_new.lastIndexOf('/') != null) {
-        //   _newUrl = _new.substring(0, _url.indexOf('/'));
-        // }
-        //   }
-        // }
-
-        //https://stackoverflow.com/questions/59763793/flutter-remove-string-after-certain-character
         _newText = text.replaceAll(_link, "").trim();
 
         notifyListeners();
@@ -71,6 +55,7 @@ class BagoCardViewModel extends BaseViewModel {
       _newText = text;
       notifyListeners();
     }
+    
   }
 
   void upVote() {

@@ -15,11 +15,11 @@ class BagoListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<BagoListViewModel>.reactive(
         disposeViewModel: false,
-        initialiseSpecialViewModelsOnce: true,
         builder: (context, model, child) {
-          print('here');
           return !model.dataReady
               ? Center(child: CircularProgressIndicator())
+              : model.dataReady && model.data.posts.data.isEmpty ? 
+                Text('no data')
               : VisibilityDetector(
                   key: Key('user-feed'),
                   onVisibilityChanged: (VisibilityInfo visibilityInfo) {
@@ -37,6 +37,7 @@ class BagoListView extends StatelessWidget {
                       itemBuilder: (context, index) {
                         Posts posts = model.data.posts;
                         return BagoCard(
+                          links: posts.data[index].post.links,
                           page: model.currentIndex,
                           choice: choice,
                           bagoIndex: posts.data[index].post.id,
