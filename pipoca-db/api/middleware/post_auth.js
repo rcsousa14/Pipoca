@@ -1,7 +1,66 @@
 
 
 export default async (req, res, next) => {
-    const {content, longitude, latitude} = req.body;
+    const {content, longitude, latitude, links} = req.body;
+    var nsfws = [
+        "porn",
+        "porno",
+        "pornografia",
+        "sex",
+        "sexo",
+        "xxx",
+        "pornhub",
+        "xvideos",
+        "xhamster",
+        "tube8",
+        "redtube",
+        "xnxx",
+        "hclips",
+        "spankbang",
+        "adult",
+        "slut",
+        "bitch",
+        "fuck",
+        "foder",
+        "porra",
+        "pussy",
+        "dick",
+        "ass",
+        "pila",
+        "cona",
+        "suicidio",
+        "brazzers",
+        "masturbation",
+        "masturb",
+        "teamSkeet",
+        "mofos",
+        "pureTaboo",
+        "blacked",
+        "jizz",
+        "camsoda",
+        "chaturbate",
+        "anal",
+        "anus",
+        "puta",
+        "punheta",
+        "rabuda",
+        "xuxuta",
+        "xuxuado",
+        "Siririca",
+        "Testuda",
+        "Tezao",
+        "Tezuda",
+        "Tezudo",
+        "Xota",
+        "Xochota",
+        "Xoxota",
+        "Xana",
+        "Xaninha",
+        "liveleaks"
+
+
+
+    ];
     if(!content){
         return res.status(400).send({message: '✍🏾 bago é requerido!'});
     }
@@ -10,6 +69,12 @@ export default async (req, res, next) => {
     }
     if(!latitude || !longitude){
         res.status(400).send({ message: '🗺️ Localização é obrigatório!'})
+    }
+    if(links && nsfws.some((nsfw) => links[0].includes(nsfw))){
+        res.status(400).send({
+            message: "Desculpe, não pode postar conteúdo adulto",
+
+        })
     }
     next();
 }

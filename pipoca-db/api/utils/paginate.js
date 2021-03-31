@@ -1,10 +1,34 @@
 import { getDistance } from 'geolib';
 const Sequelize = require('sequelize');
 const models = require('../models');
+const cheerio = require('cheerio');
+const axios = require('axios');
 const Op = Sequelize.Op;
 
 require('dotenv').config();
-exports.paginate = async(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
+
+const scrapeMetaTags = async (url) => {
+    const res = await axios.get(url);
+    const html = res.data;
+    const $ = cheerio.load(html);
+
+    const getMetaTag = (name) =>
+        $(`meta[name=${name}]`).attr('content') ||
+        $(`meta[property="og:${name}"]`).attr('content') ||
+        $(`meta[property="twitter:${name}"]`).attr('content')
+
+    return {
+        url,
+        title: $('title').text(),
+        description: getMetaTag('description'),
+        image: getMetaTag('image'),
+        video: getMetaTag('video'),
+        site: getMetaTag('site_name'),
+        
+
+    }
+}
+exports.paginate = async (model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
 
     const offset = this.getOffset(page, limit);
 
@@ -20,7 +44,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
     });
 
     var data = [];
-    const newRows = rows.map(function(row) {
+    const newRows = rows.map(function (row) {
         return row.toJSON()
     });
     for (var row of newRows) {
@@ -62,8 +86,13 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 subComment_id: row.id
             }
         }
-
-
+        let linkInfo = {};
+        if(row.links.length > 0){
+         const { url } = row.links[0];
+         linkInfo = await scrapeMetaTags(url);
+        
+        }
+        //console.log(linkInfo);
         // this gets if current user upvoted/downvoted and the value
         const vote = await model.findOne({
             raw: true,
@@ -82,7 +111,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "post": {
                 "id": row.id,
                 "content": row.content,
-                "links": row.links,
+                "links": linkInfo,
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "comments_total": row.comments_total,
                 "flags": row.flags,
@@ -99,7 +128,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "comment": {
                 "id": row.id,
                 "content": row.content,
-
+                "links": linkInfo,
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "sub_comments_total": row.comments_total,
                 "flags": row.flags,
@@ -116,6 +145,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "sub_comment": {
                 "id": row.id,
                 "content": row.content,
+                "links": linkInfo,
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "flags": row.flags,
                 "is_flagged": row.is_flagged,
@@ -141,7 +171,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         data: data
     };
 }
-exports.admin = async(model, page, limit, attributes, include) => {
+exports.admin = async (model, page, limit, attributes, include) => {
     const offset = this.getOffset(page, limit);
     const { count, rows } = await model.findAndCountAll({
         limit: limit,

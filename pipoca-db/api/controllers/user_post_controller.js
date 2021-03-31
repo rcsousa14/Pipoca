@@ -1,5 +1,4 @@
 import CacheService from '../utils/cache';
-import { getLinkPreview } from "link-preview-js";
 const { paginate } = require('../utils/paginate');
 const models = require('../models');
 const Sequelize = require('sequelize');
@@ -9,23 +8,9 @@ const cachePost = new CacheService(60);
 
 const Op = Sequelize.Op;
 
-exports.link = function getLinkData({ query }, res) {
-    const { url } = query;
-
-    getLinkPreview(url).then((data) => {
-
-            return res.status(200).send({ message: 'links are here', data })
 
 
-        },
-
-    ).catch((e) => {
-        return res.status(404).send({ message: `${e}` })
-    });
-
-}
-
-exports.store = async({ body, decoded }, res) => {
+exports.store = async ({ body, decoded }, res) => {
     try {
 
         const { content, links, hashes, longitude, latitude } = body;
@@ -38,12 +23,12 @@ exports.store = async({ body, decoded }, res) => {
         var point = {
             type: 'Point',
             coordinates: [longitude, latitude],
-            crs: { type: 'name', properties: { name: 'EPSG:4326' } }
+           // crs: { type: 'name', properties: { name: 'EPSG:4326' } }
 
         };
 
         const post = await models.post.create({ user_id: decoded.id, content, coordinates: point });
-        if (hashes && !hashes.lenght == 0 && hashes.lenght > 0) {
+        if (hashes && !hashes.length == 0 && hashes.length > 0) {
             for (var hash of hashes) {
                 const [tag] = await models.tag.findOrCreate({
                     where: { hash: hash }
@@ -52,15 +37,15 @@ exports.store = async({ body, decoded }, res) => {
                 await models.post_tag.create({ post_id: post.id, tag_id: tag.id });
             }
         }
-        if (links && !links.lenght == 0 && links.lenght > 0) {
-            for (var url of links) {
-                const [link] = await models.link.findOrCreate({ where: { url: url } });
+        if (links && !links.length == 0 && links.length > 0) { 
+        for(var url of links){
+            const [link] = await models.link.findOrCreate({where:{ url: url }});
 
 
-                await models.post_link.create({ post_id: post.id, link_id: link.id });
+            await models.post_link.create({ post_id: post.id, link_id: link.id });
 
-            }
-
+        }
+            
 
 
         }
@@ -79,12 +64,12 @@ exports.store = async({ body, decoded }, res) => {
     }
 };
 //feed shows all posts that are near by you can sort it for posts with higher points
-exports.index = async({ query, decoded }, res) => {
+exports.index = async ({ query, decoded }, res) => {
     try {
 
 
 
-        const filtro = 'post';
+        const filtro = 'post'; 
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -162,14 +147,15 @@ exports.index = async({ query, decoded }, res) => {
             'is_flagged',
             'is_deleted',
             'createdAt',
-            'coordinates',
-
+            'coordinates', 
+           
             [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
             [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`), 'comments_total'],
 
         ];
 
-        let include = [{
+        let include = [
+            {
                 model: models.user,
                 as: 'creator',
                 attributes: {
@@ -191,8 +177,8 @@ exports.index = async({ query, decoded }, res) => {
                 as: 'links',
                 required: false,
                 attributes: ['url'],
-                through: { attributes: [] },
-            }
+                through: {attributes: []},
+              }
 
             // {
             //     model: models.link,
@@ -218,28 +204,28 @@ exports.index = async({ query, decoded }, res) => {
     }
 };
 // deletes users posts
-exports.soft = async({ params, decoded }, res) => {
-        try {
-            const { id } = params;
-            await models.post.update({
-                is_deleted: false
-            }, {
-                where: {
-                    id: id,
-                    user_id: decoded.id
-                }
-            });
+exports.soft = async ({ params, decoded }, res) => {
+    try {
+        const { id } = params;
+        await models.post.update({
+            is_deleted: false
+        }, {
+            where: {
+                id: id,
+                user_id: decoded.id
+            }
+        });
 
-            cache.del(`user_posts_${decoded.id}`);
-            return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
-        } catch (error) {
-            return res.status(500).json({
-                error: error.message
-            });
-        }
+        cache.del(`user_posts_${decoded.id}`);
+        return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
     }
-    // shows all posts by user
-exports.show = async({ query, decoded }, res) => {
+}
+// shows all posts by user
+exports.show = async ({ query, decoded }, res) => {
     try {
         const result = cache.get(`user_posts_${decoded.id}`);
         if (result) {
@@ -251,11 +237,11 @@ exports.show = async({ query, decoded }, res) => {
         const page = parseInt(query.page);
         const limit = 9;
 
-        let search = { userId: decoded.id, isDeleted: false };
+        let search = { user_id: decoded.id, is_deleted: false };
         let order = [
             ['createdAt', 'DESC']
         ];
-        let group = ['post.id', 'creator.id', ];
+        let group = ['post.id', 'creator.id',];
         let attributes = [
             'id',
             'content',
@@ -269,23 +255,23 @@ exports.show = async({ query, decoded }, res) => {
         ];
 
         let include = [{
-                model: models.user,
+            model: models.user,
 
-                as: 'creator',
-                attributes: {
-                    exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "password",
-                    ]
-                }
-            },
+            as: 'creator',
+            attributes: {
+                exclude: [
+                    "createdAt",
+                    "updatedAt",
+                    "birthday",
+                    "reset_password_token",
+                    "reset_password_expiration",
+                    "refresh_token",
+                    "role_id",
+                    "bio",
+                    "password",
+                ]
+            }
+        },
 
 
         ];
