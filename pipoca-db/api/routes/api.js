@@ -74,7 +74,7 @@ router.get('/v1/posts/:id', speedLimiter, authorizeMiddleware, post.show); //☑
 
 // user posts routes
 router.post('/v1/posts', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_posts.store); //☑️❎ cache data and check if is the samething as before for spam 
-router.get('/v1/user/feed', limiter, speedLimiter, authorizeMiddleware, user_posts.index); //☑️❎ checkout the pipocar filter maybe last 3 days & cache data with redis
+router.get('/v1/user/feed', authorizeMiddleware, user_posts.index); //☑️❎ checkout the pipocar filter maybe last 3 days & cache data with redis
 router.get('/v1/posts', speedLimiter, authorizeMiddleware, user_posts.show); //☑️ ❎ cache data with redis
 router.patch('/v1/posts/:id', limiter, speedLimiter, speedLimiter, authorizeMiddleware, user_posts.soft); //☑️
 
