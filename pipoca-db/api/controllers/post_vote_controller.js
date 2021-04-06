@@ -12,16 +12,16 @@ exports.store = async({ body, decoded }, res) => {
             where: { user_id: id, post_id: postId }
         });
 
-        // if (vote) {
-        //     const updated_vote = await models.post_vote.update({ userId: id, voted, post_id: postId }, {
+        if (vote) {
+            const updated_vote = await models.post_vote.update({ userId: id, voted, post_id: postId }, {
 
-        //         where: { id: vote.id },
-        //     });
-        //     cache.del(`post_${id}`);
+                where: { id: vote.id },
+            });
+            cache.del(`post_${id}`);
 
 
-        //     return res.status(200).send({ message: "updated", updated_vote });
-        // }
+            return res.status(200).send({ message: "updated", updated_vote });
+        }
         // const add_vote = await models.post_vote.create({ userId: id, post_id: postId, voted });
         // cache.del(`post_${id}`);
 
