@@ -13,7 +13,7 @@ exports.store = async({ body, decoded }, res) => {
         });
 
         if (vote) {
-            const updated_vote = await models.post_vote.update({ userId: id, voted, post_id: postId }, {
+            const updated_vote = await models.post_vote.update({ user_id: id, voted, post_id: postId }, {
 
                 where: { id: vote.id },
             });
@@ -21,12 +21,14 @@ exports.store = async({ body, decoded }, res) => {
 
 
             return res.status(200).send({ message: "updated", updated_vote });
+        } else {
+            const add_vote = await models.post_vote.create({ user_id: id, post_id: postId, voted });
+            cache.del(`post_${id}`);
+
+
+            return res.status(201).send({ message: 'added', add_vote });
         }
-        // const add_vote = await models.post_vote.create({ userId: id, post_id: postId, voted });
-        // cache.del(`post_${id}`);
 
-
-        return res.status(201).send({ message: 'added', id, body, vote });
 
 
     } catch (error) {
