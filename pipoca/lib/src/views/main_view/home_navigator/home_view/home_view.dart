@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
@@ -13,7 +14,13 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.nonReactive(
-      onModelReady: (model) => model.pushFeed(),
+      
+      onModelReady: (model) {
+         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+ ));
+ model.pushFeed();
+      },
       disposeViewModel: false,
       builder: (context, model, child) {
         return Scaffold(

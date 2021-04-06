@@ -52,7 +52,7 @@ class Posts {
     total = json['total'];
     limit = json['limit'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = new List<Data>();
       json['data'].forEach((v) {
         data.add(new Data.fromJson(v));
       });
@@ -103,7 +103,7 @@ class Data {
 class Post {
   int id;
   String content;
-  List<Links> links;
+  Links links;
   int votesTotal;
   int commentsTotal;
   int flags;
@@ -127,12 +127,7 @@ class Post {
   Post.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];
-    if (json['links'] != null) {
-      links = <Links>[];
-      json['links'].forEach((v) {
-        links.add(new Links.fromJson(v));
-      });
-    }
+    links = json['links'] != null ? new Links.fromJson(json['links']) : null;
     votesTotal = json['votes_total'];
     commentsTotal = json['comments_total'];
     flags = json['flags'];
@@ -148,7 +143,7 @@ class Post {
     data['id'] = this.id;
     data['content'] = this.content;
     if (this.links != null) {
-      data['links'] = this.links.map((v) => v.toJson()).toList();
+      data['links'] = this.links.toJson();
     }
     data['votes_total'] = this.votesTotal;
     data['comments_total'] = this.commentsTotal;
@@ -165,16 +160,37 @@ class Post {
 
 class Links {
   String url;
+  String title;
+  String description;
+  String image;
+  String video;
+  String site;
 
-  Links({this.url});
+  Links(
+      {this.url,
+      this.title,
+      this.description,
+      this.image,
+      this.video,
+      this.site});
 
   Links.fromJson(Map<String, dynamic> json) {
     url = json['url'];
+    title = json['title'];
+    description = json['description'];
+    image = json['image'];
+    video = json['video'];
+    site = json['site'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['url'] = this.url;
+    data['title'] = this.title;
+    data['description'] = this.description;
+    data['image'] = this.image;
+    data['video'] = this.video;
+    data['site'] = this.site;
     return data;
   }
 }

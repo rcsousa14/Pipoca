@@ -20,6 +20,7 @@ import '../services/feed_service.dart';
 import '../repositories/feed/link_repository.dart';
 import '../services/location_service.dart';
 import '../views/main_view/main_view_model.dart';
+import '../repositories/feed/post_point_repository.dart';
 import '../services/push_notification_service.dart';
 import '../services/shared_local_storage_service.dart';
 import '../services/third_party_service_model.dart';
@@ -56,6 +57,7 @@ GetIt $initGetIt(
   gh.lazySingleton<MainViewModel>(() => MainViewModel());
   gh.lazySingleton<NavigationService>(
       () => thirdPartyServicesModule.navigationService);
+  gh.lazySingleton<PostPointRepository>(() => PostPointRepository());
   gh.lazySingleton<PushNotificationService>(() => PushNotificationService());
   gh.lazySingleton<SharedLocalStorageService>(
       () => SharedLocalStorageService());

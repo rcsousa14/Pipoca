@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:pipoca/src/constants/widgets/full_screen.dart';
 
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/post_view/post_view.dart';
@@ -18,6 +20,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     pageController = PageController(initialPage: widget.currentPage ?? 0);
     super.initState();
   }
@@ -32,7 +35,8 @@ class _HomeNavigatorState extends State<HomeNavigator> {
       children: [
         HomeView(controller: pageController, scaffoldKey: widget.scaffoldKey),
         PostView(controller: pageController),
-        Container(color: Colors.blue),
+        
+
       ],
     ));
   }

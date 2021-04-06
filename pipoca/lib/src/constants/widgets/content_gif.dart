@@ -1,15 +1,23 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_video_player/cached_video_player.dart';
+import 'package:pipoca/src/constants/widgets/full_screen.dart';
+import 'package:pipoca/src/constants/themes/colors.dart';
 
 class ContentImage extends StatefulWidget {
   final ImageProvider<Object> image;
-  final bool isLink;
-  final String url;
 
-  ContentImage({Key key, @required this.image, this.isLink, @required this.url})
-      : super(key: key);
+  final bool isLink;
+  final Function onTap;
+
+  ContentImage({
+    Key key,
+    @required this.image,
+    this.isLink = false,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   _ContentImageState createState() => _ContentImageState();
@@ -19,68 +27,102 @@ class _ContentImageState extends State<ContentImage> {
   @override
   void didChangeDependencies() {
     precacheImage(widget.image, context);
+
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(
-          minHeight: 190,
-          minWidth: double.infinity,
-          maxHeight: widget.isLink ? 210 : 300),
-      width: double.infinity,
-      margin: widget.isLink == false ? EdgeInsets.only(bottom: 30) : null,
-      child: ClipRRect(
-        borderRadius: widget.isLink
-            ? BorderRadius.only(
-                topLeft: Radius.circular(10), topRight: Radius.circular(10))
-            : BorderRadius.all(Radius.circular(10)),
-        child: Image(
-          frameBuilder: (context, child, frame, isFrame) {
-            return child;
-          },
-          image: widget.image,
-          fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              decoration: BoxDecoration(
-                  color: Colors.grey[350],
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Center(
-                child: SizedBox(
-                  width: 25,
-                  height: 25,
-                  child: Platform.isIOS
-                      ? CupertinoActivityIndicator()
-                      : CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes
-                              : null,
-                        ),
-                ),
-              ),
-            );
-          },
-          errorBuilder: (context, object, stackError) {
-            return Container(
-              decoration: BoxDecoration(
-                  color: Colors.grey[350],
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [Icon(Icons.link_off), Text('Ocorreu um erro!')],
-              ),
-            );
-          },
-        ),
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    return GestureDetector(
+      onTap: () {
+        if (widget.isLink == false) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => FullScreen(
+                      image: widget.image,
+                    )),
+          );
+        }
+      },
+      child: Container(
+        constraints: BoxConstraints(
+            minHeight: 190,
+            minWidth: double.infinity,
+            maxHeight: widget.isLink ? 210 : 350),
+        width: double.infinity,
+        // margin: widget.isLink == false ? EdgeInsets.only(bottom: 20) : null,
+        child: ClipRRect(
+            borderRadius: widget.isLink
+                ? BorderRadius.only(
+                    topLeft: Radius.circular(10), topRight: Radius.circular(10))
+                : BorderRadius.all(Radius.circular(10)),
+            child: imagePlace(
+                image: widget.image,
+                fullScreen: false,
+                height: height,
+                width: width)),
       ),
     );
   }
+}
+
+Widget imagePlace(
+    {ImageProvider<Object> image,
+    bool fullScreen,
+    double height,
+    double,
+    width}) {
+  final Random random = new Random();
+  return Image(
+    frameBuilder: (context, child, frame, isFrame) {
+      return Container(
+          color: Color.fromARGB(255, random.nextInt(255), random.nextInt(255),
+              random.nextInt(255)),
+          child: child);
+    },
+    image: image,
+    fit: fullScreen ? BoxFit.cover : BoxFit.cover,
+    height: fullScreen ? height : null,
+    width: fullScreen ? width : null,
+    loadingBuilder:
+        (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+      if (loadingProgress == null) return child;
+      return Container(
+        decoration: BoxDecoration(
+            color: Colors.grey[350],
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Center(
+          child: SizedBox(
+            width: 25,
+            height: 25,
+            child: Platform.isIOS
+                ? CupertinoActivityIndicator()
+                : CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes
+                        : null,
+                  ),
+          ),
+        ),
+      );
+    },
+    errorBuilder: (context, object, stackError) {
+      return Container(
+        decoration: BoxDecoration(
+            color: Colors.grey[350],
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Icon(Icons.link_off), Text('Ocorreu um erro!')],
+        ),
+      );
+    },
+  );
 }
 
 class ContentVideo extends StatefulWidget {
@@ -94,28 +136,94 @@ class ContentVideo extends StatefulWidget {
 
 class _ContentVideoState extends State<ContentVideo> {
   CachedVideoPlayerController controller;
+  bool isPressed = false;
 
   @override
   void initState() {
     if (widget.url != null) {
       controller = CachedVideoPlayerController.network(widget.url);
-      controller.initialize().then((value) {
-        setState(() {
-          controller.pause();
-        });
+      controller.initialize().then((_) {
+        setState(() {});
+        controller.pause();
       });
     }
     super.initState();
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      margin: EdgeInsets.only(bottom: 20),
       constraints: BoxConstraints(
-          minHeight: 190, minWidth: double.infinity, maxHeight: 300),
+          minHeight: 190,
+          minWidth: double.infinity,
+          maxHeight: controller.value.initialized ? 300 : 200),
       child: controller.value != null && controller.value.initialized
           ? AspectRatio(
-              child: CachedVideoPlayer(controller),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  child: GestureDetector(
+                    onTap: () => setState(() {
+                      isPressed = !isPressed;
+                      if (isPressed == true) {
+                        controller.play();
+
+                        controller.setLooping(true);
+                        Future.delayed(Duration(seconds: 15), () {
+                          setState(() {
+                            isPressed = false;
+
+                            controller.pause();
+                            controller.initialize();
+                          });
+                        });
+                      } else {
+                        controller.pause();
+                        controller.initialize();
+                      }
+                    }),
+                    child: Stack(
+                      children: [
+                        CachedVideoPlayer(controller),
+                        isPressed == false
+                            ? Center(
+                                child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                        color: red, shape: BoxShape.circle),
+                                    child: Icon(
+                                      Icons.play_arrow_rounded,
+                                      color: Colors.white,
+                                    )))
+                            : Container(),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Container(
+                              padding: const EdgeInsets.all(4),
+                              margin: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: Text(
+                                'GIF',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              )),
+                        )
+                      ],
+                    ),
+                  )),
               aspectRatio: controller.value.aspectRatio,
             )
           : Container(

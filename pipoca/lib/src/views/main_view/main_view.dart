@@ -49,7 +49,7 @@ class MainView extends StatelessWidget {
               ],
             ),
             bottomNavigationBar: BottomNavigationBar(
-              elevation: 0.8,
+              elevation: 4,
               currentIndex: model.currentIndex,
               items: model.availableItems,
               onTap: model.setIndex,

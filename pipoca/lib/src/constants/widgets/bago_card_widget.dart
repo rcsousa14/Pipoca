@@ -16,15 +16,13 @@ import 'package:pipoca/src/constants/widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 class BagoCard extends StatelessWidget {
-  final NavChoice choice;
   final bool isVoted;
-  final List<Links> links;
+  final Links links;
   final int points, bagoIndex, commentsTotal, page, vote;
   final String creator, image, text, date;
   const BagoCard({
     Key key,
     this.bagoIndex,
-    @required this.choice,
     @required this.text,
     this.links,
     @required this.date,
@@ -42,10 +40,6 @@ class BagoCard extends StatelessWidget {
     GlobalKey key = GlobalKey();
 
     return ViewModelBuilder<BagoCardViewModel>.nonReactive(
-      onModelReady: (model) => model.linkCheck(text: text),
-      fireOnModelReadyOnce: true,
-      disposeViewModel: false,
-      initialiseSpecialViewModelsOnce: true,
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
         final time = DateTime.parse(date);
@@ -69,35 +63,41 @@ class BagoCard extends StatelessWidget {
                 color: Colors.white,
                 border: Border(
                     bottom: BorderSide(color: Colors.grey[200], width: 1))),
-            padding: EdgeInsets.all(6),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      //image
+            child: GestureDetector(
+              onTap: () => print('hi'),
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          //image
 
-                      _Avatar(image: image),
+                          _Avatar(image: image),
 
-                      //need to separate these
-                      _Content(
-                        index: bagoIndex,
-                        creator: creator,
-                        timeNow: timeNow,
-                        points: points,
-                        commentsTotal: commentsTotal,
-                        isVoted: isVoted,
-                        vote: vote,
+                          //need to separate these
+                          _Content(
+                            text: text,
+                            links: links,
+                            index: bagoIndex,
+                            creator: creator,
+                            timeNow: timeNow,
+                            points: points,
+                            commentsTotal: commentsTotal,
+                            isVoted: isVoted,
+                            vote: vote,
+                          ),
+                          //more button
+                          _MoreBtn()
+                        ],
                       ),
-                      //more button
-                      _MoreBtn()
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -139,12 +139,15 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
   Widget build(BuildContext context, BagoCardViewModel model) {
     return Flexible(
       flex: 1,
-      child: GestureDetector(
-        onTap: () => print('hi'),
-        child: Icon(
-          PipocaBasics.menu,
-          size: 12,
-          color: Colors.grey[600],
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: GestureDetector(
+          onTap: () => print('hi'),
+          child: Icon(
+            PipocaBasics.menu,
+            size: 14,
+            color: Colors.grey[600],
+          ),
         ),
       ),
     );
@@ -152,12 +155,15 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
 }
 
 class _Content extends ViewModelWidget<BagoCardViewModel> {
-  final String creator;
+  final String creator, text;
   final String timeNow;
   final bool isVoted;
+  final Links links;
   final int vote, points, commentsTotal, index;
   const _Content(
       {Key key,
+      @required this.links,
+      @required this.text,
       @required this.creator,
       @required this.timeNow,
       @required this.isVoted,
@@ -180,25 +186,37 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(creator,
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Colors.black)),
                 Text(
                   ' • ',
-                  style: TextStyle(fontSize: 13.5),
+                  style: TextStyle(fontSize: 13.5, color: Colors.black),
                 ),
                 Text(timeNow,
-                    style: TextStyle(color: Colors.grey, fontSize: 13)),
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    )),
               ],
             ),
-            //content
+
             Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(
-                    top: 5, bottom: model.hasLink == true ? 10 : 30),
+                padding:
+                    EdgeInsets.only(top: 5, bottom: links != null ? 10 : 30),
                 child: ParsedText(
-                  text: model.newText,
+                  text: text,
                   style: TextStyle(color: Colors.grey[800], fontSize: 15.5),
                   parse: <MatchText>[
+                    MatchText(
+                        type: ParsedType.URL,
+                        style: TextStyle(color: Colors.blue[400], fontSize: 16),
+                        onTap: (url) {
+                          //TODO: launch url
+                        }),
                     MatchText(
                         pattern: r"\B(\#[a-zA-Z]+\b)(?!;)",
                         style: TextStyle(color: Colors.blue[400], fontSize: 16),
@@ -208,8 +226,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                   ],
                 )),
 
-            model.hasLink == true ? LinkCaller(url: model.url, index: index) : Container(),
-         
+            links != null
+                ? LinkCaller(links: links, index: index)
+                : Container(),
+
+            // content link
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -221,7 +242,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       InkWell(
-                        onTap: () => model.upVote(),
+                        onTap: () {
+                          if (isVoted == true && vote == -1 || isVoted == false) {
+                            model.vote(id: index, vote: 1);
+                          }
+                        },
                         child: Container(
                           child: Icon(
                             PipocaBasics.up_arrow,
@@ -247,7 +272,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       ),
                       InkWell(
                         highlightColor: Colors.red,
-                        onTap: () => model.downVote(),
+                        onTap: (){
+                          if (isVoted == true && vote == 1 || isVoted == false) {
+                            model.vote(id: index, vote: -1);
+                          }
+                        },
                         child: Container(
                           child: Icon(
                             PipocaBasics.down_arrow,
