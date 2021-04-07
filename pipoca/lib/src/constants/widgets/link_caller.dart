@@ -2,18 +2,30 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/constants/widgets/content_gif.dart';
 import 'package:pipoca/src/constants/widgets/full_screen.dart';
 import 'package:pipoca/src/constants/widgets/link_caller_model.dart';
+import 'package:pipoca/src/constants/widgets/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:stacked/stacked.dart';
 
 class LinkCaller extends StatelessWidget {
   final Links links;
-  final int index;
+  final int index, points, page, vote, comments;
+  final bool isVoted, filter;
 
-  const LinkCaller({Key key, @required this.links, @required this.index})
+  const LinkCaller(
+      {Key key,
+      @required this.links,
+      @required this.index,
+      this.points,
+      this.page,
+      this.isVoted,
+      this.filter,
+      this.vote,
+      this.comments})
       : super(key: key);
 
   @override
@@ -23,25 +35,63 @@ class LinkCaller extends StatelessWidget {
       builder: (context, model, child) {
         return links.url.contains('giphy')
             ? ContentVideo(url: links.video)
-            : links.url.contains('imgflip') || links.url.contains('postimg')
+            : links.url.contains('imgflip') ||
+                    links.url.contains('postimg') ||
+                    links.url.contains('w3w')
                 ? links.video == null || links.video.isEmpty
                     ? Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ContentImage(
-                              isLink: false,
-                              image: CachedNetworkImageProvider(links.image ?? links.url,
-                                  cacheKey: '$index- ${links.site}')),
-                           SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4.0),
-                          child: Text('via $via', style: TextStyle(color: Colors.grey),),
-                        )
-                        ],
-                      ),
-                    )
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ContentImage(
+                                comments: comments,
+                                vote: vote,
+                                index: index,
+                                page: page,
+                                points: points,
+                                isVoted: isVoted,
+                                filter: filter,
+                                isLink: false,
+                                image: CachedNetworkImageProvider(
+                                    links.image ?? links.url,
+                                    cacheKey: '$index- ${links.site}')),
+                            SizedBox(height: 5),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 4.0),
+                              child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                    text: 'via',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 13.5),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: ' $via',
+                                          style: TextStyle(
+                                            color: Colors.blue[400],
+                                            fontSize: 13.5,
+                                            decoration: TextDecoration.none,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          WebViewScreen(
+                                                            url: links.url,
+                                                            siteName:
+                                                                links.site,
+                                                          )));
+                                            })
+                                    ]),
+                              ),
+                          
+                            )
+                          ],
+                        ),
+                      )
                     : ContentVideo(url: links.video)
                 : Builder(builder: (context) {
                     return Container(
@@ -57,6 +107,7 @@ class LinkCaller extends StatelessWidget {
                               links.image != null) ...[
                             ContentImage(
                               isLink: true,
+                              links: links,
                               image: CachedNetworkImageProvider(links.image,
                                   cacheKey: '$index- ${links.site}'),
                             )

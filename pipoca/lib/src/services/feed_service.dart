@@ -28,7 +28,6 @@ class FeedService extends IstoppableService {
   final BehaviorSubject<Feed> _feedController = BehaviorSubject<Feed>();
   Stream<Feed> get feedStream => _feedController.stream;
 
-
   StreamSubscription _streamSubscription;
 
   FeedService() {
@@ -44,7 +43,6 @@ class FeedService extends IstoppableService {
       _feedController.onCancel = () {
         _feedController.close();
       };
-     
     });
   }
 
@@ -59,16 +57,16 @@ class FeedService extends IstoppableService {
         if (result) {
           Feed feed = await _api.getFeed(lat, lng, page, filter);
           _feedController.sink.add(feed);
-
+          print(feed);
           return feed;
         }
       }
       _error = result;
       throw result;
     }
-    
-    _feedController.sink.add(feed);
 
+    _feedController.sink.add(feed);
+    print(feed);
     return feed;
   }
 

@@ -42,6 +42,7 @@ class BagoListView extends StatelessWidget {
                             Posts posts = model.data.posts;
 
                             return BagoCard(
+                              filtered: model.isFilter,
                               links: posts.data[index].post.links,
                               page: model.currentIndex,
                               bagoIndex: posts.data[index].post.id,

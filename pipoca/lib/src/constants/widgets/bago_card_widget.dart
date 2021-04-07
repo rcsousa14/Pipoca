@@ -8,6 +8,7 @@ import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/constants/widgets/content_gif.dart';
 import 'package:pipoca/src/constants/widgets/link_caller.dart';
+import 'package:pipoca/src/constants/widgets/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
@@ -16,15 +17,17 @@ import 'package:pipoca/src/constants/widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 class BagoCard extends StatelessWidget {
-  final bool isVoted;
+  final bool isVoted, filtered;
   final Links links;
   final int points, bagoIndex, commentsTotal, page, vote;
   final String creator, image, text, date;
+
   const BagoCard({
     Key key,
     this.bagoIndex,
     @required this.text,
     this.links,
+    @required this.filtered,
     @required this.date,
     @required this.points,
     @required this.creator,
@@ -40,6 +43,7 @@ class BagoCard extends StatelessWidget {
     GlobalKey key = GlobalKey();
 
     return ViewModelBuilder<BagoCardViewModel>.nonReactive(
+      onModelReady: (model) => model.getVote(isVoted, vote, points),
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
         final time = DateTime.parse(date);
@@ -80,6 +84,9 @@ class BagoCard extends StatelessWidget {
 
                           //need to separate these
                           _Content(
+                            globalKey: key,
+                            page: page,
+                            filtered: filtered,
                             text: text,
                             links: links,
                             index: bagoIndex,
@@ -157,13 +164,18 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
 class _Content extends ViewModelWidget<BagoCardViewModel> {
   final String creator, text;
   final String timeNow;
-  final bool isVoted;
+  final bool isVoted, filtered;
   final Links links;
-  final int vote, points, commentsTotal, index;
+  final GlobalKey globalKey;
+
+  final int vote, points, commentsTotal, index, page;
   const _Content(
       {Key key,
+      @required this.globalKey,
       @required this.links,
       @required this.text,
+      @required this.filtered,
+      @required this.page,
       @required this.creator,
       @required this.timeNow,
       @required this.isVoted,
@@ -215,7 +227,13 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                         type: ParsedType.URL,
                         style: TextStyle(color: Colors.blue[400], fontSize: 16),
                         onTap: (url) {
-                          //TODO: launch url
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => WebViewScreen(
+                                        url: url,
+                                        siteName: links.site,
+                                      )));
                         }),
                     MatchText(
                         pattern: r"\B(\#[a-zA-Z]+\b)(?!;)",
@@ -227,7 +245,15 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                 )),
 
             links != null
-                ? LinkCaller(links: links, index: index)
+                ? LinkCaller(
+                    comments: commentsTotal,
+                    links: links,
+                    index: index,
+                    vote: vote,
+                    points: points,
+                    isVoted: isVoted,
+                    filter: filtered,
+                    page: page)
                 : Container(),
 
             // content link
@@ -243,15 +269,22 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                     children: <Widget>[
                       InkWell(
                         onTap: () {
-                          if (isVoted == true && vote == -1 || isVoted == false) {
-                            model.vote(id: index, vote: 1);
+                          if (model.down == true && model.up == false ||
+                              model.up == null) {
+                            model.vote(
+                                id: index,
+                                vote: 1,
+                                points: points,
+                                isVoted: isVoted,
+                                filter: filtered,
+                                page: page);
                           }
                         },
                         child: Container(
                           child: Icon(
                             PipocaBasics.up_arrow,
                             size: 20,
-                            color: isVoted == true && vote == 1
+                            color: model.up == true && model.down == false
                                 ? red
                                 : Colors.grey[400],
                           ),
@@ -261,9 +294,13 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                         width: 5,
                       ),
                       Center(
-                        child: Text('$points',
+                        child: Text('${model.points}',
                             style: TextStyle(
-                                color: points >= 1 ? red : Colors.grey[400],
+                                color: model.points >= 1
+                                    ? red
+                                    : model.points <= -1
+                                        ? Colors.black
+                                        : Colors.grey,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -272,16 +309,23 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       ),
                       InkWell(
                         highlightColor: Colors.red,
-                        onTap: (){
-                          if (isVoted == true && vote == 1 || isVoted == false) {
-                            model.vote(id: index, vote: -1);
+                        onTap: () {
+                          if (model.up == true && model.down == false ||
+                              model.down == null) {
+                            model.vote(
+                                id: index,
+                                vote: -1,
+                                points: points,
+                                isVoted: isVoted,
+                                filter: filtered,
+                                page: page);
                           }
                         },
                         child: Container(
                           child: Icon(
                             PipocaBasics.down_arrow,
                             size: 20,
-                            color: isVoted == true && vote == -1
+                            color: model.down == true && model.up == false
                                 ? Colors.black
                                 : Colors.grey[400],
                           ),
@@ -312,7 +356,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                   ],
                 ),
                 GestureDetector(
-                  onTap: () => model.share(key),
+                  onTap: () => model.share(globalKey),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[

@@ -5,18 +5,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/constants/widgets/full_screen.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
+import 'package:pipoca/src/constants/widgets/webview_screen.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
 
 class ContentImage extends StatefulWidget {
+  final Links links;
   final ImageProvider<Object> image;
-
+  final int index, points, page, vote, comments;
+  final bool isVoted, filter;
   final bool isLink;
-  final Function onTap;
 
   ContentImage({
     Key key,
     @required this.image,
     this.isLink = false,
-    this.onTap,
+    this.index,
+    this.points,
+    this.page,
+    this.isVoted,
+    this.filter,
+    this.vote,
+    this.comments,
+
+    this.links,
   }) : super(key: key);
 
   @override
@@ -42,9 +53,24 @@ class _ContentImageState extends State<ContentImage> {
             context,
             MaterialPageRoute(
                 builder: (context) => FullScreen(
+                      comments: widget.comments,
+                      vote: widget.vote,
                       image: widget.image,
+                      index: widget.index,
+                      page: widget.page,
+                      points: widget.points,
+                      isVoted: widget.isVoted,
+                      filter: widget.filter,
                     )),
           );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WebViewScreen(
+                        url: widget.links.url,
+                        siteName: widget.links.site,
+                      )));
         }
       },
       child: Container(
@@ -143,18 +169,20 @@ class _ContentVideoState extends State<ContentVideo> {
     if (widget.url != null) {
       controller = CachedVideoPlayerController.network(widget.url);
       controller.initialize().then((_) {
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
         controller.pause();
       });
     }
     super.initState();
   }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   controller.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -173,25 +201,32 @@ class _ContentVideoState extends State<ContentVideo> {
               child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   child: GestureDetector(
-                    onTap: () => setState(() {
-                      isPressed = !isPressed;
+                    onTap: () {
+                      if (mounted) {
+                        setState(() {
+                          isPressed = !isPressed;
+                        });
+                      }
+
                       if (isPressed == true) {
                         controller.play();
-
                         controller.setLooping(true);
-                        Future.delayed(Duration(seconds: 15), () {
-                          setState(() {
-                            isPressed = false;
 
-                            controller.pause();
-                            controller.initialize();
-                          });
+                        Future.delayed(Duration(seconds: 15), () {
+                          if (mounted) {
+                            setState(() {
+                              isPressed = false;
+                            });
+                          }
+
+                          controller.pause();
+                          controller.initialize();
                         });
                       } else {
                         controller.pause();
                         controller.initialize();
                       }
-                    }),
+                    },
                     child: Stack(
                       children: [
                         CachedVideoPlayer(controller),

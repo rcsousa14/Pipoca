@@ -32,7 +32,7 @@ class FeedRepository {
       );
 
       var parsed = json.decode(response.body);
-
+  
       Feed feed = Feed.fromJson(parsed);
     
       return feed;

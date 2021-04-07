@@ -20,7 +20,7 @@ class _FeedCallerState extends State<FeedCaller>
 
     if (widget.caller != null) {
       _timer =
-          Timer.periodic(Duration(minutes: 20), (timer) => widget.caller());
+          Timer.periodic(Duration(minutes: 3), (timer) => widget.caller());
     }
   }
 
