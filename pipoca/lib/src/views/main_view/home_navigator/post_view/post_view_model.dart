@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
 
 class PostViewModel extends BaseViewModel {
-  final PageController controller;
+  //final PageController controller;
 
-  PostViewModel({@required this.controller});
+  PostViewModel();
 
   // final SnackbarService _snackbarService = locator<SnackbarService>();
   // final DialogService _dialogService = locator<DialogService>();
@@ -48,8 +48,8 @@ class PostViewModel extends BaseViewModel {
   goBack() {
     _text = '';
     notifyListeners();
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
     
-    return controller.jumpToPage(0);
+    
+    //return controller.jumpToPage(0);
   }
 }

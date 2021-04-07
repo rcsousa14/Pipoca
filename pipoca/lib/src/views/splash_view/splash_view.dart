@@ -14,10 +14,13 @@ class SplashView extends StatelessWidget {
       
      
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: red,
-              brightness: Brightness.dark,
-              elevation: 0,
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(20),
+                          child: AppBar(
+                backgroundColor: red,
+                brightness: Brightness.dark,
+                elevation: 0,
+              ),
             ),
             body: Stack(
               fit: StackFit.expand,
@@ -32,8 +35,8 @@ class SplashView extends StatelessWidget {
                   ),
                 ),
                 Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 165),
+                    margin: const EdgeInsets.only(
+                        left: 165, right: 165, bottom: 30),
                     child: Image.asset('images/white.png'))
               ],
             ),

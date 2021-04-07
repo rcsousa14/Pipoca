@@ -11,16 +11,17 @@ class FeedCaller extends StatefulWidget {
   _FeedCallerState createState() => _FeedCallerState();
 }
 
-class _FeedCallerState extends State<FeedCaller>
-     {
+class _FeedCallerState extends State<FeedCaller> {
   Timer _timer;
   @override
   void initState() {
     super.initState();
 
     if (widget.caller != null) {
-      _timer =
-          Timer.periodic(Duration(minutes: 3), (timer) => widget.caller());
+      widget.caller();
+ 
+       _timer = Timer.periodic(Duration(minutes: 3), (timer) => widget.caller());
+      
     }
   }
 
@@ -32,9 +33,6 @@ class _FeedCallerState extends State<FeedCaller>
 
   @override
   Widget build(BuildContext context) {
-
     return widget.child;
   }
-
-  
 }

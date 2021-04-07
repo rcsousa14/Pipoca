@@ -1,12 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_link_preview/flutter_link_preview.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
-import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
-import 'package:pipoca/src/constants/widgets/content_gif.dart';
 import 'package:pipoca/src/constants/widgets/link_caller.dart';
 import 'package:pipoca/src/constants/widgets/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
@@ -42,7 +36,7 @@ class BagoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     GlobalKey key = GlobalKey();
 
-    return ViewModelBuilder<BagoCardViewModel>.nonReactive(
+    return ViewModelBuilder<BagoCardViewModel>.reactive(
       onModelReady: (model) => model.getVote(isVoted, vote, points),
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
@@ -200,16 +194,16 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                 Text(creator,
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 13,
+                        fontSize: 16,
                         color: Colors.black)),
                 Text(
                   ' • ',
-                  style: TextStyle(fontSize: 13.5, color: Colors.black),
+                  style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
                 Text(timeNow,
                     style: TextStyle(
                       color: Colors.grey[400],
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     )),
               ],
@@ -221,11 +215,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                     EdgeInsets.only(top: 5, bottom: links != null ? 10 : 30),
                 child: ParsedText(
                   text: text,
-                  style: TextStyle(color: Colors.grey[800], fontSize: 15.5),
+                  style: TextStyle(color: Colors.grey[800], fontSize: 18),
                   parse: <MatchText>[
                     MatchText(
                         type: ParsedType.URL,
-                        style: TextStyle(color: Colors.blue[400], fontSize: 16),
+                        style: TextStyle(color: Colors.blue[400], fontSize: 18),
                         onTap: (url) {
                           Navigator.push(
                               context,
@@ -237,7 +231,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                         }),
                     MatchText(
                         pattern: r"\B(\#[a-zA-Z]+\b)(?!;)",
-                        style: TextStyle(color: Colors.blue[400], fontSize: 16),
+                        style: TextStyle(color: Colors.blue[400], fontSize: 18),
                         onTap: (url) {
                           //TODO: launch url
                         })

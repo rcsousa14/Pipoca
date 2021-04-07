@@ -69,7 +69,8 @@ class HomeViewModel extends BaseViewModel {
   }
 
   goToPost() {
-   return controller.nextPage(duration: Duration(milliseconds: 350), curve: Curves.bounceIn);
+   return
+   controller.nextPage(duration: Duration(milliseconds: 350), curve: Curves.bounceIn);
 
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class BagoListView extends StatelessWidget {
     return ViewModelBuilder<BagoListViewModel>.reactive(
         disposeViewModel: false,
         builder: (context, model, child) {
-   
+          print(model.isVisible);
           return !model.dataReady
               ? Center(child: CircularProgressIndicator())
               : model.dataReady && model.data.posts.data.isEmpty
@@ -32,31 +33,45 @@ class BagoListView extends StatelessWidget {
                         model.changeVisibility(visible);
                       },
                       child: FeedCaller(
-                        caller: () =>
-                            model.isVisible ? model.refreshFeed() : null,
-                        child: ListView.builder(
-                          key: PageStorageKey('hi'),
-                          physics: BouncingScrollPhysics(),
-                          itemCount: model.data.posts.data.length,
-                          itemBuilder: (context, index) {
-                            Posts posts = model.data.posts;
+                        caller: () => model.isVisible == true
+                            ? model.refreshFeed()
+                            : null,
+                        child: RefreshIndicator(
+                          onRefresh: () {
+                            Completer<Null> completer = new Completer<Null>();
+                            model.refreshFeed();
 
-                            return BagoCard(
-                              filtered: model.isFilter,
-                              links: posts.data[index].post.links,
-                              page: model.currentIndex,
-                              bagoIndex: posts.data[index].post.id,
-                              text: posts.data[index].post.content,
-                              date: posts.data[index].post.createdAt,
-                              points: posts.data[index].post.votesTotal,
-                              creator: posts.data[index].post.creator.username,
-                              image: posts.data[index].post.creator.avatar,
-                              vote: posts.data[index].userVote,
-                              isVoted: posts.data[index].userVoted,
-                              commentsTotal:
-                                  posts.data[index].post.commentsTotal,
-                            );
+                            new Timer(new Duration(seconds: 3), () {
+                              completer.complete();
+                            });
+
+                            return completer.future;
                           },
+                          child: ListView.builder(
+                            key: PageStorageKey('hi'),
+                            physics: BouncingScrollPhysics(),
+                            itemCount: model.data.posts.data.length,
+                            itemBuilder: (context, index) {
+                              Posts posts = model.data.posts;
+
+                              return BagoCard(
+                                filtered: model.isFilter,
+                                links: posts.data[index].post.links,
+                                page: model.currentIndex,
+                                bagoIndex: posts.data[index].post.id,
+                                text: posts.data[index].post.content,
+                                date: posts.data[index].post.createdAt,
+                                points: posts.data[index].post.votesTotal,
+                                creator:
+                                    posts.data[index].post.creator.username,
+                                image: posts.data[index].post.creator.avatar,
+                                vote: posts.data[index].userVote,
+                                isVoted: posts.data[index].userVoted,
+                                commentsTotal:
+                                    posts.data[index].post.commentsTotal,
+                              );
+                            },
+                          ),
                         ),
                       ),
                     );

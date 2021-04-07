@@ -34,7 +34,7 @@ class BagoListViewModel extends StreamViewModel<Feed> {
     }
 
     int level = await _callerService.batteryLevel();
-    await _callerService.battery(
+  var result =  await _callerService.battery(
         level,
         _feedService.getFeed(
           page: _currentIndex,
@@ -43,6 +43,7 @@ class BagoListViewModel extends StreamViewModel<Feed> {
           filter: _isFilter == false ? 'date' : 'pipocar',
         ));
     notifyListeners();
+    return result; 
   }
 
   @override

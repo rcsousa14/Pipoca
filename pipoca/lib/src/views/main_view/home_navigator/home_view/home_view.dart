@@ -4,22 +4,25 @@ import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/widgets/bago_list_view.dart';
+import 'package:pipoca/src/views/main_view/home_navigator/post_view/post_view.dart';
 import 'package:stacked/stacked.dart';
 
 class HomeView extends StatelessWidget {
   final PageController controller;
- final GlobalKey<ScaffoldState> scaffoldKey;
-  const HomeView({Key key, @required this.controller, @required this.scaffoldKey}) : super(key: key);
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const HomeView(
+      {Key key, @required this.controller, @required this.scaffoldKey})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.nonReactive(
-      
       onModelReady: (model) {
-         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
- ));
- model.pushFeed();
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+        ));
+        model.pushFeed();
       },
       disposeViewModel: false,
       builder: (context, model, child) {
@@ -31,8 +34,11 @@ class HomeView extends StatelessWidget {
             ),
             body: BagoListView(choice: model.choice),
             floatingActionButton: HomeFloatingAction(
-              action: () => model.goToPost(),
-            ));
+                action: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreatePostView(),
+                    ))));
       },
       viewModelBuilder: () => HomeViewModel(controller: controller),
     );

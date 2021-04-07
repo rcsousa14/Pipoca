@@ -34,7 +34,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
       controller: pageController,
       children: [
         HomeView(controller: pageController, scaffoldKey: widget.scaffoldKey),
-        PostView(controller: pageController),
+        //PostView(),
         
 
       ],
