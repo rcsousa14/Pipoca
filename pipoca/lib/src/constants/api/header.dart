@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:injectable/injectable.dart';
 import 'package:http/http.dart' as http;
@@ -8,8 +9,15 @@ class ApiHeaders {
   Client get client => _client;
 
   setTokenHeaders({String token}) => {
+    
         'Content-type': 'application/json',
         'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+    setTokenHeadersType({String token}) => {
+    
+        
         'Authorization': 'Bearer $token',
       };
       

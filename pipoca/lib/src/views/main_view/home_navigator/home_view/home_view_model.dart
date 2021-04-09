@@ -11,15 +11,11 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class HomeViewModel extends BaseViewModel {
-
-  
   final _userService = locator<UserService>();
   final _feedService = locator<FeedService>();
   final _location = locator<LocationService>();
   final _localStorage = locator<SharedLocalStorageService>();
   final _bottomSheetService = locator<BottomSheetService>();
-
-  
 
   bool _isFilter = false;
 
@@ -28,9 +24,8 @@ class HomeViewModel extends BaseViewModel {
   Usuario get user => _userService.user;
   String get errorMsg => _userService.error;
 
-
-
   int _currentIndex = 1;
+  int get index => _currentIndex;
 
   Future showBasicBottomSheet(
       {String latest,
@@ -65,6 +60,4 @@ class HomeViewModel extends BaseViewModel {
       filter: _isFilter == false ? 'date' : 'pipocar',
     ));
   }
-
-  
 }

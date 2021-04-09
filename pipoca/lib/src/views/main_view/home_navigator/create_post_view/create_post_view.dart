@@ -9,9 +9,10 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 
 class CreatePostView extends StatelessWidget {
-  const CreatePostView({
-    Key key,
-  }) : super(key: key);
+  final bool filter;
+  final int index;
+  const CreatePostView({Key key, @required this.filter, @required this.index})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class CreatePostView extends StatelessWidget {
         return Scaffold(
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(58),
-            child: _AppBarNewPost(),
+            child: _AppBarNewPost(filter, index),
           ),
           body: _StringTextField(),
         );
@@ -80,8 +81,11 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                                   child: DetectableTextField(
                                     textCapitalization:
                                         TextCapitalization.sentences,
-                                    basicStyle: TextStyle(fontSize: 18, ),
-                                    detectedStyle: TextStyle(fontSize: 18, color: Colors.blue[400]),
+                                    basicStyle: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                    detectedStyle: TextStyle(
+                                        fontSize: 18, color: Colors.blue[400]),
                                     detectionRegExp:
                                         detectionRegExp(atSign: false),
                                     autofocus: true,
@@ -97,7 +101,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                                       counterText: "",
                                     ),
                                   )),
-                               model.gif != null
+                              model.gif != null
                                   ? Container(
                                       height: 300,
                                       width: double.infinity,
@@ -146,13 +150,17 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                           margin: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               border: Border.all(
-                                color: model.links.length >0? Colors.grey : Colors.blue[400],
+                                color: model.links.length > 0
+                                    ? Colors.grey
+                                    : Colors.blue[400],
                               ),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(4))),
                           child: Icon(
                             Icons.gif,
-                            color: model.links.length > 0? Colors.grey : Colors.blue[400],
+                            color: model.links.length > 0
+                                ? Colors.grey
+                                : Colors.blue[400],
                           )),
                     )
                   ],
@@ -186,7 +194,9 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
 }
 
 class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
-  const _AppBarNewPost({Key key}) : super(key: key, reactive: false);
+  final bool filter;
+  final int page;
+  const _AppBarNewPost(this.filter, this.page, {Key key}) : super(key: key, reactive: false);
 
   @override
   Widget buildViewModelWidget(BuildContext context, CreatePostViewModel model) {
@@ -204,13 +214,12 @@ class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
         iconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
           GestureDetector(
-            onTap: ()  {
-              if(model.text.length > 0 || !model.isBusy ){
-                model.addPost();
-                 Navigator.pop(context);
+            onTap: () {
+              if (model.text.length > 0 || !model.isBusy) {
+                model.addPost(page, filter);
+                Navigator.pop(context);
               }
             },
-               
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 15, vertical: 13.5),
               width: 80,

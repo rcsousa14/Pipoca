@@ -8,7 +8,6 @@ import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/constants/widgets/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 
-
 class ContentImage extends StatefulWidget {
   final Links links;
   final ImageProvider<Object> image;
@@ -27,7 +26,6 @@ class ContentImage extends StatefulWidget {
     this.filter,
     this.vote,
     this.comments,
-
     this.links,
   }) : super(key: key);
 
@@ -36,13 +34,6 @@ class ContentImage extends StatefulWidget {
 }
 
 class _ContentImageState extends State<ContentImage> {
-  @override
-  void didChangeDependencies() {
-    precacheImage(widget.image, context);
-
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -102,12 +93,14 @@ Widget imagePlace(
     double height,
     double,
     width}) {
-  final Random random = new Random();
+
   return Image(
     frameBuilder: (context, child, frame, isFrame) {
       return Container(
-          color: Color.fromARGB(255, random.nextInt(255), random.nextInt(255),
-              random.nextInt(255)),
+          decoration: BoxDecoration(
+            color: Colors.grey[350],
+            
+          ),
           child: child);
     },
     image: image,

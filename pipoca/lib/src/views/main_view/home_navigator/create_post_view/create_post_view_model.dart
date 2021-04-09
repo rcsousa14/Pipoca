@@ -5,6 +5,8 @@ import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/repositories/feed/feed_repository.dart';
+import 'package:pipoca/src/services/caller.service.dart';
+import 'package:pipoca/src/services/feed_service.dart';
 
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:pipoca/src/services/user_service.dart';
@@ -13,10 +15,12 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class CreatePostViewModel extends BaseViewModel {
+  final _feedService = locator<FeedService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
   final DialogService _dialogService = locator<DialogService>();
   final _userService = locator<UserService>();
   final _location = locator<LocationService>();
+  final _callerService = locator<CallerService>();
   final FeedRepository _feedRepository = locator<FeedRepository>();
   String _gif;
   String _text = '';
@@ -42,7 +46,7 @@ class CreatePostViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future addPost() async {
+  Future addPost(int index, bool filter) async {
     setBusy(true);
 
     var result = await _feedRepository.postFeed(CreatePost(
@@ -56,9 +60,24 @@ class CreatePostViewModel extends BaseViewModel {
       await _dialogService.showDialog(
           title: 'Não foi possível criar Bago', description: 'not possible');
     } else {
+      await refreshFeed(index, filter);
       _snackbarService.showSnackbar(message: 'seu Bago foi enviado');
     }
 
     setBusy(false);
+  }
+
+  Future refreshFeed(int index, bool filter) async {
+    int level = await _callerService.batteryLevel();
+    var result = await _callerService.battery(
+        level,
+        _feedService.getFeed(
+          page: index,
+          lat: _location.currentLocation.latitude,
+          lng: _location.currentLocation.longitude,
+          filter: filter == false ? 'date' : 'pipocar',
+        ));
+    notifyListeners();
+    return result;
   }
 }

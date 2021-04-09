@@ -37,7 +37,7 @@ class HomeView extends StatelessWidget {
                 action: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CreatePostView(),
+                      builder: (context) => CreatePostView(filter: model.isFilter, index: model.index,),
                     ))));
       },
       viewModelBuilder: () => HomeViewModel(),

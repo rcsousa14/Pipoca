@@ -16,7 +16,7 @@ class PostPointRepository {
     try {
       var url = Uri.encodeFull('$heroku_url/post/votes');
       var response = await client.post(url,
-          headers: _header.setTokenHeaders(
+          headers: _header.setTokenHeadersType(
               token: _authenticationService.currentToken),
           body: {"postId": id, "voted": vote});
 

@@ -2,10 +2,8 @@ import 'dart:async';
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/interfaces/stoppable_interface.dart';
-import 'package:pipoca/src/models/link_info_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/repositories/feed/feed_repository.dart';
-import 'package:pipoca/src/repositories/feed/link_repository.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/shared_local_storage_service.dart';
 import 'package:rxdart/rxdart.dart';
@@ -13,7 +11,7 @@ import 'package:rxdart/rxdart.dart';
 @lazySingleton
 class FeedService extends IstoppableService {
   final _api = locator<FeedRepository>();
-  final _link = locator<LinkRepository>();
+  
   final _authenticationService = locator<AuthenticationService>();
   final _localStorage = locator<SharedLocalStorageService>();
 
@@ -81,5 +79,6 @@ class FeedService extends IstoppableService {
   void stop() {
     super.stop();
     _streamSubscription?.pause();
+    _infoController?.close();
   }
 }

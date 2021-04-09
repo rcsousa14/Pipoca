@@ -30,6 +30,7 @@ class LinkCaller extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var uniKey = UniqueKey();
     String via = links.site ?? 'Postimg';
     return ViewModelBuilder<LinkViewModel>.reactive(
       builder: (context, model, child) {
@@ -53,9 +54,9 @@ class LinkCaller extends StatelessWidget {
                                 isVoted: isVoted,
                                 filter: filter,
                                 isLink: false,
-                                image: CachedNetworkImageProvider(
+                                image:NetworkImage(
                                     links.image ?? links.url,
-                                    cacheKey: '$index- ${links.site}')),
+                                    )),
                             SizedBox(height: 5),
                             Padding(
                               padding: const EdgeInsets.only(left: 4.0),
@@ -87,12 +88,11 @@ class LinkCaller extends StatelessWidget {
                                             })
                                     ]),
                               ),
-                          
                             )
                           ],
                         ),
                       )
-                    : ContentVideo(url: links.video) 
+                    : ContentVideo(url: links.video)
                 : Builder(builder: (context) {
                     return Container(
                       margin: EdgeInsets.only(bottom: 20),
@@ -108,8 +108,8 @@ class LinkCaller extends StatelessWidget {
                             ContentImage(
                               isLink: true,
                               links: links,
-                              image: CachedNetworkImageProvider(links.image,
-                                  cacheKey: '$index- ${links.site}'),
+                              image: NetworkImage(links.image,
+                                  ),
                             )
                           ],
                           Container(
@@ -149,7 +149,7 @@ class LinkCaller extends StatelessWidget {
                         ],
                       ),
                     );
-                  }) ;
+                  });
       },
       viewModelBuilder: () => LinkViewModel(),
     );
