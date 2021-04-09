@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api/url.dart';
 import 'package:pipoca/src/constants/api/header.dart';
+import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'dart:convert';
 import 'package:pipoca/src/services/authentication_service.dart';
@@ -32,10 +33,33 @@ class FeedRepository {
       );
 
       var parsed = json.decode(response.body);
-  
+
       Feed feed = Feed.fromJson(parsed);
-    
+
       return feed;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future postFeed(CreatePost post) async {
+    try {
+      var url = Uri.encodeFull('$heroku_url/posts');
+      
+      var response = await client.post(
+        url,
+        headers:
+            _header.setTokenHeaders(token: _authenticationService.currentToken),
+        body: {
+          "content": post.content,
+          "latitude": post.latitude.toString(),
+          "longitude": post.longitude.toString(),
+          "hashes": post.hashes.toString(),
+          "links": post.links.toString()
+        },
+      );
+      print(response.body);
+      return response.statusCode;
     } catch (e) {
       throw e;
     }

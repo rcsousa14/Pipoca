@@ -19,7 +19,7 @@ class PostPointRepository {
           headers: _header.setTokenHeaders(
               token: _authenticationService.currentToken),
           body: {"postId": id, "voted": vote});
-      print(response.body);
+
       return response.statusCode;
     } catch (e) {
       throw e;

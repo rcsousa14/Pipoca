@@ -7,32 +7,40 @@ class HomeAppBar extends StatelessWidget {
   final String image;
   final Function drawer;
   final Function filter;
-  final bool isFilter; 
-  const HomeAppBar({Key key, this.image, this.drawer, this.filter, this.isFilter})
+  final bool isFilter;
+  const HomeAppBar(
+      {Key key, this.image, this.drawer, this.filter, this.isFilter})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      actionsIconTheme: IconThemeData(color: isFilter? red: Colors.black),
+      actionsIconTheme: IconThemeData(color: isFilter ? red : Colors.black),
       elevation: 0.8,
       backgroundColor: Colors.white,
-      brightness:  Brightness.light,
+      brightness: Brightness.light,
       centerTitle: true,
       leading: GestureDetector(
-        onTap: drawer,
-        child: Container(
-          margin: EdgeInsets.all(7),
-          decoration: BoxDecoration(
-            color: Colors.grey[350],
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              image: NetworkImage(image),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ),
+          onTap: drawer,
+          child: image != null
+              ? Container(
+                  margin: EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[350],
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: NetworkImage(image),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              : Container(
+                  margin: EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[350],
+                    shape: BoxShape.circle,
+                  ),
+                )),
       title: Text(
         'Pipoca',
         style: GoogleFonts.poppins(

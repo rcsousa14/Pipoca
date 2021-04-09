@@ -92,7 +92,7 @@ class LinkCaller extends StatelessWidget {
                           ],
                         ),
                       )
-                    : ContentVideo(url: links.video)
+                    : ContentVideo(url: links.video) 
                 : Builder(builder: (context) {
                     return Container(
                       margin: EdgeInsets.only(bottom: 20),
@@ -149,7 +149,7 @@ class LinkCaller extends StatelessWidget {
                         ],
                       ),
                     );
-                  });
+                  }) ;
       },
       viewModelBuilder: () => LinkViewModel(),
     );

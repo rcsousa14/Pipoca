@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
@@ -117,18 +119,26 @@ class _Avatar extends ViewModelWidget<BagoCardViewModel> {
   Widget build(BuildContext context, BagoCardViewModel model) {
     return Flexible(
       flex: 3,
-      child: Container(
-        height: 45,
-        width: 45,
-        decoration: BoxDecoration(
-          color: Colors.grey[350],
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            image: NetworkImage(image),
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
+      child: image != null
+          ? Container(
+              height: 45,
+              width: 45,
+              decoration: BoxDecoration(
+                color: Colors.grey[350],
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: NetworkImage(image),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
+          : Container(
+              height: 45,
+              width: 45,
+              decoration: BoxDecoration(
+                color: Colors.grey[350],
+                shape: BoxShape.circle,
+              )),
     );
   }
 }
@@ -181,6 +191,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
+    // print(links.url == null);
     return Expanded(
       flex: 14,
       child: Container(
@@ -211,8 +222,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
 
             Container(
                 alignment: Alignment.centerLeft,
-                padding:
-                    EdgeInsets.only(top: 5, bottom: links != null ? 10 : 30),
+                padding: EdgeInsets.only(
+                    top: 5, bottom: links.url != null ? 10 : 30),
                 child: ParsedText(
                   text: text,
                   style: TextStyle(color: Colors.grey[800], fontSize: 18),
@@ -226,7 +237,9 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                               MaterialPageRoute(
                                   builder: (context) => WebViewScreen(
                                         url: url,
-                                        siteName: links.site,
+                                        siteName: links.url != null
+                                            ? links.site
+                                            : null,
                                       )));
                         }),
                     MatchText(
@@ -238,7 +251,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                   ],
                 )),
 
-            links != null
+            links.url != null
                 ? LinkCaller(
                     comments: commentsTotal,
                     links: links,

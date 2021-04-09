@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
@@ -12,15 +11,15 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class HomeViewModel extends BaseViewModel {
-  final PageController controller;
-  HomeViewModel({@required this.controller});
+
+  
   final _userService = locator<UserService>();
   final _feedService = locator<FeedService>();
   final _location = locator<LocationService>();
   final _localStorage = locator<SharedLocalStorageService>();
   final _bottomSheetService = locator<BottomSheetService>();
 
-  final NavigationService _navigationService = locator<NavigationService>();
+  
 
   bool _isFilter = false;
 
@@ -29,8 +28,7 @@ class HomeViewModel extends BaseViewModel {
   Usuario get user => _userService.user;
   String get errorMsg => _userService.error;
 
-  NavChoice get choice => NavChoice.home;
-  get choicePage => NavChoice.home.pageStorageKey();
+
 
   int _currentIndex = 1;
 
@@ -68,9 +66,5 @@ class HomeViewModel extends BaseViewModel {
     ));
   }
 
-  goToPost() {
-   return
-   controller.nextPage(duration: Duration(milliseconds: 350), curve: Curves.bounceIn);
-
-  }
+  
 }

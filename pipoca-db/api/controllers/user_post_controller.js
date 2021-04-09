@@ -28,7 +28,7 @@ exports.store = async({ body, decoded }, res) => {
         };
 
         const post = await models.post.create({ user_id: decoded.id, content, coordinates: point });
-        if (hashes && !hashes.length == 0 && hashes.length > 0) {
+        if (!hashes.length == 0 && hashes.length > 0) {
             for (var hash of hashes) {
                 const [tag] = await models.tag.findOrCreate({
                     where: { hash: hash }
@@ -37,7 +37,7 @@ exports.store = async({ body, decoded }, res) => {
                 await models.post_tag.create({ post_id: post.id, tag_id: tag.id });
             }
         }
-        if (links && !links.length == 0 && links.length > 0) {
+        if (!links.length == 0 && links.length > 0) {
             for (var url of links) {
                 const [link] = await models.link.findOrCreate({ where: { url: url } });
 

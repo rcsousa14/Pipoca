@@ -11,15 +11,15 @@ import 'package:stacked/stacked.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BagoListView extends StatelessWidget {
-  final NavChoice choice;
-  const BagoListView({Key key, this.choice}) : super(key: key);
+
+  const BagoListView({Key key, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<BagoListViewModel>.reactive(
         disposeViewModel: false,
         builder: (context, model, child) {
-          print(model.isVisible);
+        
           return !model.dataReady
               ? Center(child: CircularProgressIndicator())
               : model.dataReady && model.data.posts.data.isEmpty
