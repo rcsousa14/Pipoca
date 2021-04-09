@@ -1,7 +1,5 @@
-
-
-export default async (req, res, next) => {
-    const {content, longitude, latitude, links} = req.body;
+export default async(req, res, next) => {
+    const { content, longitude, latitude, links } = req.body;
     var nsfws = [
         "porn",
         "porno",
@@ -61,16 +59,16 @@ export default async (req, res, next) => {
 
 
     ];
-    if(!content){
-        return res.status(400).send({message: '✍🏾 bago é requerido!'});
+    if (!content) {
+        return res.status(400).send({ message: '✍🏾 bago é requerido!' });
     }
-    if(content.length > 200){
-        res.status(400).send({ message: '😱 erreh mano apenas 200 carateres 🙄'});
+    if (content.length > 200) {
+        res.status(400).send({ message: '😱 erreh mano apenas 200 carateres 🙄' });
     }
-    if(!latitude || !longitude){
-        res.status(400).send({ message: '🗺️ Localização é obrigatório!'})
+    if (!latitude || !longitude) {
+        res.status(400).send({ message: '🗺️ Localização é obrigatório!' })
     }
-    if(links && nsfws.some((nsfw) => links[0].includes(nsfw))){
+    if (links.length > 0 && nsfws.some((nsfw) => links[0].includes(nsfw))) {
         res.status(400).send({
             message: "Desculpe, não pode postar conteúdo adulto",
 
