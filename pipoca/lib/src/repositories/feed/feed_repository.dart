@@ -50,13 +50,7 @@ class FeedRepository {
         url,
         headers:
             _header.setTokenHeaders(token: _authenticationService.currentToken),
-        body: {
-          "content": post.content,
-          "latitude": post.latitude.toString(),
-          "longitude": post.longitude.toString(),
-          "hashes": post.hashes.toString(),
-          "links": post.links.toString()
-        },
+        body: json.encode(post.toJson())        
       );
       print(response.body);
       return response.statusCode;

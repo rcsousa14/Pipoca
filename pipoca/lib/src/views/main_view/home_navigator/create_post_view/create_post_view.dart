@@ -158,8 +158,8 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                   ],
                 ),
                 Container(
-                    height: 25,
-                    width: 25,
+                    height: 24,
+                    width: 24,
                     child: model.text.isEmpty
                         ? CircularProgressIndicator(
                             strokeWidth: 1.8,
@@ -167,7 +167,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                             value: 0.0,
                           )
                         : CircularProgressIndicator(
-                            strokeWidth: 1.8,
+                            strokeWidth: 2.5,
                             backgroundColor: Colors.grey[300],
                             valueColor: model.text.length == 200
                                 ? AlwaysStoppedAnimation<Color>(red)
