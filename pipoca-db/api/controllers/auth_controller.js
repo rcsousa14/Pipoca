@@ -236,7 +236,7 @@ exports.logout = async({ decoded }, res) => {
 
 exports.refresh = async(req, res) => {
     try {
-        const { token, id } = req.body;
+        const { token, id } = req.query;
         const check = auth.jwtToken.verifyToken(token);
         if (!check) {
             const user = await models.user.findByPk(id);
