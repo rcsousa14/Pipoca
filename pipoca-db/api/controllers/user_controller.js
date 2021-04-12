@@ -7,7 +7,7 @@ const ttl = 30;
 const cache = new CacheService(ttl);
 
 // for the admin need to see how many posts a user has etc etc
-exports.index = async(req, res) => {
+exports.index = async(req, res, next) => {
     try {
         const page = parseInt(req.query.page);
         const limit = 25;
@@ -32,7 +32,7 @@ exports.index = async(req, res) => {
     }
 };
 
-exports.show = async({ decoded }, res) => {
+exports.show = async({ decoded }, res, next) => {
     try {
         const result = cache.get(`user_single_${decoded.id}`);
         if (result) {
@@ -161,7 +161,7 @@ exports.show = async({ decoded }, res) => {
     }
 };
 
-exports.destroy = async({ decoded }, res) => {
+exports.destroy = async({ decoded }, res, next) => {
     try {
         await models.user.destroy({
             where: {
@@ -189,7 +189,7 @@ exports.destroy = async({ decoded }, res) => {
     }
 };
 
-exports.update = async({ body, decoded }, res) => {
+exports.update = async({ body, decoded }, res, next) => {
     try {
 
         const { username, avatar, birthday, bio, fcmToken, password } = body;

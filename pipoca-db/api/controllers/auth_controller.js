@@ -158,7 +158,7 @@ exports.login = async(req, res) => {
     }
 };
 
-exports.social = async(req, res) => {
+exports.social = async(req, res, next) => {
     try {
         const { email, avatar, type, fcmToken } = req.body;
         const { id } = await models.role.findOne({ where: { role: "regular" } });
@@ -212,7 +212,7 @@ exports.social = async(req, res) => {
     }
 };
 
-exports.logout = async({ decoded }, res) => {
+exports.logout = async({ decoded }, res, next) => {
     try {
         const update = await models.user.update({ refresh_token: '' }, { where: { id: decoded.id } });
         if (update) {
@@ -230,7 +230,7 @@ exports.logout = async({ decoded }, res) => {
     }
 }
 
-exports.refresh = async(req, res) => {
+exports.refresh = async(req, res, next) => {
     try {
         const { token, id } = req.query;
         const check = auth.jwtToken.verifyToken(token);

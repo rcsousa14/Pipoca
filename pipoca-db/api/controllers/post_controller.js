@@ -42,7 +42,7 @@ exports.index = async({ query }, res) => {
         });
     }
 };
-exports.show = async({ params, query, decoded }, res) => {
+exports.show = async({ params, query, decoded }, res, next) => {
     try {
         const result = cache.get(`post_${decoded.id}`);
         if (result) {

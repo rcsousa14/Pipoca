@@ -7,7 +7,7 @@ const ttl = 10;
 const cache = new CacheService(ttl);
 const cachePost = new CacheService(60);
 
-exports.store = async({ params, body, decoded }, res) => {
+exports.store = async({ params, body, decoded }, res, next) => {
     try {
         const { postId } = params;
         const { content, links, hashes, longitude, latitude } = body;
@@ -66,7 +66,7 @@ exports.store = async({ params, body, decoded }, res) => {
     }
 };
 
-exports.index = async({ params, query, decoded }, res) => {
+exports.index = async({ params, query, decoded }, res, next) => {
     try {
         const result = cache.get(`user_comments_feed_${decoded.id}`);
         if (result) {
@@ -168,7 +168,7 @@ exports.index = async({ params, query, decoded }, res) => {
     }
 };
 
-exports.soft = async({ params, decoded }, res) => {
+exports.soft = async({ params, decoded }, res, next) => {
     try {
         const updated = await models.comment.update({
             is_deleted: true,
@@ -197,7 +197,7 @@ exports.soft = async({ params, decoded }, res) => {
     }
 };
 
-exports.show = async({ query, decoded }, res) => {
+exports.show = async({ query, decoded }, res, next) => {
     try {
         const result = cache.get(`user_comments_${decoded.id}`);
         if (result) {

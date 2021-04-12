@@ -1,7 +1,7 @@
 const models = require("../models");
 const ApiError = require("../errors/api_error");
 
-exports.store = async({ body }, res) => {
+exports.store = async({ body }, res, next) => {
     try {
         const { role } = body;
 
@@ -15,7 +15,7 @@ exports.store = async({ body }, res) => {
     }
 };
 
-exports.destroy = async({ params }, res) => {
+exports.destroy = async({ params }, res, next) => {
     try {
         const { id } = params;
 
@@ -31,7 +31,7 @@ exports.destroy = async({ params }, res) => {
     }
 };
 
-exports.index = async(req, res) => {
+exports.index = async(req, res, next) => {
     try {
         const roles = await models.role.findAll();
 

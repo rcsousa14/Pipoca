@@ -3,7 +3,7 @@ import CacheService from "../utils/cache";
 const models = require("../models");
 const ttl = 10;
 const cache = new CacheService(ttl);
-exports.store = async({ body, decoded }, res) => {
+exports.store = async({ body, decoded }, res, next) => {
     try {
         const { commentId, voted } = body;
         const post = await models.comment.findByPk(commentId);

@@ -1,7 +1,7 @@
 const models = require("../models");
 const ApiError = require("../errors/api_error");
 
-exports.store = async({ body, decoded }, res) => {
+exports.store = async({ body, decoded }, res, next) => {
     try {
         const { subCommentId, voted } = body;
         const post = await models.sub_comment.findByPk(subCommentId);

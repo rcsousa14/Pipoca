@@ -1,7 +1,7 @@
 const ApiError = require("../errors/api_error");
 const models = require("../models");
 
-exports.store = async({ body, decoded }, res) => {
+exports.store = async({ body, decoded }, res, next) => {
     try {
         const { id } = decoded;
         const { postId, voted } = body;

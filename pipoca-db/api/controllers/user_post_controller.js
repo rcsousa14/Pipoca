@@ -9,7 +9,7 @@ const cachePost = new CacheService(60);
 
 const Op = Sequelize.Op;
 
-exports.store = async({ body, decoded }, res) => {
+exports.store = async({ body, decoded }, res, next) => {
     try {
         const { content, links, hashes, longitude, latitude } = body;
 
@@ -61,7 +61,7 @@ exports.store = async({ body, decoded }, res) => {
     }
 };
 //feed shows all posts that are near by you can sort it for posts with higher points
-exports.index = async({ query, decoded }, res) => {
+exports.index = async({ query, decoded }, res, next) => {
     try {
         const filtro = "post";
         const { lat, lng } = query;
@@ -223,7 +223,7 @@ exports.index = async({ query, decoded }, res) => {
     }
 };
 // deletes users posts
-exports.soft = async({ params, decoded }, res) => {
+exports.soft = async({ params, decoded }, res, next) => {
     try {
         const { id } = params;
         const updated = await models.post.update({
@@ -252,7 +252,7 @@ exports.soft = async({ params, decoded }, res) => {
     }
 };
 // shows all posts by user
-exports.show = async({ query, decoded }, res) => {
+exports.show = async({ query, decoded }, res, next) => {
     try {
         const result = cache.get(`user_posts_${decoded.id}`);
         if (result) {
