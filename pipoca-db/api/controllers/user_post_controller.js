@@ -1,262 +1,175 @@
-import CacheService from '../utils/cache';
-const { paginate } = require('../utils/paginate');
-const models = require('../models');
-const Sequelize = require('sequelize');
+import ApiError from "../errors/api_error";
+import CacheService from "../utils/cache";
+const { paginate } = require("../utils/paginate");
+const models = require("../models");
+const Sequelize = require("sequelize");
 const ttl = 10;
 const cache = new CacheService(ttl);
 const cachePost = new CacheService(60);
 
 const Op = Sequelize.Op;
 
-
-
 exports.store = async({ body, decoded }, res) => {
     try {
-
         const { content, links, hashes, longitude, latitude } = body;
 
         const result = cachePost.get(`user_post_${decoded.id}`);
         if (result && result == content) {
-
-            return res.status(550).json({ message: '🖐🏾 Eh mano ninguem gosta de spam 👾' });
+            next(ApiError.badRequestException("Ninguém gosta de spam"));
+            return;
         }
         var point = {
-            type: 'Point',
+            type: "Point",
             coordinates: [longitude, latitude],
-            crs: { type: 'name', properties: { name: 'EPSG:4326' } }
-
+            crs: { type: "name", properties: { name: "EPSG:4326" } },
         };
 
-        const post = await models.post.create({ user_id: decoded.id, content, coordinates: point });
+        const post = await models.post.create({
+            user_id: decoded.id,
+            content,
+            coordinates: point,
+        });
         if (!hashes.length == 0 && hashes.length > 0) {
             for (var hash of hashes) {
                 const [tag] = await models.tag.findOrCreate({
-                    where: { hash: hash }
+                    where: { hash: hash },
                 });
 
                 await models.post_tag.create({ post_id: post.id, tag_id: tag.id });
             }
         }
         if (!links.length == 0 && links.length > 0) {
-            for (var url of links) {
-                const [link] = await models.link.findOrCreate({ where: { url: url } });
+            const [link] = await models.link.findOrCreate({
+                where: { url: links[0] },
+            });
 
-
-                await models.post_link.create({ post_id: post.id, link_id: link.id });
-
-            }
-
-
-
+            await models.post_link.create({ post_id: post.id, link_id: link.id });
         }
-
-
 
         cachePost.set(`user_post_${decoded.id}`, post.content);
 
         cache.del(`user_posts_${decoded.id}`);
-        return res.status(201).send({ message: '🍿 Bago criado com sucesso! 🥳' });
-
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
+        return res.status(201).json({
+            success: true,
+            message: "Bago criado com sucesso!",
         });
+    } catch (error) {
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
 //feed shows all posts that are near by you can sort it for posts with higher points
 exports.index = async({ query, decoded }, res) => {
     try {
-
-
-
-        const filtro = 'post';
+        const filtro = "post";
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 25;
 
-
         let search;
         let order = [];
-        const TODAY_START = new Date().setHours(0, 0, 0, 0);
+        // const TODAY_START = new Date().setHours(0, 0, 0, 0);
 
         const NOW = new Date();
+        const TODAY_START = new Date(
+            NOW.getFullYear(),
+            NOW.getMonth(),
+            NOW.getDate() - 5
+        );
 
         if (lat && lng) {
-            if (query.filter == 'pipocar') {
+            if (query.filter == "pipocar") {
                 search = {
                     is_deleted: false,
                     createdAt: {
-                        [Op.gt]: TODAY_START,
-                        [Op.lt]: NOW,
+                        [Op.gt]: NOW,
+                        [Op.lt]: TODAY_START,
                     },
                     [Op.and]: Sequelize.where(
-                        Sequelize.fn('ST_DWithin',
-                            Sequelize.col('post.coordinates'),
-                            Sequelize.fn('ST_SetSRID',
-                                Sequelize.fn('ST_MakePoint',
-                                    lng, lat),
-                                4326),
-                            950),
-                        true)
+                        Sequelize.fn(
+                            "ST_DWithin",
+                            Sequelize.col("post.coordinates"),
+                            Sequelize.fn(
+                                "ST_SetSRID",
+                                Sequelize.fn("ST_MakePoint", lng, lat),
+                                4326
+                            ),
+                            950
+                        ),
+                        true
+                    ),
 
                     /**
-                     * for location-post
-                     * Sequelize.where(
-                     Sequelize.fn('ST_Contains',
-                        Sequelize.col('location.poly'),
-                        Sequelize.fn('ST_SetSRID',
-                            Sequelize.fn('ST_MakePoint',
-                                lng, lat),
-                            4326),
-                        950),
-                    true)
-                     */
-                }
+                                                   * for location-post
+                                                   * Sequelize.where(
+                                                   Sequelize.fn('ST_Contains',
+                                                      Sequelize.col('location.poly'),
+                                                      Sequelize.fn('ST_SetSRID',
+                                                          Sequelize.fn('ST_MakePoint',
+                                                              lng, lat),
+                                                          4326),
+                                                      950),
+                                                  true)
+                                                   */
+                };
             }
-            if (query.filter == 'date') {
+            if (query.filter == "date") {
                 search = {
                     is_deleted: false,
                     [Op.and]: Sequelize.where(
-                        Sequelize.fn('ST_DWithin',
-                            Sequelize.col('post.coordinates'),
-                            Sequelize.fn('ST_SetSRID',
-                                Sequelize.fn('ST_MakePoint',
-                                    lng, lat),
-                                4326),
-                            950),
-                        true)
-                }
+                        Sequelize.fn(
+                            "ST_DWithin",
+                            Sequelize.col("post.coordinates"),
+                            Sequelize.fn(
+                                "ST_SetSRID",
+                                Sequelize.fn("ST_MakePoint", lng, lat),
+                                4326
+                            ),
+                            950
+                        ),
+                        true
+                    ),
+                };
             }
-
         }
-        let group = ['post.id'];
-        if (query.filter == 'pipocar') {
-
+        let group = ["post.id"];
+        if (query.filter == "pipocar") {
             order.push(
-                [Sequelize.literal('votes_total ASC')], [Sequelize.literal('comments_total ASC')]
+                [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
             );
         }
-        if (query.filter == 'date') {
-            order.push(['createdAt', 'DESC']);
+        if (query.filter == "date") {
+            order.push(["createdAt", "DESC"]);
         }
         let attributes = [
-            'id',
-            'content',
-            'flags',
-            'is_flagged',
-            'is_deleted',
-            'createdAt',
-            'coordinates',
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "is_deleted",
+            "createdAt",
+            "coordinates",
 
-            [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
-            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`), 'comments_total'],
-
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
+                ),
+                "votes_total",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
+                ),
+                "comments_total",
+            ],
         ];
 
         let include = [{
                 model: models.user,
-                as: 'creator',
-                attributes: {
-                    exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "password"
-                    ]
-                }
-            },
-            {
-                model: models.link,
-                as: 'links',
-                required: false,
-                attributes: ['url'],
-                through: { attributes: [] },
-            }
-
-            // {
-            //     model: models.link,
-            //     attributes: ['url'],
-            //     through: 'post_links',
-            //     as: 'links'
-            // }
-
-
-        ];
-        const model = models.post;
-        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
-
-        const data = { message: '🍿 Todos os Bagos proximo de ti 🥳', posts };
-
-
-        return res.status(200).send(data);
-
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        });
-    }
-};
-// deletes users posts
-exports.soft = async({ params, decoded }, res) => {
-        try {
-            const { id } = params;
-            await models.post.update({
-                is_deleted: false
-            }, {
-                where: {
-                    id: id,
-                    user_id: decoded.id
-                }
-            });
-
-            cache.del(`user_posts_${decoded.id}`);
-            return res.status(200).send({ message: `Bago ${id} foi eliminado com sucesso` });
-        } catch (error) {
-            return res.status(500).json({
-                error: error.message
-            });
-        }
-    }
-    // shows all posts by user
-exports.show = async({ query, decoded }, res) => {
-    try {
-        const result = cache.get(`user_posts_${decoded.id}`);
-        if (result) {
-            return res.status(200).json(result);
-        }
-        const filtro = 'post';
-        const { lat, lng } = query;
-        const id = decoded.id;
-        const page = parseInt(query.page);
-        const limit = 9;
-
-        let search = { user_id: decoded.id, is_deleted: false };
-        let order = [
-            ['createdAt', 'DESC']
-        ];
-        let group = ['post.id', 'creator.id', ];
-        let attributes = [
-            'id',
-            'content',
-            'flags',
-            'is_flagged',
-            'is_deleted',
-            'createdAt',
-            'coordinates', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`), 'votes_total'],
-            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`), 'comments_total'],
-
-        ];
-
-        let include = [{
-                model: models.user,
-
-                as: 'creator',
+                as: "creator",
                 attributes: {
                     exclude: [
                         "createdAt",
@@ -268,22 +181,170 @@ exports.show = async({ query, decoded }, res) => {
                         "role_id",
                         "bio",
                         "password",
-                    ]
-                }
+                    ],
+                },
             },
-
-
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
         ];
         const model = models.post;
-        const posts = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
+        const posts = await paginate(
+            model,
+            id,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng,
+            filtro
+        );
 
-        const data = { message: `Aqui esta todos os teu Bagos! 🍿`, posts };
+        const data = {
+            success: true,
+            message: "Todos os Bagos proximo de ti",
+            posts,
+        };
+
+        return res.status(200).json(data);
+    } catch (error) {
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
+    }
+};
+// deletes users posts
+exports.soft = async({ params, decoded }, res) => {
+    try {
+        const { id } = params;
+        const updated = await models.post.update({
+            is_deleted: false,
+        }, {
+            where: {
+                id: id,
+                user_id: decoded.id,
+            },
+        });
+        if (updated) {
+            cache.del(`user_posts_${decoded.id}`);
+            return res.status(200).json({
+                success: true,
+                message: `Bago ${id} foi eliminado com sucesso`,
+            });
+        } else {
+            next({});
+            return;
+        }
+    } catch (error) {
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
+    }
+};
+// shows all posts by user
+exports.show = async({ query, decoded }, res) => {
+    try {
+        const result = cache.get(`user_posts_${decoded.id}`);
+        if (result) {
+            return res.status(200).json(result);
+        }
+        const filtro = "post";
+        const { lat, lng } = query;
+        const id = decoded.id;
+        const page = parseInt(query.page);
+        const limit = 10;
+
+        let search = { user_id: decoded.id, is_deleted: false };
+        let order = [
+            ["createdAt", "DESC"]
+        ];
+        let group = ["post.id", "creator.id"];
+        let attributes = [
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "is_deleted",
+            "createdAt",
+            "coordinates", [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
+                ),
+                "votes_total",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
+                ),
+                "comments_total",
+            ],
+        ];
+
+        let include = [{
+                model: models.user,
+
+                as: "creator",
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "birthday",
+                        "reset_password_token",
+                        "reset_password_expiration",
+                        "refresh_token",
+                        "role_id",
+                        "bio",
+                        "password",
+                    ],
+                },
+            },
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
+        ];
+        const model = models.post;
+        const posts = await paginate(
+            model,
+            id,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng,
+            filtro
+        );
+
+        const data = {
+            success: true,
+            message: `Todos os teu Bagos!`,
+            posts
+        };
         cache.set(`user_posts_${decoded.id}`, data);
 
-        return res.status(200).send(data);
+        return res.status(200).json(data);
+
     } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        });
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
-}
+};

@@ -1,4 +1,6 @@
 import { getDistance } from 'geolib';
+const { scrapeMetaTags } = require('../utils/paginate');
+import ApiError from '../errors/api_error';
 const Sequelize = require("sequelize");
 const models = require("../models");
 
@@ -51,54 +53,51 @@ exports.show = async({ params, query, decoded }, res) => {
         var posts = await models.post.findOne({
             distinct: true,
             raw: true,
-            group: ["post.id", "creator.id"],
+            group: ["post.id"],
             where: { id: id },
             attributes: [
                 'id',
                 'content',
-                'links',
                 'flags',
                 'is_flagged',
                 'is_deleted',
                 'createdAt',
                 'coordinates',
 
-                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'total'],
-
-                [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('post_votes.voted')), 'INT'), 'votesTotal'],
+                [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`), 'votes_total'],
+                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'comments_total'],
             ],
             include: [{
                     model: models.user,
                     as: "creator",
                     attributes: {
                         exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "password",
+                            "createdAt",
+                            "updatedAt",
+                            "birthday",
+                            "reset_password_token",
+                            "reset_password_expiration",
+                            "refresh_token",
+                            "role_id",
+                            "bio",
+                            "password",
                         ],
                     },
                 },
                 {
-
-                    model: models.post_vote,
-                    as: 'post_votes',
-                    attributes: [],
-                    duplicating: false,
-                    required: false
-
-                },
+                    model: models.link,
+                    as: 'links',
+                    required: false,
+                    attributes: ['url'],
+                    through: { attributes: [] },
+                }
 
             ],
         });
 
         if (!posts) {
-            return res.status(400).send({ message: `🍿 Bago ${id}  nao existe` });
+            next(ApiError.badRequestException(`Bago ${id} não existe`));
+            return;
         }
 
 
@@ -117,9 +116,15 @@ exports.show = async({ params, query, decoded }, res) => {
                 exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
             },
         });
-        const { votesTotal } = posts;
+
         const isVoted = votes ? true : false;
 
+        let linkInfo = {};
+        if (posts.links.length > 0) {
+            const { url } = posts.links[0];
+            linkInfo = await scrapeMetaTags(url);
+
+        }
 
         let post = {
 
@@ -130,9 +135,9 @@ exports.show = async({ params, query, decoded }, res) => {
 
                 id: posts.id,
                 content: posts.content,
-                links: posts.links,
-                comments_total: posts.total,
-                votes_total: votesTotal == null ? 0 : votesTotal, // == null ? 0 : posts.votes_total,
+                links: linkInfo,
+                comments_total: posts.comments_total,
+                votes_total: votes_total == null ? 0 : votes_total,
                 flags: posts.flags,
                 is_flagged: posts.isFlagged,
                 is_deleted: posts.isDeleted,
@@ -141,13 +146,12 @@ exports.show = async({ params, query, decoded }, res) => {
 
             },
         };
-        const data = { message: `🍿 Bago ${id}  para ti 🥳`, post };
+        const data = { success: true, message: ` Bago ${id} para ti`, post };
         cache.set(`post_${decoded.id}`, data);
 
         return res.status(200).send(data);
     } catch (error) {
-        return res.status(500).json({
-            error: error.message,
-        });
+        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+        return;
     }
 };

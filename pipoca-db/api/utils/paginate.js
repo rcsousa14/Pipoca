@@ -7,7 +7,7 @@ const Op = Sequelize.Op;
 
 require('dotenv').config();
 
-const scrapeMetaTags = async (url) => {
+const scrapeMetaTags = async(url) => {
     const res = await axios.get(url);
     const html = res.data;
     const $ = cheerio.load(html);
@@ -24,11 +24,11 @@ const scrapeMetaTags = async (url) => {
         image: getMetaTag('image'),
         video: getMetaTag('video'),
         site: getMetaTag('site_name'),
-        
+
 
     }
 }
-exports.paginate = async (model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
+exports.paginate = async(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
 
     const offset = this.getOffset(page, limit);
 
@@ -44,7 +44,7 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
     });
 
     var data = [];
-    const newRows = rows.map(function (row) {
+    const newRows = rows.map(function(row) {
         return row.toJSON()
     });
     for (var row of newRows) {
@@ -87,12 +87,12 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
             }
         }
         let linkInfo = {};
-        if(row.links.length > 0){
-         const { url } = row.links[0];
-         linkInfo = await scrapeMetaTags(url);
-        
+        if (row.links.length > 0) {
+            const { url } = row.links[0];
+            linkInfo = await scrapeMetaTags(url);
+
         }
-        //console.log(linkInfo);
+
         // this gets if current user upvoted/downvoted and the value
         const vote = await model.findOne({
             raw: true,
@@ -171,7 +171,7 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
         data: data
     };
 }
-exports.admin = async (model, page, limit, attributes, include) => {
+exports.admin = async(model, page, limit, attributes, include) => {
     const offset = this.getOffset(page, limit);
     const { count, rows } = await model.findAndCountAll({
         limit: limit,

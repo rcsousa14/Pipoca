@@ -5,6 +5,8 @@ const nodemailer = require('nodemailer');
 const nodemailerSendgrid = require('nodemailer-sendgrid');
 const ejs = require("ejs");
 import path from 'path';
+import { nextTick } from 'process';
+import ApiError from '../errors/api_error';
 require('dotenv').config();
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
@@ -158,7 +160,7 @@ exports.login = async(req, res) => {
 
 exports.social = async(req, res) => {
     try {
-        const { email, avatar, type, fcmToken, } = req.body;
+        const { email, avatar, type, fcmToken } = req.body;
         const { id } = await models.role.findOne({ where: { role: "regular" } });
         const refreshToken = uuidv4();
         const [user, created] = await models.user.findOrCreate({
@@ -170,47 +172,43 @@ exports.social = async(req, res) => {
         const username = `user${user.id}`;
         if (!created) {
             if (user.type != type) {
-                return res.status(401).send({
-                    message: "seu e-mail está associado a uma conta diferente!🤔"
-                })
+                next(ApiError.badRequestException('seu e-mail está associado a uma conta diferente!'));
+                return;
             }
             if (user.refresh_token != 'blocked') {
 
-                const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcmToken, active: true, username: username }, { where: { id: user.id } });
+                const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcmToken, active: true, username: username, avatar: avatar }, { where: { id: user.id } });
                 if (updated) {
-                    return res.status(200).send({
-                        message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
+                    return res.status(200).json({
+                        success: true,
+                        message: "Bem-vindo ao Pipoca",
                         token,
                     });
                 }
-                return res.status(401).send({
-                    message: "unknown error"
-                })
+                next({});
+                return;
 
 
             }
-            return res.status(401).send({
-                message: "Foste bloqueado devido a violação de uso!🙅🏾‍♀️ ",
+            next(ApiError.unauthorisedValidException("Foste bloqueado devido a violação de uso!"));
+            return;
 
-            });
 
         }
-        const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcmToken, active: true, username: username }, { where: { id: user.id } });
+        const updated = await models.user.update({ refresh_token: refreshToken, fcm_token: fcmToken, active: true, username: username, avatar: avatar }, { where: { id: user.id } });
         if (updated) {
-            return res.status(201).send({
-                message: "welcome to Pipoca 🍿 use the token to gain access!😄",
+            return res.status(201).json({
+                success: true,
+                message: "Bem-vindo ao Pipoca",
                 token,
             });
         }
-        return res.status(401).send({
-            message: "unknown error"
-        })
+        next({});
+        return;
 
     } catch (error) {
-        return res.status(500).json({
-            status: 500,
-            message: error.message,
-        });
+        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+        return;
     }
 };
 
@@ -218,19 +216,17 @@ exports.logout = async({ decoded }, res) => {
     try {
         const update = await models.user.update({ refresh_token: '' }, { where: { id: decoded.id } });
         if (update) {
-            return res.status(200).send({
-                message: "sucessfully logout",
+            return res.status(200).json({
+                success: true,
+                message: "desconectou com sucesso!",
 
             });
         }
-        return res.status(400).send({
-            message: "unknown error"
-        })
+        next({});
+        return;
     } catch (error) {
-        return res.status(500).json({
-            status: 500,
-            message: error.message,
-        });
+        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+        return;
     }
 }
 
@@ -243,28 +239,24 @@ exports.refresh = async(req, res) => {
             if (user && user.refresh_token != null || user.refresh_token.length > 0) {
                 const token = auth.jwtToken.createToken(user);
                 if (user.refresh_token == 'blocked') {
-                    return res.status(403).send({
-                        message: "You been blocked due to violation of usage!🙅🏾‍♀️ ",
-
-                    });
+                    next(ApiError.unauthorisedValidException("Foste bloqueado devido a violação de uso!"));
+                    return;
                 }
 
-                return res.status(200).send({
-                    message: "welcome back to Pipoca 🍿 use the token to gain access!😄",
+                return res.status(200).json({
+                    success: true,
+                    message: "Bem-vindo ao Pipoca",
                     token,
                 });
             }
-            return res.status(401).send({
-                message: "your are not sign in",
-
-            });
+            next(ApiError.badRequestException("Não estas logado"));
+            return;
         }
-        return null;
+        next({});
+        return;
     } catch (error) {
-        return res.status(500).json({
-            status: 500,
-            message: error.message,
-        });
+        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+        return;
     }
 }
 
@@ -279,7 +271,7 @@ exports.forgot = async(req, res) => {
             where: { email: email }
         });
         if (!user) {
-            return res.status(400).send({ message: '📧Email Enviado! Verifique seu e-mail.' });
+            return res.status(400).json({ message: '📧Email Enviado! Verifique seu e-mail.' });
         }
         const { username } = user;
 

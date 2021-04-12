@@ -1,3 +1,4 @@
+import ApiError from "../errors/api_error";
 export default async(req, res, next) => {
     const { content, longitude, latitude, links } = req.body;
     var nsfws = [
@@ -60,19 +61,24 @@ export default async(req, res, next) => {
 
     ];
     if (!content) {
-        return res.status(400).send({ message: '✍🏾 bago é requerido!' });
+        next(ApiError.badRequestException('Bago é requerido!'));
+        return;
+
     }
     if (content.length > 200) {
-        res.status(400).send({ message: '😱 erreh mano apenas 200 carateres 🙄' });
+        next(ApiError.badRequestException('Bago deve ter menos de 200 caracteres.'));
+        return;
+
     }
     if (!latitude || !longitude) {
-        res.status(400).send({ message: '🗺️ Localização é obrigatório!' })
+        next(ApiError.badRequestException('Localização é obrigatório!'));
+        return;
+
     }
     if (links.length > 0 && nsfws.some((nsfw) => links[0].includes(nsfw))) {
-        res.status(400).send({
-            message: "Desculpe, não pode postar conteúdo adulto",
+        next(ApiError.unauthorisedValidException("Desculpe, não pode postar conteúdo adulto."));
+        return;
 
-        })
     }
     next();
 }

@@ -1,18 +1,19 @@
-import models from '../models';
+import ApiError from "../errors/api_error";
+import models from "../models";
 
-
-export default ({ decoded }, res, next)=> {
+export default ({ decoded }, res, next) => {
     // this checks if the user calling the enpoint is an admin
-    const admin =  models.user.findOne({
+    const admin = models.user.findOne({
         where: { id: decoded.id },
         include: [{
             model: models.role,
-            as: 'role',
-            where: { role: "admin" }
-        }]
+            as: "role",
+            where: { role: "admin" },
+        }, ],
     });
     if (!admin) {
-        return res.status(401).send('401: Unauthorized 💩!');
+        next(ApiError.unauthorisedInvalidException("desautorizado : 💩"));
+        return;
     }
     next();
-}
+};

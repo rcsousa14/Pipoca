@@ -1,7 +1,8 @@
-import CacheService from '../utils/cache';
-const models = require('../models');
-const Sequelize = require('sequelize');
-const { paginate } = require('../utils/paginate');
+import ApiError from "../errors/api_error";
+import CacheService from "../utils/cache";
+const models = require("../models");
+const Sequelize = require("sequelize");
+const { paginate } = require("../utils/paginate");
 const ttl = 10;
 const cache = new CacheService(ttl);
 const cachePost = new CacheService(60);
@@ -12,46 +13,58 @@ exports.store = async({ params, body, decoded }, res) => {
         const { content, links, hashes, longitude, latitude } = body;
         const result = cachePost.get(`user_comment_${decoded.id}`);
         if (result && result == content) {
-            console.log(result)
-            return res.status(550).json({ message: '🖐🏾 Eh mano ninguem gosta de spam 👾' });
+            next(ApiError.badRequestException("Ninguém gosta de spam"));
+            return;
         }
         var point = {
-            type: 'Point',
+            type: "Point",
             coordinates: [longitude, latitude],
-            crs: { type: 'name', properties: { name: 'EPSG:4326' } }
-
+            crs: { type: "name", properties: { name: "EPSG:4326" } },
         };
 
-        const comment = await models.comment.create({ user_id: decoded.id, post_id: postId, content, coordinates: point });
+        const comment = await models.comment.create({
+            user_id: decoded.id,
+            post_id: postId,
+            content,
+            coordinates: point,
+        });
 
-        if (hashes) {
+        if (!hashes.length == 0 && hashes.length > 0) {
             for (var hash of hashes) {
                 const [tag] = await models.tag.findOrCreate({
-                    where: { hash: hash }
+                    where: { hash: hash },
                 });
 
-                await models.post_tag.create({post_id: post.id, type: 'comment', tag_id: tag.id});
+                await models.post_tag.create({
+                    comment_id: comment.id,
+                    tag_id: tag.id,
+                });
             }
         }
-        if (links) {
+        if (!links.length == 0 && links.length > 0) {
+            const [link] = await models.link.findOrCreate({
+                where: { url: links[0] },
+            });
 
-            getLinkData({ url: links[0] });
-            const link = await models.link.findOne({where: {url: links[0]}})
-            
-            await models.post_link.create({post_id: post.id, type: 'comment', link_id: link.id});
-           
-               
-           }
+            await models.post_link.create({
+                comment_id: comment.id,
+                link_id: link.id,
+            });
+        }
         cachePost.set(`user_comment_${decoded.id}`, comment.content);
         cache.del(`user_comments_feed_${decoded.id}`);
         cache.del(`user_comments_${decoded.id}`);
-        return res.status(201).send({ message: '🍿 Commentario criado com sucesso! 🥳' })
+        return res.status(201).json({
+            success: true,
+            message: "Comentário criado com sucesso!",
+        });
     } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        })
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
-}
+};
 
 exports.index = async({ params, query, decoded }, res) => {
     try {
@@ -59,7 +72,7 @@ exports.index = async({ params, query, decoded }, res) => {
         if (result) {
             return res.status(200).json(result);
         }
-        const filtro = 'comment';
+        const filtro = "comment";
         const { postId } = params;
         const { lat, lng } = query;
         const id = decoded.id;
@@ -68,33 +81,41 @@ exports.index = async({ params, query, decoded }, res) => {
         let search = { post_id: postId };
 
         let order = [];
-        let group = ['comment.id', 'creator.id'];
-        if (query.filter == 'date') {
-            order.push(
-                ['createdAt', 'DESC']
-            )
+        let group = ["comment.id"];
+        if (query.filter == "date") {
+            order.push(["createdAt", "DESC"]);
         }
-        if (query.filter == 'pipocar') {
+        if (query.filter == "pipocar") {
             order.push(
-                [Sequelize.literal('votes_total ASC')], [Sequelize.literal('comments_total ASC')]
+                [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
             );
         }
-        if (query.filter == 'date') {
-            order.push(['createdAt', 'DESC']);
+        if (query.filter == "date") {
+            order.push(["createdAt", "DESC"]);
         }
         let attributes = [
-            'id',
-            'content',
-            'flags',
-            'is_flagged',
-            'is_deleted',
-            'createdAt',
-            'coordinates', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`), 'votes_total'],
-            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`), 'comments_total'],
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "is_deleted",
+            "createdAt",
+            "coordinates", [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
+                ),
+                "votes_total",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`
+                ),
+                "comments_total",
+            ],
         ];
         let include = [{
                 model: models.user,
-                as: 'creator',
+                as: "creator",
                 attributes: {
                     exclude: [
                         "createdAt",
@@ -106,46 +127,75 @@ exports.index = async({ params, query, decoded }, res) => {
                         "role_id",
                         "bio",
                         "password",
-                    ]
-                }
+                    ],
+                },
             },
-
-
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
         ];
         const model = models.comment;
-        const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
-        const data = { message: '🍿 Todos os commentarios proximo de ti 🥳', comments };
+        const comments = await paginate(
+            model,
+            id,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng,
+            filtro
+        );
+        const data = {
+            success: true,
+            message: "Todos os comentários",
+            comments,
+        };
         cache.set(`user_comments_feed_${decoded.id}`, data);
-        return res.status(200).send(data);
-
-
+        return res.status(200).json(data);
     } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        })
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
-}
+};
 
 exports.soft = async({ params, decoded }, res) => {
     try {
-
-        await models.comment.update({
-            is_deleted: true
+        const updated = await models.comment.update({
+            is_deleted: true,
         }, {
             where: {
                 user_id: decoded.id,
-                id: params.id
-            }
+                id: params.id,
+            },
         });
-        cache.del(`user_comments_feed_${decoded.id}`);
-        cache.del(`user_comments_${decoded.id}`);
-        return res.status(200).send({ message: `Commentario ${id} foi eliminado com sucesso` });
+        if (updated) {
+            cache.del(`user_comments_feed_${decoded.id}`);
+            cache.del(`user_comments_${decoded.id}`);
+            return res.status(200).json({
+                success: true,
+                message: `Comentário ${id} foi eliminado com sucesso`,
+            });
+        } else {
+            next({});
+            return;
+        }
     } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        });
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
-}
+};
 
 exports.show = async({ query, decoded }, res) => {
     try {
@@ -153,31 +203,41 @@ exports.show = async({ query, decoded }, res) => {
         if (result) {
             return res.status(200).json(result);
         }
-        const filtro = 'comment';
+        const filtro = "comment";
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
-        const limit = 9;
+        const limit = 10;
 
-        let search = { user_id: id };
+        let search = { user_id: id, is_deleted: false };
         let order = [
-            ['createdAt', 'DESC']
+            ["createdAt", "DESC"]
         ];
-        let group = ['comment.id', 'creator.id'];
+        let group = ["comment.id", "creator.id"];
         let attributes = [
-            'id',
-            'content',
-            'flags',
-            'is_flagged',
-            'is_deleted',
-            'createdAt',
-            'coordinates', [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`), 'votes_total'],
-            [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`), 'comments_total'],
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "is_deleted",
+            "createdAt",
+            "coordinates", [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
+                ),
+                "votes_total",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`
+                ),
+                "comments_total",
+            ],
         ];
 
         let include = [{
                 model: models.user,
-                as: 'creator',
+                as: "creator",
                 attributes: {
                     exclude: [
                         "createdAt",
@@ -189,20 +249,43 @@ exports.show = async({ query, decoded }, res) => {
                         "role_id",
                         "bio",
                         "password",
-                    ]
-                }
+                    ],
+                },
             },
-
-
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
         ];
         const model = models.comment;
-        const comments = await paginate(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro);
-        const data = { message: '🍿 Todos os teus sub commentarios  🥳', comments };
+        const comments = await paginate(
+            model,
+            id,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng,
+            filtro
+        );
+        const data = {
+            success: true,
+            message: "Todos os teus comentários!",
+            comments
+        };
         cache.set(`user_comments_${decoded.id}`, data);
-        return res.status(200).send(result);
+        return res.status(200).json(result);
     } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        });
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
-}
+};
