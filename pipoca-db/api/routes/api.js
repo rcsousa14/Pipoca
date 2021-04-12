@@ -6,7 +6,7 @@ import authorizeMiddleware from '../middleware/authorize';
 import postauthMiddleware from '../middleware/post_auth';
 import adminMiddleware from '../middleware/admin_auth';
 import voteMiddleware from '../middleware/vote_auth';
-import linkMiddleware from '../middleware/link_auth';
+
 
 const user = require('../controllers/user_controller');
 const auth = require('../controllers/auth_controller');
