@@ -8,15 +8,15 @@ class FullScreen extends StatefulWidget {
   final int index, points, page, vote, comments;
   final bool isVoted, filter;
   FullScreen(
-      {Key key,
-      @required this.image,
-      this.index,
-      this.points,
-      this.page,
-      this.isVoted,
-      this.filter,
-      this.vote,
-      this.comments})
+      {Key? key,
+      required this.image,
+      required this.index,
+      required this.points,
+      required this.page,
+      required this.isVoted,
+      required this.filter,
+      required this.vote,
+       required this.comments})
       : super(key: key);
 
   @override

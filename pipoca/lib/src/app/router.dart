@@ -1,39 +1,27 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:auto_route/auto_route_annotations.dart';
-import 'package:pipoca/src/views/forgot_view/forgot_view.dart';
-import 'package:pipoca/src/views/intro_view/intro_view.dart';
-import 'package:pipoca/src/views/login_view/login_view.dart';
-import 'package:pipoca/src/views/main_view/main_view.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:pipoca/src/constants/routes/navigation.dart';
+import 'package:pipoca/src/views/auth_view/auth_view.dart';
+import 'package:stacked/stacked.dart';
 
-import 'package:pipoca/src/views/splash_view/splash_view.dart';
+class Router {
+  Route<dynamic> generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case '/':
+      case initialRoute:
+        return PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 300),
+          transitionsBuilder: (context, animation, anotherAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+          pageBuilder: (context, animation, secondaryAnimation) => AuthView(),
+        );
 
-
-@MaterialAutoRouter(routes:<AutoRoute>[
-   CustomRoute(
-    page: SplashView,
-    transitionsBuilder: TransitionsBuilders.fadeIn,
-    initial: true,
-  ),
-  CustomRoute(
-    page: IntroView,
-   path: '/intro-view',
-  
-  ),
-   CustomRoute(
-    page: MainView,
-    transitionsBuilder: TransitionsBuilders.fadeIn,
-    path: '/main-view',
-  ),
-   CustomRoute(
-    page: LoginView,
-    transitionsBuilder: TransitionsBuilders.fadeIn,
-    path: '/login-view',
-  ),
-  CustomRoute(
-    page: ForgotView,
-    transitionsBuilder: TransitionsBuilders.fadeIn,
-    path: '/forgot-view',
-  ),
- 
-])
-class $Router {}
+      default:
+        return PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 300),
+          transitionsBuilder: (context, animation, anotherAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+          pageBuilder: (context, animation, secondaryAnimation) => AuthView(),
+        );
+    }
+  }
+}

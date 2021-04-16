@@ -1,51 +1,53 @@
 class Usuario {
-  String message;
-  User user;
+  late bool success;
+  late String message;
+  late User? user;
 
-  Usuario({this.message, this.user});
+  Usuario({required this.success, required this.message, this.user});
 
   Usuario.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
     message = json['message'];
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = User.fromJson(json['user']);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
     data['message'] = this.message;
-    if (this.user != null) {
-      data['user'] = this.user.toJson();
-    }
+    data['user'] = this.user!.toJson();
+
     return data;
   }
 }
 
 class User {
-  int id;
-  String username;
-  String email;
-  String bio;
-  String avatar;
-  String birthday;
-  String fcmToken;
-  String createdAt;
-  int karmaTotal;
-  int interationTotal;
-  Karma karma;
-  Interation interation;
+  late int id;
+   String? username;
+  late String email;
+   String? bio;
+   String? avatar;
+   String? birthday;
+   String? fcmToken;
+  late String createdAt;
+  late int karmaTotal;
+  late int interationTotal;
+  late Karma karma;
+  late Interation interation;
 
   User(
-      {this.id,
+      {required this.id,
       this.username,
-      this.email,
-      this.bio,
-      this.avatar,
-      this.birthday,
-      this.fcmToken,
-      this.createdAt,
-      this.karmaTotal,
-      this.interationTotal,
-      this.karma,
-      this.interation});
+      required this.email,
+       this.bio,
+       this.avatar,
+       this.birthday,
+       this.fcmToken,
+      required this.createdAt,
+      required this.karmaTotal,
+      required this.interationTotal,
+      required this.karma,
+      required this.interation});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -58,10 +60,8 @@ class User {
     createdAt = json['created_at'];
     karmaTotal = json['karma_total'];
     interationTotal = json['interation_total'];
-    karma = json['karma'] != null ? new Karma.fromJson(json['karma']) : null;
-    interation = json['interation'] != null
-        ? new Interation.fromJson(json['interation'])
-        : null;
+    karma = new Karma.fromJson(json['karma']);
+    interation = new Interation.fromJson(json['interation']);
   }
 
   Map<String, dynamic> toJson() {
@@ -76,25 +76,24 @@ class User {
     data['created_at'] = this.createdAt;
     data['karma_total'] = this.karmaTotal;
     data['interation_total'] = this.interationTotal;
-    if (this.karma != null) {
-      data['karma'] = this.karma.toJson();
-    }
-    if (this.interation != null) {
-      data['interation'] = this.interation.toJson();
-    }
+
+    data['karma'] = this.karma.toJson();
+
+    data['interation'] = this.interation.toJson();
+
     return data;
   }
 }
 
 class Karma {
-  int postsVotesTotal;
-  int commentsVotesTotal;
-  int subCommentsVotesTotal;
+  late int postsVotesTotal;
+  late int commentsVotesTotal;
+  late int subCommentsVotesTotal;
 
   Karma(
-      {this.postsVotesTotal,
-      this.commentsVotesTotal,
-      this.subCommentsVotesTotal});
+      {required this.postsVotesTotal,
+      required this.commentsVotesTotal,
+      required this.subCommentsVotesTotal});
 
   Karma.fromJson(Map<String, dynamic> json) {
     postsVotesTotal = json['posts_votes_total'];
@@ -112,12 +111,14 @@ class Karma {
 }
 
 class Interation {
-  int userPostsTotal;
-  int userCommentsTotal;
-  int userSubCommentsTotal;
+  late int userPostsTotal;
+  late int userCommentsTotal;
+  late int userSubCommentsTotal;
 
   Interation(
-      {this.userPostsTotal, this.userCommentsTotal, this.userSubCommentsTotal});
+      {required this.userPostsTotal,
+      required this.userCommentsTotal,
+      required this.userSubCommentsTotal});
 
   Interation.fromJson(Map<String, dynamic> json) {
     userPostsTotal = json['user_posts_total'];

@@ -1,5 +1,4 @@
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:injectable/injectable.dart';
 
@@ -8,16 +7,16 @@ class PushNotificationService {
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   Future initialise() async {
-    await Firebase.initializeApp();
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+    // await Firebase.initializeApp();
+    // NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    //   alert: true,
+    //   announcement: false,
+    //   badge: true,
+    //   carPlay: false,
+    //   criticalAlert: false,
+    //   provisional: false,
+    //   sound: true,
+    // );
   }
 
   // void _navigate(Map<String, dynamic> message) {
@@ -35,7 +34,7 @@ class PushNotificationService {
   //   }
   // }
 
-  Future<String> token() async {
-    return await _firebaseMessaging.getToken();
-  }
+  // Future<String> token() async {
+  //   return await _firebaseMessaging.getToken();
+  // }
 }

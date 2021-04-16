@@ -5,24 +5,24 @@ class FeedCaller extends StatefulWidget {
   final Function caller;
   final Widget child;
 
-  FeedCaller({Key key, @required this.caller, this.child}) : super(key: key);
+  FeedCaller({Key? key, required this.caller, required this.child}) : super(key: key);
 
   @override
   _FeedCallerState createState() => _FeedCallerState();
 }
 
 class _FeedCallerState extends State<FeedCaller> {
-  Timer _timer;
+  Timer? _timer;
   @override
   void initState() {
     super.initState();
 
-    if (widget.caller != null) {
+   
       widget.caller();
  
        _timer = Timer.periodic(Duration(minutes: 3), (timer) => widget.caller());
       
-    }
+    
   }
 
   @override

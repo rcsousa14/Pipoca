@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pipoca/src/models/auth_user_model.dart';
 import 'package:pipoca/src/views/login_view/login_view_model.dart';
 import 'package:pipoca/src/views/login_view/widgets/form.dart';
 import 'package:pipoca/src/views/login_view/widgets/logo.dart';
@@ -9,13 +10,19 @@ import 'package:stacked/stacked.dart';
 import 'package:pipoca/src/constants/widgets/network_sensitive.dart';
 
 class LoginView extends StatelessWidget {
-  const LoginView({Key key}) : super(key: key);
+  final String message;
+  const LoginView({Key? key, this.message = ''}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return ViewModelBuilder<LoginViewModel>.reactive(
+      onModelReady: (model) {
+        if (message.isNotEmpty) {
+          model.showError(message);
+        }
+      },
       builder: (context, model, child) {
         Widget loadingIndicator = model.isBusy
             ? new Container(
@@ -54,12 +61,18 @@ class LoginView extends StatelessWidget {
                     Logo(),
                     FormBuilder(
                       isBusy: model.isBusy,
-                      fbTap: () =>
-                          model.access(type: 'facebook', context: context),
-                      glTap: () =>
-                          model.access(type: 'google', context: context),
+                      fbTap: () => model.facebook().then((value) {
+                        if (value is UserAuth) {
+                          model.getToken(value);
+                        }
+                      }),
+                      glTap: () => model.google().then((value) {
+                        if (value is UserAuth) {
+                          model.getToken(value);
+                        }
+                      }),
                       apTap: () => print('apple'),
-                      termsTap: () => print('hi'),
+                      termsTap: () => print('hello'),
                     ),
                     new Align(
                       child: loadingIndicator,
@@ -77,7 +90,7 @@ class LoginView extends StatelessWidget {
     );
   }
 }
- 
+
 // class _SignUpForm extends HookViewModelWidget<LoginViewModel> {
 //   const _SignUpForm({Key key}) : super(key: key);
 

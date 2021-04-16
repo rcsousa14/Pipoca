@@ -243,7 +243,7 @@ exports.refresh = async(req, res, next) => {
                     return;
                 }
 
-                return res.status(200).json({
+                return res.status(201).json({
                     success: true,
                     message: "Bem-vindo ao Pipoca",
                     token,

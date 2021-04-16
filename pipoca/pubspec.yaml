@@ -18,55 +18,53 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  auto_route: ^0.6.9
-  webview_flutter: ^1.0.7
+
+  webview_flutter: ^2.0.4
   flutter_parsed_text: ^2.1.0
-  cupertino_icons: ^1.0.0
-  firebase_analytics: ^7.0.1
-  firebase_core: ^0.7.0
-  firebase_messaging: ^8.0.0-dev.15
-  firebase_dynamic_links: ^0.7.0+1
-  battery: ^1.0.11
-  shimmer: ^1.1.2
-  flutter_hooks: ^0.15.0
-  google_sign_in: ^4.5.9
-  sign_in_with_apple: ^2.5.4
-  flutter_svg: ^0.19.3
-  font_awesome_flutter: ^8.11.0
-  flutter_facebook_auth: ^2.0.2+1  
-  connectivity: ^2.0.2
-  get_it: ^5.0.6 
-  google_fonts: ^1.1.2
-  http: ^0.12.1
-  injectable: ^1.1.2
-  location: ^3.2.4
-  permission_handler: ^5.1.0+2
-  provider: ^4.3.1
-  cached_video_player: ^1.0.3
-  stacked: ^1.9.5
-  detectable_text_field: ^1.0.1
-  visibility_detector: ^0.1.5
-  stacked_hooks: ^0.1.3+2
-  stacked_services: ^0.7.2
-  cached_network_image: ^2.5.0
-  timeago: ^2.0.30
-  esys_flutter_share: ^1.0.2
-  shared_preferences: ^0.5.12+4
-  flutter_multi_formatter: ^1.3.6
-  rxdart: ^0.25.0
+  cupertino_icons: ^1.0.2
+  firebase_analytics: ^8.0.0-dev.2
+  observable_ish: ^3.0.0
+  firebase_core: ^1.0.3
+  firebase_messaging: ^9.1.1
+  firebase_dynamic_links: ^2.0.0-dev.1
+  battery: ^2.0.1
+  shimmer: ^2.0.0
+  flutter_hooks: ^0.16.0
+  google_sign_in: ^5.0.1
+  flutter_svg: ^0.21.0+1
+  font_awesome_flutter: ^9.0.0
+  flutter_facebook_auth: ^3.3.2+2
+  connectivity: ^3.0.3
+  get_it: ^6.1.1
+  google_fonts: ^2.0.0
+  http: ^0.13.1
+  injectable: ^1.2.2
+  location: ^4.1.1
+  permission_handler: ^6.1.1
+  provider: ^5.0.0
+  video_player: ^2.1.1
+  stacked: ^2.0.4
+  detectable_text_field: ^2.0.1
+  visibility_detector: ^0.2.0
+  stacked_hooks: ^0.2.0
+  stacked_services: ^0.8.3
+  timeago: ^3.0.2
+  share: ^2.0.1
+  shared_preferences: ^2.0.5
+  flutter_multi_formatter: ^2.0.2
+  rxdart: ^0.26.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  auto_route_generator: ^0.6.10
   build_runner: null
-  
-  injectable_generator: ^1.0.6
+
+  injectable_generator:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

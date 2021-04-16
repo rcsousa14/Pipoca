@@ -1,33 +1,42 @@
-import 'package:battery/battery.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:location/location.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
-import 'package:pipoca/src/models/user_location_model.dart';
-import 'package:pipoca/src/services/authentication_service.dart';
-import 'package:pipoca/src/services/battery_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:permission_handler/permission_handler.dart' as settings;
 
 @lazySingleton
 class MainViewModel extends IndexTrackingViewModel {
-  final _authenticationService = locator<AuthenticationService>();
   final _conn = locator<ConnectivityService>();
-  final _location = locator<LocationService>();
-  final _battery = locator<BatteryService>();
-
+  final _currentLocation = locator<LocationService>();
+  final _dialogService = locator<DialogService>();
 
   ConnectivityStatus get result => _conn.status;
-  Coordinates get coords => _location.currentLocation;
-  String get token => _authenticationService.currentToken;
+  // Coordinates get coords => _location.currentLocation;
+  // String get token => _authenticationService.token;
 
-  BatteryState get state => _battery.batteryState;
+  // BatteryState get state => _battery.batteryState;
 
+  Future locationCheck() async {
+    var permission = await _currentLocation.location.hasPermission();
+    if (permission != PermissionStatus.granted) {
+      DialogResponse? response = await _dialogService.showDialog(
+          title: 'Localização',
+          description:
+              'Parece que não deu-nos permissão para sua localização.\nSe gostarias de usar sua localização para interagir com as pessoas próximas de si, clique "Sim".',
+          buttonTitle: 'Sim',
+          cancelTitle: 'Agora Não');
 
-  
+      if (response?.confirmed == true) {
+        await settings.openAppSettings();
+      }
+    }
+  }
 
   List<BottomNavigationBarItem> get availableItems =>
       availableChoices.map((elem) => elem.navChoiceItem()).toList();
@@ -37,7 +46,9 @@ class MainViewModel extends IndexTrackingViewModel {
         NavChoice.notfy,
         NavChoice.user,
       ];
-  GlobalKey<NavigatorState> get currentNestedKey => StackedService.nestedNavigationKey(availableChoices[currentIndex].nestedKeyValue());
+  GlobalKey<NavigatorState>? get currentNestedKey =>
+      StackedService.nestedNavigationKey(
+          availableChoices[currentIndex].nestedKeyValue());
 
   NavChoice get currentChoice => availableChoices[currentIndex];
 }

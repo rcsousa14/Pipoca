@@ -10,13 +10,15 @@ import 'package:rxdart/rxdart.dart';
 class ConnectivityService extends IstoppableService {
   BehaviorSubject<ConnectivityStatus> connectionStatusController =
       BehaviorSubject<ConnectivityStatus>();
-  ConnectivityStatus get status => connectionStatusController.value;
-  StreamSubscription _streamSubscription;
+  ConnectivityStatus get status => connectionStatusController.value!;
+
   Stream<ConnectivityStatus> get getStreamData =>
       connectionStatusController.stream;
 
+    
+
   ConnectivityService() {
-    _streamSubscription = Connectivity()
+     Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
       
@@ -54,6 +56,6 @@ class ConnectivityService extends IstoppableService {
   void stop() {
     super.stop();
 
-    _streamSubscription?.cancel();
+  
   }
 }

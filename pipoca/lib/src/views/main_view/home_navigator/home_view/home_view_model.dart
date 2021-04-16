@@ -1,5 +1,4 @@
 import 'package:pipoca/src/app/locator.dart';
-import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
@@ -21,17 +20,17 @@ class HomeViewModel extends BaseViewModel {
 
   bool get isFilter => _isFilter;
 
-  Usuario get user => _userService.user;
-  String get errorMsg => _userService.error;
+  User get user => _userService.user;
+ 
 
   int _currentIndex = 1;
   int get index => _currentIndex;
 
   Future showBasicBottomSheet(
-      {String latest,
-      String trending,
-      String latestD,
-      String trendingD}) async {
+      {required String latest,
+      required String trending,
+      required String latestD,
+      required String trendingD}) async {
     var response = await _bottomSheetService.showBottomSheet(
         confirmButtonTitle: 'Fixe',
         title: !_isFilter ? trending : latest,

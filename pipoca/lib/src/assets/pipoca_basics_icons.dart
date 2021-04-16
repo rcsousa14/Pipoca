@@ -23,7 +23,7 @@ class PipocaBasics {
   PipocaBasics._();
 
   static const _kFontFam = 'PipocaBasics';
-  static const String _kFontPkg = null;
+  static const  _kFontPkg = null;
 
   static const IconData quill = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData dharma_wheel = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);

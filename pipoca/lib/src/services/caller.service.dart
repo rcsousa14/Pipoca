@@ -11,7 +11,7 @@ class CallerService {
   final _battery = locator<BatteryService>();
   final _conn = locator<ConnectivityService>();
 
-  Future connection(int level, BatteryState state, Future<Feed> caller) async {
+  Future connection(int level, BatteryState state, Future caller) async {
     if (caller != null) {
       switch (_conn.status) {
         case ConnectivityStatus.Cellular:
@@ -39,7 +39,7 @@ class CallerService {
      
           return caller;
         case ConnectivityStatus.Offiline:
-          return 'no internet Connection';
+          return caller;
       }
     }
   }

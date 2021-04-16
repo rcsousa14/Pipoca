@@ -1,45 +1,41 @@
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/constants/widgets/content_gif.dart';
-import 'package:pipoca/src/constants/widgets/full_screen.dart';
 import 'package:pipoca/src/constants/widgets/link_caller_model.dart';
 import 'package:pipoca/src/constants/widgets/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:stacked/stacked.dart';
 
 class LinkCaller extends StatelessWidget {
-  final Links links;
+  final Links? links;
   final int index, points, page, vote, comments;
   final bool isVoted, filter;
 
   const LinkCaller(
-      {Key key,
-      @required this.links,
-      @required this.index,
-      this.points,
-      this.page,
-      this.isVoted,
-      this.filter,
-      this.vote,
-      this.comments})
+      {Key? key,
+       this.links,
+      required this.index,
+      required this.points,
+      required this.page,
+      required this.isVoted,
+      required this.filter,
+     required this.vote,
+     required this.comments})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var uniKey = UniqueKey();
-    String via = links.site ?? 'Postimg';
+
+    String via = links != null ?  links!.site! : 'Postimg' ;
     return ViewModelBuilder<LinkViewModel>.reactive(
       builder: (context, model, child) {
-        return links.url.contains('giphy')
-            ? ContentVideo(url: links.video)
-            : links.url.contains('imgflip') ||
-                    links.url.contains('postimg') ||
-                    links.url.contains('w3w')
-                ? links.video == null || links.video.isEmpty
+        return links!.url!.contains('giphy')
+            ? ContentVideo(url: links!.video!)
+            : links!.url!.contains('imgflip') ||
+                    links!.url!.contains('postimg') ||
+                    links!.url!.contains('w3w')
+                ?  links!.video!.isEmpty
                     ? Container(
                         margin: const EdgeInsets.only(bottom: 20),
                         child: Column(
@@ -55,7 +51,7 @@ class LinkCaller extends StatelessWidget {
                                 filter: filter,
                                 isLink: false,
                                 image:NetworkImage(
-                                    links.image ?? links.url,
+                                     links!.image!.isNotEmpty ? links!.image! : links!.url!,
                                     )),
                             SizedBox(height: 5),
                             Padding(
@@ -81,9 +77,9 @@ class LinkCaller extends StatelessWidget {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           WebViewScreen(
-                                                            url: links.url,
+                                                            url: links!.url,
                                                             siteName:
-                                                                links.site,
+                                                                links!.site,
                                                           )));
                                             })
                                     ]),
@@ -92,7 +88,7 @@ class LinkCaller extends StatelessWidget {
                           ],
                         ),
                       )
-                    : ContentVideo(url: links.video)
+                    : ContentVideo(url: links!.video!)
                 : Builder(builder: (context) {
                     return Container(
                       margin: EdgeInsets.only(bottom: 20),
@@ -103,12 +99,12 @@ class LinkCaller extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          if (links.image.isNotEmpty ||
-                              links.image != null) ...[
+                          if (links!.image!.isNotEmpty 
+                              ) ...[
                             ContentImage(
                               isLink: true,
-                              links: links,
-                              image: NetworkImage(links.image,
+                              links: links!,
+                              image: NetworkImage(links!.image!,
                                   ),
                             )
                           ],
@@ -118,7 +114,7 @@ class LinkCaller extends StatelessWidget {
                                 vertical: 10, horizontal: 6),
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: Colors.grey[200],
+                                  color: Colors.grey.shade200,
                                 ),
                                 borderRadius: BorderRadius.only(
                                     bottomLeft: Radius.circular(10),
@@ -128,7 +124,7 @@ class LinkCaller extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  links.title,
+                                  links!.title!,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -138,7 +134,7 @@ class LinkCaller extends StatelessWidget {
                                 ),
                                 SizedBox(height: 2),
                                 Text(
-                                  links.site,
+                                  links!.site!,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontSize: 13.5, color: Colors.grey),

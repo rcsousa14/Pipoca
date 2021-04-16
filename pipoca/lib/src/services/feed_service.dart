@@ -1,84 +1,101 @@
 import 'dart:async';
 import 'package:injectable/injectable.dart';
+import 'package:observable_ish/observable_ish.dart';
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/interfaces/stoppable_interface.dart';
+import 'package:pipoca/src/models/auth_token_model.dart';
+import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/repositories/feed/feed_repository.dart';
-import 'package:pipoca/src/services/authentication_service.dart';
-import 'package:pipoca/src/services/shared_local_storage_service.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:stacked/stacked.dart';
 
 @lazySingleton
-class FeedService extends IstoppableService {
+class FeedService extends IstoppableService with ReactiveServiceMixin {
   final _api = locator<FeedRepository>();
-  
-  final _authenticationService = locator<AuthenticationService>();
-  final _localStorage = locator<SharedLocalStorageService>();
 
-  String _error;
-  String get error => _error;
-
-  BehaviorSubject<FeedInfo> _infoController = BehaviorSubject<FeedInfo>();
+  late BehaviorSubject<FeedInfo> _infoController;
   Sink<FeedInfo> get feedInfo => _infoController.sink;
 
   // this will get the feed
 
-  final BehaviorSubject<Feed> _feedController = BehaviorSubject<Feed>();
-  Stream<Feed> get feedStream => _feedController.stream;
+ late BehaviorSubject<ApiResponse<Posts>> _feedController;
 
-  StreamSubscription _streamSubscription;
+  Sink<ApiResponse<Posts>> get feedSink => _feedController.sink;
+  Stream<ApiResponse<Posts>> get feedStream => _feedController.stream;
+  RxValue<CreatePost> _newPost = RxValue<CreatePost>(CreatePost());
+  
+  // new post rxValue
+  CreatePost get newPost => _newPost.value;
+
+
+  
+
 
   FeedService() {
-    _streamSubscription = _infoController.stream.listen((FeedInfo info) async {
-      print('yh aqio');
-      await getFeed(
-        lat: info.coordinates.latitude,
-        lng: info.coordinates.longitude,
-        page: info.page,
-        filter: info.filter,
-      );
-
-      _feedController.onCancel = () {
-        _feedController.close();
-      };
+   
+    listenToReactiveValues([_newPost]);
+    _feedController = BehaviorSubject<ApiResponse<Posts>>();
+    _infoController = BehaviorSubject<FeedInfo>();
+    _infoController.stream.listen((FeedInfo info) async {
+      print('I have changed the info:: $info');
+      fetchFeed(info);
     });
   }
 
-  Future<Feed> getFeed(
-      {double lat, double lng, int page, String filter}) async {
-    Feed feed = await _api.getFeed(lat, lng, page, filter);
-    if (feed == null) {
-      int id = await _localStorage.recieve('id');
-      var result = await _authenticationService.refreshToken(
-          currentToken: _authenticationService.currentToken, id: id);
-      if (result is bool) {
-        if (result) {
-          Feed feed = await _api.getFeed(lat, lng, page, filter);
-          _feedController.sink.add(feed);
-          print(feed);
-          return feed;
-        }
-      }
-      _error = result;
-      throw result;
+  fetchFeed(FeedInfo info) async {
+    feedSink.add(ApiResponse.loading('loading ..'));
+    
+    try {
+      Posts data = await _api.getFeedData(
+        lat: info.coordinates!.latitude,
+        lng: info.coordinates!.longitude,
+        page: info.page!,
+        filter: info.filter!,
+      );
+      feedSink.add(ApiResponse.completed(data));
+    } catch (e) {
+      feedSink.add(ApiResponse.error(e.toString()));
     }
+  }
 
-    _feedController.sink.add(feed);
-    print(feed);
-    return feed;
+  Future postFeed({required CreatePost post}) async {
+    ApiResponse.loading('posting...');
+    _newPost.value = post;
+    try {
+      Generic posts = await _api.postFeedData(post);
+      ApiResponse.completed(posts);
+      _newPost.value = CreatePost();
+    } catch (e) {
+      ApiResponse.error(e.toString());
+      _newPost.value = CreatePost();
+    }
+  }
+
+  Future pointPost({required PostPoint point}) async {
+    ApiResponse.loading('loading');
+    try {
+      Generic data = await _api.postPointData(point);
+      ApiResponse.completed(data);
+    } catch (e) {
+      ApiResponse.error(e.toString());
+    }
   }
 
   @override
   void start() {
     super.start();
 
-    _streamSubscription?.resume();
+   
   }
 
   @override
   void stop() {
     super.stop();
-    _streamSubscription?.pause();
-    _infoController?.close();
+
+    _feedController.close();
+    _infoController.close();
+  
   }
 }

@@ -1,10 +1,10 @@
 class UserAuth {
-  String email;
-  String password;
-  String fcmToken;
-  String avatar;
-  String username;
-  String type;
+  String? email;
+  String? password;
+  String? fcmToken;
+  String? avatar;
+  String? username;
+  String? type;
 
   UserAuth(
       {this.email,

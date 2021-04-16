@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:pipoca/src/app/locator.dart';
-import 'package:pipoca/src/repositories/feed/post_point_repository.dart';
+
 import 'package:pipoca/src/services/caller.service.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
@@ -8,21 +8,19 @@ import 'package:pipoca/src/services/location_service.dart';
 import 'package:pipoca/src/services/social_share_service.dart';
 import 'package:stacked/stacked.dart';
 
-
 class BagoCardViewModel extends BaseViewModel {
   final _feedService = locator<FeedService>();
   final _location = locator<LocationService>();
   final _callerService = locator<CallerService>();
   final CapturePngService _captureService = locator<CapturePngService>();
   final UrlLancherService _lancherService = locator<UrlLancherService>();
-  final PostPointRepository _pointRepository = locator<PostPointRepository>();
 
-  bool _isUp;
-  bool _isDown;
-  int _totalPoints;
-  int get points => _totalPoints;
-  bool get up => _isUp;
-  bool get down => _isDown;
+  bool? _isUp;
+  bool? _isDown;
+  late int _totalPoints;
+  int? get points => _totalPoints;
+  bool? get up => _isUp;
+  bool? get down => _isDown;
 
   void getVote(bool isVoted, int vote, int points) {
     _totalPoints = points;
@@ -41,12 +39,12 @@ class BagoCardViewModel extends BaseViewModel {
   }
 
   Future vote({
-    @required int id,
-    @required int vote,
-    @required bool isVoted,
-    bool filter,
-    int page,
-    int points,
+    required int id,
+    required int vote,
+    required bool isVoted,
+    bool? filter,
+    int? page,
+    required int points,
   }) async {
     if (vote == -1) {
       if (points == 0 && isVoted == true ||
@@ -54,7 +52,9 @@ class BagoCardViewModel extends BaseViewModel {
           points == 0 && isVoted == false) {
         _totalPoints = vote;
       } else {
+        
         --_totalPoints;
+        notifyListeners();
       }
 
       _isUp = false;
@@ -75,16 +75,16 @@ class BagoCardViewModel extends BaseViewModel {
       _isDown = false;
       notifyListeners();
     }
-    await _pointRepository.postPoint(id.toString(), vote.toString());
-    int level = await _callerService.batteryLevel();
-    await _callerService.battery(
-        level,
-        _feedService.getFeed(
-          page: page,
-          lat: _location.currentLocation.latitude,
-          lng: _location.currentLocation.longitude,
-          filter: filter == false ? 'date' : 'pipocar',
-        ));
+    //await _pointRepository.postPoint(id.toString(), vote.toString());
+    // int level = await _callerService.batteryLevel();
+    //await _callerService.battery(;
+    //  level,;
+    //  _feedService.getFeed(;
+    //     page: page,;
+    //      lat: _location.currentLocation.latitude,;
+    //     lng: _location.currentLocation.longitude,;
+    //     filter: filter == false ? 'date' : 'pipocar',;
+    //   ));
     _totalPoints = points;
     notifyListeners();
   }

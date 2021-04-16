@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/money_input_enums.dart';
 import 'package:flutter_multi_formatter/formatters/money_input_formatter.dart';
@@ -13,7 +12,7 @@ import 'package:stacked/stacked.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class MainDrawerView extends StatelessWidget {
-  const MainDrawerView({Key key}) : super(key: key);
+  const MainDrawerView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +21,7 @@ class MainDrawerView extends StatelessWidget {
     return ViewModelBuilder<MainDrawerViewModel>.reactive(
       initialiseSpecialViewModelsOnce: true,
       disposeViewModel: false,
-      onModelReady: (model) {
-        if (model.errorMsg != null) {
-          model.logout();
-        }
-      },
+      
       builder: (context, model, child) {
         return SizedBox(
           width: width * .7,
@@ -57,6 +52,8 @@ class MainDrawerView extends StatelessWidget {
                       ),
                       title: model.isBusy
                           ? Container(
+                            height: 20,
+                            width: 20,
                               child: Row(
                               children: [
                                 Flexible(
@@ -85,11 +82,11 @@ class MainDrawerView extends StatelessWidget {
 }
 
 class _DrawerHeader extends ViewModelWidget<MainDrawerViewModel> {
-  const _DrawerHeader({Key key}) : super(key: key);
+  const _DrawerHeader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, MainDrawerViewModel model) {
-    User user = model.user.user;
+    User user = model.user;
     timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
     
     final time = DateTime.parse(user.createdAt);
@@ -99,26 +96,26 @@ class _DrawerHeader extends ViewModelWidget<MainDrawerViewModel> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          avatar(user.avatar),
-          account(
-            username: user.username,
-            tap: () => print('hi'),
-            date: timeago.format(time, locale: 'pt_BR_short'),
-            karma: user.karmaTotal >= 1000
-                ? toCurrencyString('${user.karmaTotal}',
-                    shorteningPolicy: ShorteningPolicy.RoundToThousands)
-                : user.karmaTotal >= 1000000
-                    ? toCurrencyString('${user.karmaTotal}',
-                        shorteningPolicy: ShorteningPolicy.RoundToMillions)
-                    : user.karmaTotal >= 1000000000
-                        ? toCurrencyString('${user.karmaTotal}',
-                            shorteningPolicy: ShorteningPolicy.RoundToBillions)
-                        : user.karmaTotal >= 1000000000000
-                            ? toCurrencyString('${user.karmaTotal}',
-                                shorteningPolicy:
-                                    ShorteningPolicy.RoundToTrillions)
-                            : user.karmaTotal,
-          )
+        //  avatar(user.avatar),
+          // account(
+          //   username: user.username!,
+          //   tap: () => print('hi'),
+          //   date: timeago.format(time, locale: 'pt_BR_short'),
+          //   karma: user.karmaTotal  >= 1000
+          //       ? toCurrencyString('${user.karmaTotal}',
+          //           shorteningPolicy: ShorteningPolicy.RoundToThousands)
+          //       : user.karmaTotal >= 1000000
+          //           ? toCurrencyString('${user.karmaTotal}',
+          //               shorteningPolicy: ShorteningPolicy.RoundToMillions)
+          //           : user.karmaTotal >= 1000000000
+          //               ? toCurrencyString('${user.karmaTotal}',
+          //                   shorteningPolicy: ShorteningPolicy.RoundToBillions)
+          //               : user.karmaTotal >= 1000000000000
+          //                   ? toCurrencyString('${user.karmaTotal}',
+          //                       shorteningPolicy:
+          //                           ShorteningPolicy.RoundToTrillions)
+          //                   : user.karmaTotal,
+          // )
         ],
       ),
     ));
@@ -143,7 +140,7 @@ Widget drawerList() {
       title: Align(
         alignment: Alignment(-1.3, 0),
         child: Text(
-          data[index].text,
+          data[index].text!,
           style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black, fontSize: 15.5),
         ),
       ),
@@ -151,48 +148,48 @@ Widget drawerList() {
   );
 }
 
-Widget avatar(image) {
-  return CachedNetworkImage(
-    imageUrl: image,
-    imageBuilder: (context, imageProvider) => Container(
-      height: 60,
-      width: 60,
-      decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
-    ),
-    placeholder: (context, url) => Shimmer.fromColors(
-      baseColor: Colors.grey[350],
-      highlightColor: Colors.grey[200],
-      child: Container(
-        height: 60,
-        width: 60,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.grey[350],
-        ),
-      ),
-    ),
-    errorWidget: (context, url, error) => Container(
-        height: 60,
-        width: 60,
-        decoration: BoxDecoration(
-          color: Colors.grey[350],
-          shape: BoxShape.circle,
-        ),
-        child: Icon(Icons.broken_image, color: Colors.white)),
-  );
-}
+// Widget avatar(image) {
+//   return Image.network(
+//      image,
+//     frameBuilder: (context, imageProvider, index?, child) => Container(
+//       height: 60,
+//       width: 60,
+//       decoration: BoxDecoration(
+//           shape: BoxShape.circle,
+//           image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
+//     ),
+//     placeholder: (context, url) => Shimmer.fromColors(
+//       baseColor: Colors.grey.shade300,
+//       highlightColor: Colors.grey.shade200,
+//       child: Container(
+//         height: 60,
+//         width: 60,
+//         decoration: BoxDecoration(
+//           shape: BoxShape.circle,
+//           color: Colors.grey[350],
+//         ),
+//       ),
+//     ),
+//     errorWidget: (context, url, error) => Container(
+//         height: 60,
+//         width: 60,
+//         decoration: BoxDecoration(
+//           color: Colors.grey[350],
+//           shape: BoxShape.circle,
+//         ),
+//         child: Icon(Icons.broken_image, color: Colors.white)),
+//   );
+// }
 
-Widget account({String username, Function tap, int karma, String date}) {
+Widget account({required String username, required Function tap, required int karma, required String date}) {
   return Column(
     children: [
       GestureDetector(
-        onTap: tap,
+        onTap:()=> tap,
         child: Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 26),
           child: Text(
-            '@$username' ?? '',
+            '@$username',
             style: TextStyle(fontSize: 15.5),
           ),
         ),
@@ -231,11 +228,11 @@ Widget account({String username, Function tap, int karma, String date}) {
   );
 }
 
-Widget icon({Icon icon, String text, String txtNum}) {
+Widget icon({ Icon? icon, String? text, String? txtNum}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      icon,
+      icon!,
       SizedBox(
         width: 8,
       ),
@@ -243,11 +240,11 @@ Widget icon({Icon icon, String text, String txtNum}) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            txtNum,
+            txtNum!,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(
-            text,
+            text!,
             style: TextStyle(fontSize: 13, color: Colors.grey[400]),
           ),
         ],

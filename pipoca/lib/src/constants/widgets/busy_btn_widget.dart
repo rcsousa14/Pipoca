@@ -8,12 +8,12 @@ class BusyBtn extends StatelessWidget {
   final Color btnColor;
   final Color txtColor;
   const BusyBtn(
-      {Key key,
-      this.tap,
+      {Key? key,
+      required this.tap,
       this.busy = false,
-      this.txtColor,
-      this.text,
-      this.btnColor})
+      required this.txtColor,
+      required this.text,
+      required this.btnColor})
       : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class BusyBtn extends StatelessWidget {
           borderRadius: BorderRadius.circular(32),
         ),
       ),
-      onPressed: tap,
+      onPressed:()=> tap,
       child: !busy
           ? Padding(
               padding: const EdgeInsets.all(8.0),
@@ -61,9 +61,9 @@ class BusyBtnLogin extends StatelessWidget {
   final String text;
   final bool busy;
   final Color btnColor;
-   final Color txtColor;
+   final Color? txtColor;
   const BusyBtnLogin(
-      {Key key, this.tap, @required this.icon, this.txtColor, this.busy = false, this.text, @required this.btnColor})
+      {Key? key, required this.tap, required this.icon,  this.txtColor, this.busy = false,required this.text, required this.btnColor})
       : super(key: key);
 
   @override
@@ -76,7 +76,7 @@ class BusyBtnLogin extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
       ),
-      onPressed: !busy ? tap : null,
+      onPressed:()=> !busy ? tap() : null,
       child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(

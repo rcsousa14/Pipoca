@@ -17,13 +17,13 @@ class DynamicLinkService {
     //_handleDeepLinkStartup(data);
 
     // INTO FOREGROUND FROM DYNAMIC LINK LOGIC
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLinkData) async {
+    // FirebaseDynamicLinks.instance.onLink(
+    //     onSuccess: (PendingDynamicLinkData dynamicLinkData?) async {
       
-    //  _handleDeepLink(dynamicLinkData);
-    }, onError: (OnLinkErrorException e) async {
+    // //  _handleDeepLink(dynamicLinkData);
+    // }, onError: (OnLinkErrorException e) async {
       
-    });
+    // });
   }
 
   Future<String> shareView(

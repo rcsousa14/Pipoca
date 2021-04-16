@@ -20,17 +20,17 @@ class NewFormTextField extends StatelessWidget {
   final AutovalidateMode validate;
   final TextCapitalization textCap;
   const NewFormTextField(
-      {Key key,
-      this.keyboardType,
-      this.icon,
-      this.isPassword = false,
-      this.text,
-      this.controller,
-      this.validator,
-      this.validate,
-      this.focus = false,
-      this.formater,
-      this.textCap})
+      {Key? key,
+     required this.keyboardType,
+     required this.icon,
+   this.isPassword = false,
+     required this.text,
+     required this.controller,
+      required this.validator,
+     required this.validate,
+    this.focus = false,
+     required this.formater,
+     required this.textCap})
       : super(key: key);
 
   @override
@@ -44,7 +44,7 @@ class NewFormTextField extends StatelessWidget {
         autovalidateMode: validate,
         textCapitalization: textCap,
         inputFormatters: [formater],
-        validator: validator,
+        validator:(value)=> validator(value),
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
@@ -52,12 +52,12 @@ class NewFormTextField extends StatelessWidget {
             filled: true,
             fillColor: Colors.white,
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey[200]),
+              borderSide: BorderSide(color: Colors.grey.shade200),
               borderRadius: BorderRadius.all(Radius.circular(35.0)),
             ),
             errorBorder: OutlineInputBorder(),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blue[300]),
+              borderSide: BorderSide(color: Colors.blue.shade300),
               borderRadius: BorderRadius.all(Radius.circular(35.0)),
             ),
             focusedErrorBorder: OutlineInputBorder(
@@ -87,7 +87,7 @@ class FormBuilder extends StatelessWidget {
 
   final Function termsTap;
   const FormBuilder(
-      {Key key, this.apTap, this.fbTap, this.glTap, this.isBusy, this.termsTap})
+      {Key? key, required this.apTap, required this.fbTap, required this.glTap, required this.isBusy, required this.termsTap})
       : super(key: key);
 
   @override
@@ -171,7 +171,7 @@ class FormBuilder extends StatelessWidget {
                               fontSize: 13.5,
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold),
-                          recognizer: TapGestureRecognizer()..onTap = termsTap)
+                          recognizer: TapGestureRecognizer()..onTap = ()=> termsTap())
                     ]),
               ),
             ),
@@ -183,12 +183,12 @@ class FormBuilder extends StatelessWidget {
 }
 
 class Tabs extends StatelessWidget {
-  final Widget signup;
-  final Widget login;
-  final int currentIndex;
-  final Function(int) setIndex;
+  final Widget? signup;
+  final Widget? login;
+  final int? currentIndex;
+  final Function(int)? setIndex;
   const Tabs(
-      {Key key, this.login, this.signup, this.currentIndex, this.setIndex})
+      {Key? key,  this.login,  this.signup, this.currentIndex, this.setIndex})
       : super(key: key);
 
   @override
@@ -196,7 +196,7 @@ class Tabs extends StatelessWidget {
     var height = MediaQuery.of(context).size.height;
     return DefaultTabController(
       length: 2,
-      initialIndex: currentIndex,
+      initialIndex: currentIndex!,
       child: Column(
         children: [
           PreferredSize(

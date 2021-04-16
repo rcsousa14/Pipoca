@@ -11,19 +11,19 @@ class LocationService extends IstoppableService {
 
   BehaviorSubject<Coordinates> locationController =
       BehaviorSubject<Coordinates>();
-  Coordinates get currentLocation => locationController.value;
+  Coordinates get currentLocation => locationController.value!;
   Location get permission => location;
-  StreamSubscription _streamSubscription;
+
   Stream<Coordinates> get getStreamData => locationController.stream;
 
   LocationService() {
     location.requestPermission().then((locationPermission) {
       if (locationPermission == PermissionStatus.granted) {
-        _streamSubscription = location.onLocationChanged.listen((location) {
+    location.onLocationChanged.listen((location) {
           locationController.add(
             Coordinates(
-              longitude: location.longitude,
-              latitude: location.latitude,
+              longitude: location.longitude!,
+              latitude: location.latitude!,
             ),
           );
           locationController.onCancel = () {
@@ -45,6 +45,6 @@ class LocationService extends IstoppableService {
   void stop() {
     super.stop();
 
-    _streamSubscription?.cancel();
+   
   }
 }

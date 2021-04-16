@@ -120,7 +120,7 @@ extension NavChoiceExtension on NavChoice {
 
     return value;
   }
-  PageStorageKey pageStorageKey() {
+  PageStorageKey? pageStorageKey() {
     return _pageStorageKeys[this];
   }
    static Map<NavChoice, PageStorageKey> _pageStorageKeys = {

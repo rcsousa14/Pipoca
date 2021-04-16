@@ -4,12 +4,12 @@ import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 
 class HomeAppBar extends StatelessWidget {
-  final String image;
+  final String? image;
   final Function drawer;
   final Function filter;
   final bool isFilter;
   const HomeAppBar(
-      {Key key, this.image, this.drawer, this.filter, this.isFilter})
+      {Key? key, this.image, required this.drawer, required this.filter, required this.isFilter})
       : super(key: key);
 
   @override
@@ -21,7 +21,7 @@ class HomeAppBar extends StatelessWidget {
       brightness: Brightness.light,
       centerTitle: true,
       leading: GestureDetector(
-          onTap: drawer,
+          onTap:()=> drawer,
           child: image != null
               ? Container(
                   margin: EdgeInsets.all(7),
@@ -29,7 +29,7 @@ class HomeAppBar extends StatelessWidget {
                     color: Colors.grey[350],
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: NetworkImage(image),
+                      image: NetworkImage(image!),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -48,7 +48,7 @@ class HomeAppBar extends StatelessWidget {
       ),
       actions: <Widget>[
         GestureDetector(
-          onTap: filter,
+          onTap:()=> filter,
           child: Container(
             height: 30,
             width: 30,
@@ -69,7 +69,7 @@ class HomeAppBar extends StatelessWidget {
 
 class HomeFloatingAction extends StatelessWidget {
   final Function action;
-  const HomeFloatingAction({Key key, this.action}) : super(key: key);
+  const HomeFloatingAction({Key? key, required this.action}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class HomeFloatingAction extends StatelessWidget {
         child: FloatingActionButton(
           backgroundColor: red,
           elevation: 1,
-          onPressed: action,
+          onPressed:()=> action,
           child: Icon(
             PipocaBasics.quill,
           ),

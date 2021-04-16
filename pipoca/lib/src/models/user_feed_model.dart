@@ -1,41 +1,44 @@
 import 'package:pipoca/src/models/user_location_model.dart';
 
 class FeedInfo {
-  Coordinates coordinates; 
-  String filter; 
-  int page;
+  Coordinates? coordinates; 
+  String? filter; 
+  int? page;
 
   FeedInfo({this.coordinates, this.filter, this.page});
 }
 
 class Feed {
-  String message;
-  Posts posts;
+  bool? success;
+  String? message;
+  Posts? posts;
 
   Feed({this.message, this.posts});
 
   Feed.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
     message = json['message'];
     posts = json['posts'] != null ? new Posts.fromJson(json['posts']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
     data['message'] = this.message;
     if (this.posts != null) {
-      data['posts'] = this.posts.toJson();
+      data['posts'] = this.posts!.toJson();
     }
     return data;
   }
 }
 
 class Posts {
-  int previousPage;
-  int currentPage;
-  int nextPage;
-  int total;
-  int limit;
-  List<Data> data;
+  int? previousPage;
+  int? currentPage;
+  int? nextPage;
+  int? total;
+  int? limit;
+  List<Data>? data;
 
   Posts(
       {this.previousPage,
@@ -52,9 +55,9 @@ class Posts {
     total = json['total'];
     limit = json['limit'];
     if (json['data'] != null) {
-      data = new List<Data>();
+      data = <Data>[];
       json['data'].forEach((v) {
-        data.add(new Data.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
   }
@@ -67,17 +70,17 @@ class Posts {
     data['total'] = this.total;
     data['limit'] = this.limit;
     if (this.data != null) {
-      data['data'] = this.data.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Data {
-  bool userVoted;
-  int userVote;
-  bool userIsNear;
-  Post post;
+  bool? userVoted;
+  int? userVote;
+  bool? userIsNear;
+  Post? post;
 
   Data({this.userVoted, this.userVote, this.userIsNear, this.post});
 
@@ -94,23 +97,23 @@ class Data {
     data['user_vote'] = this.userVote;
     data['user_isNear'] = this.userIsNear;
     if (this.post != null) {
-      data['post'] = this.post.toJson();
+      data['post'] = this.post!.toJson();
     }
     return data;
   }
 }
 
 class Post {
-  int id;
-  String content;
-  Links links;
-  int votesTotal;
-  int commentsTotal;
-  int flags;
-  bool isFlagged;
-  bool isDeleted;
-  String createdAt;
-  Creator creator;
+  int? id;
+  String? content;
+  Links? links;
+  int? votesTotal;
+  int? commentsTotal;
+  int? flags;
+  bool? isFlagged;
+  bool? isDeleted;
+  String? createdAt;
+  Creator? creator;
 
   Post(
       {this.id,
@@ -143,7 +146,7 @@ class Post {
     data['id'] = this.id;
     data['content'] = this.content;
     if (this.links != null) {
-      data['links'] = this.links.toJson();
+      data['links'] = this.links!.toJson();
     }
     data['votes_total'] = this.votesTotal;
     data['comments_total'] = this.commentsTotal;
@@ -152,19 +155,19 @@ class Post {
     data['is_deleted'] = this.isDeleted;
     data['created_at'] = this.createdAt;
     if (this.creator != null) {
-      data['creator'] = this.creator.toJson();
+      data['creator'] = this.creator!.toJson();
     }
     return data;
   }
 }
 
 class Links {
-  String url;
-  String title;
-  String description;
-  String image;
-  String video;
-  String site;
+  String? url;
+  String? title;
+  String? description;
+  String? image;
+  String? video;
+  String? site;
 
   Links(
       {this.url,
@@ -196,13 +199,13 @@ class Links {
 }
 
 class Creator {
-  int id;
-  String email;
-  String username;
-  String avatar;
-  String fcmToken;
-  String type;
-  bool active;
+  int? id;
+  String? email;
+  String? username;
+  String? avatar;
+  String? fcmToken;
+  String? type;
+  bool? active;
 
   Creator(
       {this.id,

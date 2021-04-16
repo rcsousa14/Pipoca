@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,24 +13,25 @@ import 'package:stacked/stacked.dart';
 
 class BagoCard extends StatelessWidget {
   final bool isVoted, filtered;
-  final Links links;
-  final int points, bagoIndex, commentsTotal, page, vote;
+  final Links? links;
+  final int? bagoIndex;
+  final int points, commentsTotal, page, vote;
   final String creator, image, text, date;
 
   const BagoCard({
-    Key key,
+    Key? key,
     this.bagoIndex,
-    @required this.text,
+    required this.text,
     this.links,
-    @required this.filtered,
-    @required this.date,
-    @required this.points,
-    @required this.creator,
-    @required this.image,
-    @required this.commentsTotal,
-    @required this.vote,
-    @required this.page,
-    @required this.isVoted,
+    required this.filtered,
+    required this.date,
+    required this.points,
+    required this.creator,
+    required this.image,
+    required this.commentsTotal,
+    required this.vote,
+    required this.page,
+    required this.isVoted,
   }) : super(key: key);
 
   @override
@@ -62,7 +62,7 @@ class BagoCard extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
-                    bottom: BorderSide(color: Colors.grey[200], width: 1))),
+                    bottom: BorderSide(color: Colors.grey.shade200, width: 1))),
             child: GestureDetector(
               onTap: () => print('hi'),
               child: Container(
@@ -84,8 +84,8 @@ class BagoCard extends StatelessWidget {
                             page: page,
                             filtered: filtered,
                             text: text,
-                            links: links,
-                            index: bagoIndex,
+                            links: links!,
+                            index: bagoIndex!,
                             creator: creator,
                             timeNow: timeNow,
                             points: points,
@@ -112,15 +112,15 @@ class BagoCard extends StatelessWidget {
 
 class _Avatar extends ViewModelWidget<BagoCardViewModel> {
   final String image;
-  const _Avatar({Key key, @required this.image})
+  const _Avatar({Key? key, required this.image})
       : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
     return Flexible(
       flex: 3,
-      child: image != null
-          ? Container(
+      child: 
+           Container(
               height: 45,
               width: 45,
               decoration: BoxDecoration(
@@ -132,19 +132,13 @@ class _Avatar extends ViewModelWidget<BagoCardViewModel> {
                 ),
               ),
             )
-          : Container(
-              height: 45,
-              width: 45,
-              decoration: BoxDecoration(
-                color: Colors.grey[350],
-                shape: BoxShape.circle,
-              )),
+         
     );
   }
 }
 
 class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
-  const _MoreBtn({Key key}) : super(key: key, reactive: true);
+  const _MoreBtn({Key? key}) : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
@@ -169,29 +163,29 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
   final String creator, text;
   final String timeNow;
   final bool isVoted, filtered;
-  final Links links;
+  final Links? links;
   final GlobalKey globalKey;
 
   final int vote, points, commentsTotal, index, page;
   const _Content(
-      {Key key,
-      @required this.globalKey,
-      @required this.links,
-      @required this.text,
-      @required this.filtered,
-      @required this.page,
-      @required this.creator,
-      @required this.timeNow,
-      @required this.isVoted,
-      @required this.vote,
-      @required this.points,
-      @required this.index,
-      @required this.commentsTotal})
+      {Key? key,
+      required this.globalKey,
+       this.links,
+      required this.text,
+      required this.filtered,
+      required this.page,
+      required this.creator,
+      required this.timeNow,
+      required this.isVoted,
+      required this.vote,
+      required this.points,
+      required this.index,
+      required this.commentsTotal})
       : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
-    // print(links.url == null);
+
     return Expanded(
       flex: 14,
       child: Container(
@@ -223,7 +217,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
             Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(
-                    top: 5, bottom: links.url != null ? 10 : 30),
+                    top: 5, bottom: links != null ?  10 : 30),
                 child: ParsedText(
                   text: text,
                   style: TextStyle(color: Colors.grey[800], fontSize: 18),
@@ -237,9 +231,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                               MaterialPageRoute(
                                   builder: (context) => WebViewScreen(
                                         url: url,
-                                        siteName: links.url != null
-                                            ? links.site
-                                            : null,
+                                        siteName: links!.site != null ? links!.site : links!.url 
+                                            
                                       )));
                         }),
                     MatchText(
@@ -250,18 +243,17 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                         })
                   ],
                 )),
-
-            links.url != null
-                ? LinkCaller(
+            links != null ?
+            LinkCaller(
                     comments: commentsTotal,
-                    links: links,
+                    links: links!,
                     index: index,
                     vote: vote,
                     points: points,
                     isVoted: isVoted,
                     filter: filtered,
-                    page: page)
-                : Container(),
+                    page: page) : Container(),
+             
 
             // content link
 
@@ -303,9 +295,9 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       Center(
                         child: Text('${model.points}',
                             style: TextStyle(
-                                color: model.points >= 1
+                                color: model.points! >= 1
                                     ? red
-                                    : model.points <= -1
+                                    : model.points! <= -1
                                         ? Colors.black
                                         : Colors.grey,
                                 fontSize: 13,

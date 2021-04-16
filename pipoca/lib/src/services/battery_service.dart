@@ -19,15 +19,15 @@ class BatteryService extends IstoppableService {
     return batteryLevel;
   }
 
-  BatteryState get batteryState => batteryController.value;
+  BatteryState get batteryState => batteryController.value!;
 
 
-  StreamSubscription<BatteryState> _streamSubscription;
+  
 
 
 
   BatteryService() {
-    _streamSubscription =
+  
         battery.onBatteryStateChanged.listen((BatteryState state) {
       batteryController.add(state);
   
@@ -49,6 +49,6 @@ class BatteryService extends IstoppableService {
   void stop() {
     super.stop();
   
-    _streamSubscription?.cancel();
+    
   }
 }

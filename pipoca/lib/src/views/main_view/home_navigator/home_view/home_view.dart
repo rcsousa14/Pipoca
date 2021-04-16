@@ -11,7 +11,7 @@ class HomeView extends StatelessWidget {
 
   final GlobalKey<ScaffoldState> scaffoldKey;
   const HomeView(
-      {Key key, @required this.scaffoldKey})
+      {Key? key, required this.scaffoldKey})
       : super(key: key);
 
   @override
@@ -30,7 +30,7 @@ class HomeView extends StatelessWidget {
             backgroundColor: Colors.blueGrey[50],
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(48),
-              child: _Header(tap: () => scaffoldKey.currentState.openDrawer()),
+              child: _Header(tap: () => scaffoldKey.currentState!.openDrawer()),
             ),
             body: BagoListView(),
             floatingActionButton: HomeFloatingAction(
@@ -47,11 +47,11 @@ class HomeView extends StatelessWidget {
 
 class _Header extends ViewModelWidget<HomeViewModel> {
   final Function tap;
-  const _Header({Key key, this.tap}) : super(key: key, reactive: true);
+  const _Header({Key? key, required this.tap}) : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, HomeViewModel model) {
-    User user = model.user.user;
+    User user = model.user;
     return HomeAppBar(
       drawer: tap,
       isFilter: model.isFilter,

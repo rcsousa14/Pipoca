@@ -6,9 +6,9 @@ import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
-  final String siteName;
-  final String url;
-  WebViewScreen({Key key,  this.siteName, @required this.url})
+  final String? siteName;
+  final String? url;
+  WebViewScreen({Key? key,   this.siteName,  this.url})
       : super(key: key);
 
   @override
@@ -28,8 +28,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.siteName);
-    print(widget.url);
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(40),
@@ -37,8 +36,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
           backgroundColor: red,
           centerTitle: true,
           title: Text(
-            widget.siteName ?? widget.url,
-            style: TextStyle(color: Colors.white, fontSize: widget.siteName != null ? 18 : 14.5),
+            widget.siteName != null ? widget.siteName! : widget.url! ,
+            style: TextStyle(color: Colors.white, fontSize:  18),
           ),
           leading: IconButton(
               icon: Icon(

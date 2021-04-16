@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
@@ -8,7 +7,9 @@ import 'package:pipoca/src/views/main_view/widgets/main_drawer_view.dart';
 import 'package:stacked/stacked.dart';
 
 class MainView extends StatelessWidget {
-  const MainView({Key key}) : super(key: key);
+  
+  
+  const MainView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,8 @@ class MainView extends StatelessWidget {
      final GlobalKey<ScaffoldState> scafoldkey = new GlobalKey<ScaffoldState>();
     return ViewModelBuilder<MainViewModel>.reactive(
       disposeViewModel: false,
-    
+      onModelReady: (model)=> model.locationCheck(),
+      fireOnModelReadyOnce: true,
       builder: (context, model, child) {
         
         return WillPopScope(
@@ -28,16 +30,16 @@ class MainView extends StatelessWidget {
             body: IndexedStack(
               index: model.currentIndex,
               children: [
-                HomeView( scaffoldKey: scafoldkey),
+               // HomeView( scaffoldKey: scafoldkey),
+                 Container(
+                  color: Colors.green,
+                  
+                 
+                ),
                 Container(
                   color: Colors.orange,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(model.token),
-                     
-                    ],
-                  ),
+                  
+                 
                 ),
               
                 Container(

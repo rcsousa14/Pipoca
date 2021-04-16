@@ -1,73 +1,58 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
-import 'package:pipoca/src/constants/api/url.dart';
+import 'package:pipoca/src/constants/api_helpers/base_helper.dart';
+import 'package:pipoca/src/models/auth_token_model.dart';
+import 'package:pipoca/src/models/auth_user_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
-import 'package:pipoca/src/constants/api/header.dart';
-import 'dart:convert';
-import 'package:pipoca/src/services/authentication_service.dart';
-import 'package:pipoca/src/services/shared_local_storage_service.dart';
+import 'package:pipoca/src/constants/api_helpers/header.dart';
 
 @lazySingleton
 class UserRepository {
   final _header = locator<ApiHeaders>();
-  final client = locator<ApiHeaders>().client;
-  final _authenticationService = locator<AuthenticationService>();
-  final _localStorage = locator<SharedLocalStorageService>();
+  final _helper = locator<ApiBaseHelper>();
 
   //USER CRUD
 
-  Future<Usuario> getUser() async {
-    try {
-      var url = Uri.encodeFull('$heroku_url/users');
-      var response = await client.get(
-        url,
-        headers:
-            _header.setTokenHeaders(token: _authenticationService.currentToken),
-      );
- 
-      var parsed = json.decode(response.body);
-      Usuario user = Usuario.fromJson(parsed);
-
-      await _localStorage.put('id', user.user.id);
-  
-      return user;
-    } catch (e) {
-
-      return e;
-    }
+  Future<Usuario> fetchUserData({required String token}) async {
+   
+    final response = await _helper.get(
+        query: 'users', header: _header.setTokenHeaders(token));
+   Usuario user = Usuario.fromJson(response);
+    
+    return user;
   }
 
-  Future<Usuario> patchFcmToken(String fcmToken) async {
-    try {
-      var url = Uri.encodeFull('$heroku_url/users');
-      var response = await client.patch(url,
-          headers: _header.setTokenHeaders(
-              token: _authenticationService.currentToken),
-          body: {'fcm_token': fcmToken});
-      var parsed = json.decode(response.body);
-      Usuario user = Usuario.fromJson(parsed);
-      return user;
-    } catch (e) {
-      return e;
-    }
+  Future<Generic> deleteUserData({required String token}) async {
+    final response = await _helper.get(
+        query: 'users', header: _header.setTokenHeaders(token));
+    Generic generic = Generic.fromJson(response);
+    return generic;
+  }
+
+  Future<Generic> updateUserData(
+      {required UserAuth user, required String token}) async {
+    final response = await _helper.patch(
+        query: 'users', header: _header.setTokenHeaders(token), body: user);
+    Generic users = Generic.fromJson(response);
+    return users;
+  }
+
+  Future<Generic> logout(String token) async {
+    final response = await _helper.patch(
+        query: 'auth/logout', header: _header.setTokenHeaders(token));
+    Generic logout = Generic.fromJson(response);
+    return logout;
+  }
+
+  Future<AuthenticationResponse> refreshToken(
+      int id, String currentToken) async {
+    final response = await _helper.post(
+      query: 'auth/refresh-token?id=$id&token=$currentToken',
+      header: _header.setHeaders(),
+    );
+    AuthenticationResponse token = AuthenticationResponse.fromJson(response);
+    return token;
   }
 }
-
-// if (user == null) {
-//   int id = await _localStorage.recieve('id');
-//   var result = await _authenticationService.refreshToken(
-//       currentToken: _authenticationService.currentToken, id: id);
-//   if (result is bool) {
-//     if (result) {
-//       var response = await client.get(
-//         url,
-//         headers: _header.setTokenHeaders(
-//             token: _authenticationService.currentToken),
-//       );
-//       var parsed = json.decode(response.body);
-//       Usuario user = Usuario.fromJson(parsed);
-//       await _localStorage.put('id', user.user.id);
-//       return user;
-//     }
-//   }
-// }

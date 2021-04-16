@@ -11,7 +11,7 @@ import 'package:stacked_hooks/stacked_hooks.dart';
 class CreatePostView extends StatelessWidget {
   final bool filter;
   final int index;
-  const CreatePostView({Key key, @required this.filter, @required this.index})
+  const CreatePostView({Key? key, required this.filter, required this.index})
       : super(key: key);
 
   @override
@@ -33,13 +33,13 @@ class CreatePostView extends StatelessWidget {
 
 class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
   const _StringTextField({
-    Key key,
+    Key? key,
   }) : super(key: key, reactive: true);
 
   @override
   Widget buildViewModelWidget(BuildContext context, CreatePostViewModel model) {
     var text = useTextEditingController();
-    User user = model.user.user;
+    //  User user = model.user.user;
     return Container(
       height: MediaQuery.of(context).size.height,
       color: Colors.white,
@@ -65,10 +65,10 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                         decoration: BoxDecoration(
                           color: Colors.grey[350],
                           shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: NetworkImage(user.avatar),
-                            fit: BoxFit.cover,
-                          ),
+                          // image: DecorationImage(
+                          //   image: NetworkImage(user.avatar),
+                          //   fit: BoxFit.cover,
+                          // ),
                         ),
                       ),
                       Expanded(
@@ -84,10 +84,10 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                                     basicStyle: TextStyle(
                                       fontSize: 18,
                                     ),
-                                    detectedStyle: TextStyle(
+                                    decoratedStyle: TextStyle(
                                         fontSize: 18, color: Colors.blue[400]),
                                     detectionRegExp:
-                                        detectionRegExp(atSign: false),
+                                        detectionRegExp(atSign: false)!,
                                     autofocus: true,
                                     cursorColor: Colors.blue[400],
                                     controller: text,
@@ -124,7 +124,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
             decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
-                    top: BorderSide(width: 0.3, color: Colors.grey[350]))),
+                    top: BorderSide(width: 0.3, color: Colors.grey.shade300))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -150,9 +150,9 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                           margin: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               border: Border.all(
-                                color: model.links.length > 0
-                                    ? Colors.grey
-                                    : Colors.blue[400],
+                                // color: model.links.length > 0
+                                //     ? Colors.grey
+                                //     : Colors.blue[400],
                               ),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(4))),
@@ -180,7 +180,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                             valueColor: model.text.length == 200
                                 ? AlwaysStoppedAnimation<Color>(red)
                                 : AlwaysStoppedAnimation<Color>(
-                                    Colors.blue[400]),
+                                    Colors.blue.shade400),
                             value: model.text.length >= 0
                                 ? model.text.length.toDouble() / 200
                                 : null))
@@ -196,7 +196,8 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
 class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
   final bool filter;
   final int page;
-  const _AppBarNewPost(this.filter, this.page, {Key key}) : super(key: key, reactive: false);
+  const _AppBarNewPost(this.filter, this.page, {Key? key})
+      : super(key: key, reactive: false);
 
   @override
   Widget buildViewModelWidget(BuildContext context, CreatePostViewModel model) {

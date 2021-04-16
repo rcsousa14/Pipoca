@@ -1,32 +1,31 @@
 import 'dart:io';
-import 'dart:math';
-import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/constants/widgets/full_screen.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/constants/widgets/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:video_player/video_player.dart';
 
 class ContentImage extends StatefulWidget {
-  final Links links;
+  final Links? links;
   final ImageProvider<Object> image;
-  final int index, points, page, vote, comments;
-  final bool isVoted, filter;
+  final int? index, points, page, vote, comments;
+  final bool? isVoted, filter;
   final bool isLink;
 
   ContentImage({
-    Key key,
-    @required this.image,
+    Key? key,
+    required this.image,
     this.isLink = false,
     this.index,
     this.points,
-    this.page,
+     this.page,
     this.isVoted,
     this.filter,
-    this.vote,
+     this.vote,
     this.comments,
-    this.links,
+   this.links,
   }) : super(key: key);
 
   @override
@@ -45,14 +44,14 @@ class _ContentImageState extends State<ContentImage> {
             context,
             MaterialPageRoute(
                 builder: (context) => FullScreen(
-                      comments: widget.comments,
-                      vote: widget.vote,
+                      comments: widget.comments!,
+                      vote: widget.vote!,
                       image: widget.image,
-                      index: widget.index,
-                      page: widget.page,
-                      points: widget.points,
-                      isVoted: widget.isVoted,
-                      filter: widget.filter,
+                      index: widget.index!,
+                      page: widget.page!,
+                      points: widget.points!,
+                      isVoted: widget.isVoted!,
+                      filter: widget.filter!,
                     )),
           );
         } else {
@@ -60,8 +59,8 @@ class _ContentImageState extends State<ContentImage> {
               context,
               MaterialPageRoute(
                   builder: (context) => WebViewScreen(
-                        url: widget.links.url,
-                        siteName: widget.links.site,
+                        url: widget.links!.url,
+                        siteName: widget.links!.site!.isNotEmpty ? widget.links!.site : widget.links!.url,
                       )));
         }
       },
@@ -81,17 +80,17 @@ class _ContentImageState extends State<ContentImage> {
                 image: widget.image,
                 fullScreen: false,
                 height: height,
-                width: width)),
+                width: width, double: null)),
       ),
     );
   }
 }
 
 Widget imagePlace(
-    {ImageProvider<Object> image,
-    bool fullScreen,
-    double height,
-    double,
+    { required ImageProvider<Object> image,
+   required bool fullScreen,
+   required double height,
+  required  double,
     width}) {
 
   return Image(
@@ -108,7 +107,7 @@ Widget imagePlace(
     height: fullScreen ? height : null,
     width: fullScreen ? width : null,
     loadingBuilder:
-        (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+        (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
       if (loadingProgress == null) return child;
       return Container(
         decoration: BoxDecoration(
@@ -123,7 +122,7 @@ Widget imagePlace(
                 : CircularProgressIndicator(
                     value: loadingProgress.expectedTotalBytes != null
                         ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes
+                            loadingProgress.expectedTotalBytes!
                         : null,
                   ),
           ),
@@ -148,27 +147,27 @@ Widget imagePlace(
 class ContentVideo extends StatefulWidget {
   final String url;
 
-  ContentVideo({Key key, this.url}) : super(key: key);
+  ContentVideo({Key? key,  required this.url}) : super(key: key);
 
   @override
   _ContentVideoState createState() => _ContentVideoState();
 }
 
 class _ContentVideoState extends State<ContentVideo> {
-  CachedVideoPlayerController controller;
+  VideoPlayerController? controller;
   bool isPressed = false;
 
   @override
   void initState() {
-    if (widget.url != null) {
-      controller = CachedVideoPlayerController.network(widget.url);
-      controller.initialize().then((_) {
+    
+      controller = VideoPlayerController.network(widget.url);
+      controller!.initialize().then((_) {
         if (mounted) {
           setState(() {});
         }
-        controller.pause();
+        controller!.pause();
       });
-    }
+    
     super.initState();
   }
 
@@ -189,9 +188,9 @@ class _ContentVideoState extends State<ContentVideo> {
       constraints: BoxConstraints(
           minHeight: 190,
           minWidth: double.infinity,
-          maxHeight: controller.value.initialized ? 300 : 200),
-      child: controller.value != null && controller.value.initialized
-          ? AspectRatio(
+          maxHeight: controller!.value.isInitialized ? 300 : 200),
+      child: controller!.value.isInitialized ?
+           AspectRatio(
               child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   child: GestureDetector(
@@ -203,8 +202,8 @@ class _ContentVideoState extends State<ContentVideo> {
                       }
 
                       if (isPressed == true) {
-                        controller.play();
-                        controller.setLooping(true);
+                        controller!.play();
+                        controller!.setLooping(true);
 
                         Future.delayed(Duration(seconds: 15), () {
                           if (mounted) {
@@ -213,17 +212,17 @@ class _ContentVideoState extends State<ContentVideo> {
                             });
                           }
 
-                          controller.pause();
-                          controller.initialize();
+                          controller!.pause();
+                          controller!.initialize();
                         });
                       } else {
-                        controller.pause();
-                        controller.initialize();
+                        controller!.pause();
+                        controller!.initialize();
                       }
                     },
                     child: Stack(
                       children: [
-                        CachedVideoPlayer(controller),
+                        VideoPlayer(controller!),
                         isPressed == false
                             ? Center(
                                 child: Container(
@@ -253,7 +252,7 @@ class _ContentVideoState extends State<ContentVideo> {
                       ],
                     ),
                   )),
-              aspectRatio: controller.value.aspectRatio,
+              aspectRatio: controller!.value.aspectRatio,
             )
           : Container(
               decoration: BoxDecoration(

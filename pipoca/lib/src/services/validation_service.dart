@@ -12,7 +12,7 @@ class ValidationService {
     } else if (!regExp.hasMatch(value)) {
       return '📧 Digite o email correctamente';
     }
-    return null;
+    return value; 
   }
 
   String validatePass(String value) {
@@ -23,7 +23,7 @@ class ValidationService {
     } else if (!regExp.hasMatch(value)) {
       return '🔓 8 caracteres, [Aa-zZ], [0-9]';
     }
-    return null;
+    return value;
   }
 
   String validateUsername(String value) {
@@ -36,6 +36,6 @@ class ValidationService {
     } else if (!regExp.hasMatch(value)) {
       return '🤿 [a-z A-Z 0-9] (.) e (_)';
     }
-    return null;
+    return value;
   }
 }
