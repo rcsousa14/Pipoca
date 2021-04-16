@@ -252,8 +252,11 @@ exports.refresh = async(req, res, next) => {
             next(ApiError.badRequestException("Não estas logado"));
             return;
         }
-        next({});
-        return;
+        return res.status(200).json({
+            success: true,
+            message: "Bem-vindo ao Pipoca",
+            token,
+        });
     } catch (error) {
         next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
         return;
