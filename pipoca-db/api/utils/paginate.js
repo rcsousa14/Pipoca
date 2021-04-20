@@ -200,12 +200,12 @@ exports.getNextPage = (page, limit, total) => {
         return page + 1;
     }
 
-    return null
+    return 0
 }
 
 exports.getPreviousPage = (page) => {
     if (page <= 1) {
-        return null
+        return 0
     }
     return page - 1;
 }

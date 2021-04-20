@@ -39,6 +39,9 @@ exports.show = async({ decoded }, res, next) => {
             return res.status(200).json(result);
         }
 
+        if (decoded.id == null) {
+            ApiError.badRequestException("Problema com a auth");
+        }
         const user = await models.user.findOne({
             group: ["user.id", "posts.id", "comments.id", "sub_comments.id"],
             raw: true,
