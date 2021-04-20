@@ -1,11 +1,17 @@
 
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/interfaces/local_storage_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 @lazySingleton
 class SharedLocalStorageService implements ILocalStorage {
+
+  
+
+  
+
   @override
   Future clear() async {
     var shared = await SharedPreferences.getInstance();

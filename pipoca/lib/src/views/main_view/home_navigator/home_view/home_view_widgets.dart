@@ -21,7 +21,7 @@ class HomeAppBar extends StatelessWidget {
       brightness: Brightness.light,
       centerTitle: true,
       leading: GestureDetector(
-          onTap:()=> drawer,
+          onTap:()=> drawer(),
           child: image != null
               ? Container(
                   margin: EdgeInsets.all(7),
@@ -48,7 +48,7 @@ class HomeAppBar extends StatelessWidget {
       ),
       actions: <Widget>[
         GestureDetector(
-          onTap:()=> filter,
+          onTap:()=> filter(),
           child: Container(
             height: 30,
             width: 30,

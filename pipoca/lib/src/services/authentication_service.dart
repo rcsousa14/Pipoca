@@ -1,9 +1,10 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:observable_ish/observable_ish.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
-import 'package:pipoca/src/models/auth_user_model.dart';
 import 'package:pipoca/src/repositories/user/auth_repository.dart';
 import 'package:pipoca/src/repositories/user/user_repository.dart';
 import 'package:pipoca/src/services/shared_local_storage_service.dart';
@@ -14,13 +15,16 @@ class AuthenticationService with ReactiveServiceMixin {
   final _userRepo = locator<UserRepository>();
   final _authRepo = locator<AuthenticationRepository>();
   final _localStorage = locator<SharedLocalStorageService>();
+  final _socialRepo = locator<SocialRepository>();
 
-  RxValue<String> _token = RxValue<String>('');
-  String get token => _token.value;
-  bool get loggedIn => _token.value.isNotEmpty ? true : false;
+  RxValue<Auth> _auth = RxValue<Auth>(Auth(id: 0));
+  RxValue<bool> _filter = RxValue<bool>(false);
+  bool get filter => _filter.value;
+  String get token => _auth.value.token;
+  bool get loggedIn => _auth.value.token.isNotEmpty ? true : false;
 
   AuthenticationService() {
-    listenToReactiveValues([_token]);
+    listenToReactiveValues([_auth, _filter]);
   }
 
   /// these are the social login will incorporate email/password later
@@ -29,19 +33,18 @@ class AuthenticationService with ReactiveServiceMixin {
     try {
       AuthenticationResponse data =
           await _authRepo.fetchTokenData(type: 'social', body: body);
-      _token.value = data.token!;
-
-      setToken(data.token!);
+      _auth.value = Auth(id: 0, token: data.token!);
       return ApiResponse.completed(data);
     } catch (e) {
       return ApiResponse.error(e.toString());
     }
   }
 
-  Future<ApiResponse<Generic>> logout() async {
+  Future<ApiResponse<Generic>> logout(String token) async {
     ApiResponse.loading('fetching');
     try {
-      Generic data = await _userRepo.logout(_token.value);
+      await _socialRepo.socialLogout();
+      Generic data = await _userRepo.logout(token);
       deleteToken();
       return ApiResponse.completed(data);
     } catch (e) {
@@ -52,35 +55,41 @@ class AuthenticationService with ReactiveServiceMixin {
   Future<ApiResponse<AuthenticationResponse>> resetToken() async {
     ApiResponse.loading('fetching');
     try {
-      var id = await _localStorage.recieve('id');
       AuthenticationResponse data =
-          await _userRepo.refreshToken(id, _token.value);
-      print(data);
-      _token.value = data.token!;
-      setToken(data.token!);
+          await _userRepo.refreshToken(_auth.value.id, _auth.value.token);
+      _auth.value = Auth(id: _auth.value.id, token: data.token!);
+
       return ApiResponse.completed(data);
     } catch (e) {
       return ApiResponse.error(e.toString());
     }
   }
 
-  // sharelocalStorage for token
-  //
-  Future getToken() async {
-    var token = await _localStorage.recieve('token');
-    if (token != null) {
-      _token.value = token;
+  Future<Auth> getToken() async {
+    var filter = await _localStorage.recieve('filter');
+    var res = await _localStorage.recieve('auth');
+
+    if (filter != null) {
+      _filter.value = filter;
     }
+    if (res != null) {
+      var values = json.decode(res);
+      Auth auth = Auth(id: values['id'], token: values['token']);
+      _auth.value = auth;
+    }
+
+    return _auth.value;
   }
 
-  void setToken(String token) async {
-    await _localStorage.put('token', token);
+  Future setFilter(bool newFilter) async {
+    await _localStorage.put('filter', newFilter);
+    _filter.value = newFilter;
   }
 
-  void deleteToken() async {
-    AuthenticationResponse data =
-        AuthenticationResponse(token: "", message: '', success: true);
-    _token.value = data.token!;
-    await _localStorage.clear();
+  Future deleteToken() async {
+    await _localStorage.delete('auth');
+    await _localStorage.delete('filter');
+    _filter.value = false;
+    _auth.value = Auth(id: 0);
   }
 }

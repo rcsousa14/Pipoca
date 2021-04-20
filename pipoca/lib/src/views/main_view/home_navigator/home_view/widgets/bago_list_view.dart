@@ -94,7 +94,7 @@ class BagoListView extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(model.data!.message),
+                            Text(model.data!.message!),
                             ElevatedButton(
                               onPressed: () => model.refreshFeed(),
                               child: Text('Tentar Novamente'),

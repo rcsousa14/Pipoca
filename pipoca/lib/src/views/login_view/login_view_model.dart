@@ -1,5 +1,5 @@
-
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/app/router.router.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/auth_user_model.dart';
 import 'package:pipoca/src/repositories/user/auth_repository.dart';
@@ -10,9 +10,12 @@ import 'package:stacked_services/stacked_services.dart';
 
 class LoginViewModel extends IndexTrackingViewModel {
   final _authenticationService = locator<AuthenticationService>();
+  final _navigationService = locator<NavigationService>();
   final _socialRepo = locator<SocialRepository>();
   final _dialogService = locator<DialogService>();
   final _userService = locator<UserService>();
+
+  getTokenNow() => _authenticationService.getToken();
 
   Future facebook() async {
     setBusy(true);
@@ -59,21 +62,39 @@ class LoginViewModel extends IndexTrackingViewModel {
 
   Future getToken(UserAuth body) async {
     var result = await _authenticationService.social(body);
-
-    if (result.status == Status.COMPLETED) {
-      
-     var res = await _userService.fetchUser();
-     if(res.status == Status.ERROR){
-       await _dialogService.showDialog(
-          title: 'Login', description: '${result.message}', buttonTitle: 'Ok');
-      setBusy(false);
-     }
-     
+    switch (result.status) {
+      case Status.LOADING:
+        break;
+      case Status.COMPLETED:
+        await getUser();
+        break;
+      case Status.ERROR:
+        await _dialogService.showDialog(
+            title: 'Login',
+            description: '${result.message}',
+            buttonTitle: 'Ok');
+        setBusy(false);
+        break;
     }
-    if (result.status == Status.ERROR) {
-      await _dialogService.showDialog(
-          title: 'Login', description: '${result.message}', buttonTitle: 'Ok');
-      setBusy(false);
+  }
+
+  Future getUser() async {
+    var result = await _userService.fetchUser();
+    switch (result.status) {
+      case Status.LOADING:
+        break;
+      case Status.COMPLETED:
+     
+         await _navigationService.navigateTo(Routes.mainView);
+        break;
+      case Status.ERROR:
+        await _dialogService.showDialog(
+            title: 'Login',
+            description: '${result.message}',
+            buttonTitle: 'Ok');
+        setBusy(false);
+
+        break;
     }
   }
 

@@ -10,12 +10,10 @@ import 'package:pipoca/src/constants/api_helpers/header.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/auth_user_model.dart';
 
-
 @lazySingleton
 class AuthenticationRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
- 
 
   Future<AuthenticationResponse> fetchTokenData(
       {required String type, required dynamic body}) async {
@@ -30,6 +28,11 @@ class AuthenticationRepository {
 class SocialRepository {
   final _fb = FacebookAuth.instance;
   final _google = GoogleSignIn(scopes: ['profile', 'email']);
+
+  Future socialLogout() async {
+    await _fb.logOut();
+    await _google.signOut();
+  }
 
   Future facebook(String fcmToken) async {
     try {
@@ -78,7 +81,6 @@ class SocialRepository {
       UserAuth user = UserAuth.fromJson(userData);
       return user;
     } catch (e) {
-     
       throw e;
     }
   }

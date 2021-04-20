@@ -16,11 +16,10 @@ class UserRepository {
   //USER CRUD
 
   Future<Usuario> fetchUserData({required String token}) async {
-   
     final response = await _helper.get(
         query: 'users', header: _header.setTokenHeaders(token));
-   Usuario user = Usuario.fromJson(response);
-    
+    Usuario user = Usuario.fromJson(response);
+    print(user);
     return user;
   }
 
@@ -48,11 +47,13 @@ class UserRepository {
 
   Future<AuthenticationResponse> refreshToken(
       int id, String currentToken) async {
+   
     final response = await _helper.post(
       query: 'auth/refresh-token?id=$id&token=$currentToken',
       header: _header.setHeaders(),
     );
     AuthenticationResponse token = AuthenticationResponse.fromJson(response);
+    print(token);
     return token;
   }
 }

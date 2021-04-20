@@ -9,7 +9,9 @@ import 'package:pipoca/src/interfaces/repository_interface.dart';
 
 @lazySingleton
 class ApiBaseHelper implements IRepository {
-  final _client = http.Client();
+  final _client = http.Client(
+    
+  );
   Client get client => _client;
 
   final String _heroku = "https://pipoca-ao.herokuapp.com/v1";
@@ -33,6 +35,9 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+    }on ClientException {
+      throw FetchDataException(
+          'Conexão com o servidor fechada.⏲️ Tente novamente!');
     }
     return responseJson;
   }
@@ -58,6 +63,9 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+    }on ClientException {
+      throw FetchDataException(
+          'Conexão com o servidor fechada.⏲️ Tente novamente!');
     }
     return responseJson;
   }
@@ -85,6 +93,9 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+    }on ClientException {
+      throw FetchDataException(
+          'Conexão com o servidor fechada.⏲️ Tente novamente!');
     }
     return responseJson;
   }
@@ -99,8 +110,9 @@ class ApiBaseHelper implements IRepository {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
       var response = await client.post(url,
-          headers: header, body: json.encode(body.toJson()));
-    
+          headers: header,
+          body: body != null ? json.encode(body.toJson()) : null);
+
       responseJson = _returnResponse(response);
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
@@ -112,6 +124,9 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+    } on ClientException {
+      throw FetchDataException(
+          'Conexão com o servidor fechada.⏲️ Tente novamente!');
     }
     return responseJson;
   }
@@ -139,17 +154,21 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
-    }
+    }on ClientException {
+      throw FetchDataException(
+          'Conexão com o servidor fechada.⏲️ Tente novamente!');
+    } 
     return responseJson;
   }
 
   dynamic _returnResponse(http.Response response) {
     var msg = json.decode(response.body.toString());
+    print(response.statusCode);
     switch (response.statusCode) {
       case 201:
       case 200:
         var responseJson = json.decode(response.body);
-        
+
         return responseJson;
       case 400:
         throw BadRequestException(msg['message']);

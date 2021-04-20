@@ -1,3 +1,5 @@
+
+
 class AuthenticationResponse {
   late bool success;
   late String message;
@@ -36,6 +38,22 @@ class Generic {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
+    return data;
+  }
+}
+
+
+class Auth {
+
+  final String token;
+  
+  final int id;
+
+  Auth({this.token = '', required this.id });
+   Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['token'] = this.token;
+    data['id'] = this.id;
     return data;
   }
 }

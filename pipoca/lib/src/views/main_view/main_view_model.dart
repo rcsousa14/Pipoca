@@ -37,6 +37,7 @@ class MainViewModel extends IndexTrackingViewModel {
       }
     }
   }
+  
 
   List<BottomNavigationBarItem> get availableItems =>
       availableChoices.map((elem) => elem.navChoiceItem()).toList();

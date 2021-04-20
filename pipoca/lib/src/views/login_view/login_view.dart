@@ -11,7 +11,7 @@ import 'package:pipoca/src/constants/widgets/network_sensitive.dart';
 
 class LoginView extends StatelessWidget {
   final String message;
-  const LoginView({Key? key, this.message = ''}) : super(key: key);
+  const LoginView({this.message = ''});
 
   @override
   Widget build(BuildContext context) {
