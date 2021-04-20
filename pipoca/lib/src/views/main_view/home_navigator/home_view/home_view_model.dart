@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
@@ -27,20 +29,20 @@ class HomeViewModel extends ReactiveViewModel {
       required String trending,
       required String latestD,
       required String trendingD}) async {
-  
     var response = await _bottomSheetService.showBottomSheet(
         confirmButtonTitle: 'Fixe',
         title: filter ? trending : latest,
         description: filter ? trendingD : latestD);
     if (response?.confirmed == true) {
       bool newFilter = !filter;
-     await _authenticationService.setFilter(newFilter);
-      //await pushFeed();
+      await _authenticationService.setFilter(newFilter);
+      await pushFeed();
       notifyListeners();
     }
   }
 
   Future pushFeed() async {
+  
     _feedService.feedInfo.add(FeedInfo(
       coordinates: Coordinates(
           latitude: _location.currentLocation.latitude,
@@ -51,5 +53,6 @@ class HomeViewModel extends ReactiveViewModel {
   }
 
   @override
-  List<ReactiveServiceMixin> get reactiveServices => [_authenticationService, _userService];
+  List<ReactiveServiceMixin> get reactiveServices =>
+      [_authenticationService, _userService];
 }

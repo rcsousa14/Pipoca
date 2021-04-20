@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/constants/widgets/bago_card_widget.dart';
@@ -18,16 +19,15 @@ class BagoListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<BagoListViewModel>.reactive(
-        disposeViewModel: false,
+        fireOnModelReadyOnce: true,
         builder: (context, model, child) {
           return !model.dataReady
               ? Center(child: CircularProgressIndicator())
               : Builder(builder: (context) {
-                  List<Data> posts = model.data!.data!.data!;
                   switch (model.data!.status) {
-                    case Status.LOADING:
-                      return Center(child: CircularProgressIndicator());
+                    
                     case Status.COMPLETED:
+                      List<Data> posts = model.data!.data!.posts!.data;
                       return VisibilityDetector(
                         key: UniqueKey(),
                         onVisibilityChanged: (VisibilityInfo visibilityInfo) {
@@ -57,6 +57,7 @@ class BagoListView extends StatelessWidget {
                               itemCount: posts.length + 1,
                               separatorBuilder: (context, index) {
                                 if (index == 0) {
+                                  // needs to be its own widget that has a reactiveViewModel 
                                   return Container(
                                     color: Colors.blue,
                                     width: double.infinity,
@@ -67,6 +68,11 @@ class BagoListView extends StatelessWidget {
                               },
                               itemBuilder: (context, index) {
                                 if (index > 0) {
+                                  return Container(
+                                    color: Colors.red,
+                                    width: double.infinity,
+                                    height: 30,
+                                  );
                                   // return BagoCard(
                                   //   filtered: model.isFilter,
                                   //   links: posts[index].post.links,
@@ -91,10 +97,12 @@ class BagoListView extends StatelessWidget {
                       );
                     case Status.ERROR:
                       return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(model.data!.message!),
+                            Text(model.data!.message!, textAlign: TextAlign.center,),
                             ElevatedButton(
                               onPressed: () => model.refreshFeed(),
                               child: Text('Tentar Novamente'),

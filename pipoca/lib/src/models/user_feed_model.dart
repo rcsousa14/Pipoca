@@ -1,52 +1,52 @@
 import 'package:pipoca/src/models/user_location_model.dart';
 
 class FeedInfo {
-  Coordinates? coordinates; 
-  String? filter; 
-  int? page;
+  Coordinates? coordinates;
+  String? filter;
+  int page;
 
-  FeedInfo({this.coordinates, this.filter, this.page});
+  FeedInfo({this.coordinates, this.filter, required this.page});
 }
 
 class Feed {
   bool? success;
   String? message;
-  Posts? posts;
+   Posts? posts;
 
-  Feed({this.message, this.posts});
+  Feed({this.message, required this.posts});
 
   Feed.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    posts = json['posts'] != null ? new Posts.fromJson(json['posts']) : null;
+    posts = new Posts.fromJson(json['posts']);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
-    if (this.posts != null) {
+    
       data['posts'] = this.posts!.toJson();
-    }
+    
     return data;
   }
 }
 
 class Posts {
-  int? previousPage;
-  int? currentPage;
-  int? nextPage;
-  int? total;
-  int? limit;
-  List<Data>? data;
+  late int previousPage;
+  late int currentPage;
+  late int nextPage;
+  late int total;
+  late int limit;
+  late List<Data> data;
 
   Posts(
-      {this.previousPage,
-      this.currentPage,
-      this.nextPage,
-      this.total,
-      this.limit,
-      this.data});
+      {required this.previousPage,
+      required this.currentPage,
+      required this.nextPage,
+      required this.total,
+      required this.limit,
+      required this.data});
 
   Posts.fromJson(Map<String, dynamic> json) {
     previousPage = json['previousPage'];
@@ -54,12 +54,11 @@ class Posts {
     nextPage = json['nextPage'];
     total = json['total'];
     limit = json['limit'];
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
-    }
+
+    data = <Data>[];
+    json['data'].forEach((v) {
+      data.add(new Data.fromJson(v));
+    });
   }
 
   Map<String, dynamic> toJson() {
@@ -69,26 +68,30 @@ class Posts {
     data['nextPage'] = this.nextPage;
     data['total'] = this.total;
     data['limit'] = this.limit;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
+
+    data['data'] = this.data.map((v) => v.toJson()).toList();
+
     return data;
   }
 }
 
 class Data {
-  bool? userVoted;
-  int? userVote;
-  bool? userIsNear;
-  Post? post;
+  late bool userVoted;
+  late int userVote;
+  late bool userIsNear;
+  late Post post;
 
-  Data({this.userVoted, this.userVote, this.userIsNear, this.post});
+  Data(
+      {required this.userVoted,
+      required this.userVote,
+      required this.userIsNear,
+      required this.post});
 
   Data.fromJson(Map<String, dynamic> json) {
     userVoted = json['user_voted'];
     userVote = json['user_vote'];
     userIsNear = json['user_isNear'];
-    post = json['post'] != null ? new Post.fromJson(json['post']) : null;
+    post = new Post.fromJson(json['post']);
   }
 
   Map<String, dynamic> toJson() {
@@ -96,67 +99,63 @@ class Data {
     data['user_voted'] = this.userVoted;
     data['user_vote'] = this.userVote;
     data['user_isNear'] = this.userIsNear;
-    if (this.post != null) {
-      data['post'] = this.post!.toJson();
-    }
+
+    data['post'] = this.post.toJson();
+
     return data;
   }
 }
 
 class Post {
-  int? id;
-  String? content;
-  Links? links;
-  int? votesTotal;
-  int? commentsTotal;
-  int? flags;
-  bool? isFlagged;
-  bool? isDeleted;
-  String? createdAt;
-  Creator? creator;
+  late int id;
+  late String content;
+  late Links links;
+  late int votesTotal;
+  late int commentsTotal;
+  late int flags;
+  late bool isFlagged;
+  late bool isDeleted;
+  late String createdAt;
+  late Creator creator;
 
   Post(
-      {this.id,
-      this.content,
-      this.links,
-      this.votesTotal,
-      this.commentsTotal,
-      this.flags,
-      this.isFlagged,
-      this.isDeleted,
-      this.createdAt,
-      this.creator});
+      {required this.id,
+      required this.content,
+      required this.links,
+      required this.votesTotal,
+      required this.commentsTotal,
+      required this.flags,
+      required this.isFlagged,
+      required this.isDeleted,
+      required this.createdAt,
+      required this.creator});
 
   Post.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];
-    links = json['links'] != null ? new Links.fromJson(json['links']) : null;
+    links = new Links.fromJson(json['links']);
     votesTotal = json['votes_total'];
     commentsTotal = json['comments_total'];
     flags = json['flags'];
     isFlagged = json['is_flagged'];
     isDeleted = json['is_deleted'];
     createdAt = json['created_at'];
-    creator =
-        json['creator'] != null ? new Creator.fromJson(json['creator']) : null;
+    creator = new Creator.fromJson(json['creator']);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['content'] = this.content;
-    if (this.links != null) {
-      data['links'] = this.links!.toJson();
-    }
+    data['links'] = this.links.toJson();
     data['votes_total'] = this.votesTotal;
     data['comments_total'] = this.commentsTotal;
     data['flags'] = this.flags;
     data['is_flagged'] = this.isFlagged;
     data['is_deleted'] = this.isDeleted;
     data['created_at'] = this.createdAt;
-    if (this.creator != null) {
-      data['creator'] = this.creator!.toJson();
-    }
+    data['creator'] = this.creator.toJson();
+
     return data;
   }
 }
@@ -199,22 +198,22 @@ class Links {
 }
 
 class Creator {
-  int? id;
-  String? email;
-  String? username;
-  String? avatar;
-  String? fcmToken;
-  String? type;
-  bool? active;
+  late int id;
+  late String email;
+  late String username;
+  late String avatar;
+   String? fcmToken;
+  late String type;
+  late bool active;
 
   Creator(
-      {this.id,
-      this.email,
-      this.username,
-      this.avatar,
-      this.fcmToken,
-      this.type,
-      this.active});
+      {required this.id,
+      required this.email,
+      required this.username,
+      required this.avatar,
+       this.fcmToken,
+      required this.type,
+      required this.active});
 
   Creator.fromJson(Map<String, dynamic> json) {
     id = json['id'];

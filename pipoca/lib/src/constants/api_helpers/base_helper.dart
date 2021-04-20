@@ -9,9 +9,7 @@ import 'package:pipoca/src/interfaces/repository_interface.dart';
 
 @lazySingleton
 class ApiBaseHelper implements IRepository {
-  final _client = http.Client(
-    
-  );
+  final _client = http.Client();
   Client get client => _client;
 
   final String _heroku = "https://pipoca-ao.herokuapp.com/v1";
@@ -35,7 +33,7 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
-    }on ClientException {
+    } on ClientException {
       throw FetchDataException(
           'Conexão com o servidor fechada.⏲️ Tente novamente!');
     }
@@ -49,7 +47,7 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-
+    
       var response = await client.get(url, headers: header);
 
       responseJson = _returnResponse(response);
@@ -63,7 +61,7 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
-    }on ClientException {
+    } on ClientException {
       throw FetchDataException(
           'Conexão com o servidor fechada.⏲️ Tente novamente!');
     }
@@ -93,7 +91,7 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
-    }on ClientException {
+    } on ClientException {
       throw FetchDataException(
           'Conexão com o servidor fechada.⏲️ Tente novamente!');
     }
@@ -154,10 +152,10 @@ class ApiBaseHelper implements IRepository {
       throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
     } on IOException {
       throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
-    }on ClientException {
+    } on ClientException {
       throw FetchDataException(
           'Conexão com o servidor fechada.⏲️ Tente novamente!');
-    } 
+    }
     return responseJson;
   }
 

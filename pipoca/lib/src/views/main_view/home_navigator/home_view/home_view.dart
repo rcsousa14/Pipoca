@@ -4,6 +4,7 @@ import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/create_post_view/create_post_view.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
+import 'package:pipoca/src/views/main_view/home_navigator/home_view/widgets/bago_list_view.dart';
 import 'package:stacked/stacked.dart';
 
 class HomeView extends StatelessWidget {
@@ -18,7 +19,7 @@ class HomeView extends StatelessWidget {
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
         ));
-       // model.pushFeed();
+       model.pushFeed();
       },
       builder: (context, model, child) {
         return Scaffold(
@@ -28,7 +29,7 @@ class HomeView extends StatelessWidget {
               preferredSize: const Size.fromHeight(48),
               child: _Header(tap: () => Scaffold.of(context).openDrawer()),
             ),
-            body: Container(), // BagoListView(),
+            body: BagoListView(),
             floatingActionButton: HomeFloatingAction(
                 action: () => Navigator.push(
                     context,

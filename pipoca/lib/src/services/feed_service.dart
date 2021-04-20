@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:injectable/injectable.dart';
 import 'package:observable_ish/observable_ish.dart';
 import 'package:pipoca/src/app/locator.dart';
@@ -20,23 +21,18 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
   // this will get the feed
 
- late BehaviorSubject<ApiResponse<Posts>> _feedController;
+  late BehaviorSubject<ApiResponse<Feed>> _feedController;
 
-  Sink<ApiResponse<Posts>> get feedSink => _feedController.sink;
-  Stream<ApiResponse<Posts>> get feedStream => _feedController.stream;
+  Sink<ApiResponse<Feed>> get feedSink => _feedController.sink;
+  Stream<ApiResponse<Feed>> get feedStream => _feedController.stream;
   RxValue<CreatePost> _newPost = RxValue<CreatePost>(CreatePost());
-  
+
   // new post rxValue
   CreatePost get newPost => _newPost.value;
 
-
-  
-
-
   FeedService() {
-   
     listenToReactiveValues([_newPost]);
-    _feedController = BehaviorSubject<ApiResponse<Posts>>();
+    _feedController = BehaviorSubject<ApiResponse<Feed>>();
     _infoController = BehaviorSubject<FeedInfo>();
     _infoController.stream.listen((FeedInfo info) async {
       print('I have changed the info:: $info');
@@ -46,14 +42,15 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
   fetchFeed(FeedInfo info) async {
     feedSink.add(ApiResponse.loading('loading ..'));
-    
+
     try {
-      Posts data = await _api.getFeedData(
+      Feed data = await _api.getFeedData(
         lat: info.coordinates!.latitude,
         lng: info.coordinates!.longitude,
-        page: info.page!,
+        page: info.page,
         filter: info.filter!,
       );
+      _newPost.value = CreatePost();
       feedSink.add(ApiResponse.completed(data));
     } catch (e) {
       feedSink.add(ApiResponse.error(e.toString()));
@@ -64,9 +61,10 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     ApiResponse.loading('posting...');
     _newPost.value = post;
     try {
-      Generic posts = await _api.postFeedData(post);
-      ApiResponse.completed(posts);
-      _newPost.value = CreatePost();
+      Generic data = await _api.postFeedData(post);
+      _newPost.value = post;
+      ApiResponse.completed(data);
+      
     } catch (e) {
       ApiResponse.error(e.toString());
       _newPost.value = CreatePost();
@@ -86,8 +84,6 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   @override
   void start() {
     super.start();
-
-   
   }
 
   @override
@@ -96,6 +92,5 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
     _feedController.close();
     _infoController.close();
-  
   }
 }
