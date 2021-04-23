@@ -15,17 +15,17 @@ class AppException implements Exception {
  
 class FetchDataException extends AppException {
   FetchDataException([String? message])
-      : super(message, "Erro durante a comunicação: ");
+      : super(message, "Erro durante a comunicação:\n");
 }
 
 class BadRequestException extends AppException {
-  BadRequestException([String? message]) : super(message, "Pedido Inválido: ");
+  BadRequestException([String? message]) : super(message, "Pedido Inválido:\n");
 }
 
 class UnauthorisedException extends AppException {
-  UnauthorisedException([String? message]) : super(message, "Não Autorizado: ");
+  UnauthorisedException([String? message]) : super(message, "Não Autorizado:\n");
 }
 
 class InvalidInputException extends AppException {
-  InvalidInputException([String? message]) : super(message, "Entrada Inválida: ");
+  InvalidInputException([String? message]) : super(message, "Entrada Inválida:\n");
 }

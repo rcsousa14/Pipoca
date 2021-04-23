@@ -18,6 +18,7 @@ class HomeViewModel extends ReactiveViewModel {
   final _location = locator<LocationService>();
   final _bottomSheetService = locator<BottomSheetService>();
 
+
   bool get filter => _authenticationService.filter;
   User get user => _userService.user;
 
@@ -31,8 +32,8 @@ class HomeViewModel extends ReactiveViewModel {
       required String trendingD}) async {
     var response = await _bottomSheetService.showBottomSheet(
         confirmButtonTitle: 'Fixe',
-        title: filter ? trending : latest,
-        description: filter ? trendingD : latestD);
+        title: filter ? latest : trending,
+        description: filter ? latestD : trendingD);
     if (response?.confirmed == true) {
       bool newFilter = !filter;
       await _authenticationService.setFilter(newFilter);
@@ -42,7 +43,6 @@ class HomeViewModel extends ReactiveViewModel {
   }
 
   Future pushFeed() async {
-  
     _feedService.feedInfo.add(FeedInfo(
       coordinates: Coordinates(
           latitude: _location.currentLocation.latitude,

@@ -100,7 +100,7 @@ class _DrawerHeader extends ViewModelWidget<MainDrawerViewModel> {
         children: [
           avatar(user.avatar),
           account(
-              username: user.username!,
+              username: user.username,
               tap: () => print('hi'),
               date: timeago.format(time, locale: 'pt_BR_short'),
               karma: user.karmaTotal >= 1000

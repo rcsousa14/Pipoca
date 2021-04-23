@@ -1,7 +1,7 @@
 import 'package:battery/battery.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
-import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
+import 'package:pipoca/src/constants/widgets/helpers/connectivity_status.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/services/battery_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';

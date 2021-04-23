@@ -28,14 +28,14 @@ class ApiBaseHelper implements IRepository {
     } on HttpException {
       throw FetchDataException('O que procuras não existe🤷');
     } on FormatException {
-      throw FetchDataException('Formato de resposta ruim📛');
+      throw FetchDataException('Formato da resposta ruim📛');
     } on TimeoutException {
-      throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
+      throw FetchDataException('O pedido demorou muito⏲️');
     } on IOException {
-      throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+      throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
       throw FetchDataException(
-          'Conexão com o servidor fechada.⏲️ Tente novamente!');
+          'Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -56,14 +56,14 @@ class ApiBaseHelper implements IRepository {
     } on HttpException {
       throw FetchDataException('O que procuras não existe🤷');
     } on FormatException {
-      throw FetchDataException('Formato de resposta ruim📛');
+      throw FetchDataException('Formato da resposta ruim📛');
     } on TimeoutException {
-      throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
+      throw FetchDataException('O pedido demorou muito⏲️');
     } on IOException {
-      throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+      throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
       throw FetchDataException(
-          'Conexão com o servidor fechada.⏲️ Tente novamente!');
+          'Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -86,14 +86,14 @@ class ApiBaseHelper implements IRepository {
     } on HttpException {
       throw FetchDataException('O que procuras não existe🤷');
     } on FormatException {
-      throw FetchDataException('Formato de resposta ruim📛');
+      throw FetchDataException('Formato da resposta ruim📛');
     } on TimeoutException {
-      throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
+      throw FetchDataException('O pedido demorou muito⏲️');
     } on IOException {
-      throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+      throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
       throw FetchDataException(
-          'Conexão com o servidor fechada.⏲️ Tente novamente!');
+          'Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -117,14 +117,14 @@ class ApiBaseHelper implements IRepository {
     } on HttpException {
       throw FetchDataException('O que procuras não existe🤷');
     } on FormatException {
-      throw FetchDataException('Formato de resposta ruim📛');
+      throw FetchDataException('Formato da resposta ruim📛');
     } on TimeoutException {
-      throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
+      throw FetchDataException('O pedido demorou muito⏲️');
     } on IOException {
-      throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+      throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
       throw FetchDataException(
-          'Conexão com o servidor fechada.⏲️ Tente novamente!');
+          'Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -142,26 +142,26 @@ class ApiBaseHelper implements IRepository {
           headers: header,
           body: body != null ? json.encode(body.toJson()) : null);
       responseJson = _returnResponse(response);
-    } on SocketException {
+    }on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
     } on HttpException {
       throw FetchDataException('O que procuras não existe🤷');
     } on FormatException {
-      throw FetchDataException('Formato de resposta ruim📛');
+      throw FetchDataException('Formato da resposta ruim📛');
     } on TimeoutException {
-      throw FetchDataException('O pedido demorou muito.⏲️ Tente novamente!');
+      throw FetchDataException('O pedido demorou muito⏲️');
     } on IOException {
-      throw FetchDataException('Erro desconhecido.🤷 Tente novamente!');
+      throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
       throw FetchDataException(
-          'Conexão com o servidor fechada.⏲️ Tente novamente!');
+          'Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
 
   dynamic _returnResponse(http.Response response) {
     var msg = json.decode(response.body.toString());
-    print(response.statusCode);
+   
     switch (response.statusCode) {
       case 201:
       case 200:

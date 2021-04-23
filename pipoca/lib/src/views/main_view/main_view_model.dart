@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:location/location.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
-import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
+import 'package:pipoca/src/constants/widgets/helpers/connectivity_status.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:stacked/stacked.dart';

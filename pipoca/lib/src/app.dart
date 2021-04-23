@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pipoca/src/app/lifecycle_manager.dart';
 import 'package:pipoca/src/app_view_model.dart';
-import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
+import 'package:pipoca/src/constants/widgets/helpers/connectivity_status.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/battery_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';

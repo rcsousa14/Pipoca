@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/create_post_view/create_post_view.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_model.dart';
@@ -23,22 +26,22 @@ class HomeView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
-         
-            backgroundColor: Colors.blueGrey[50],
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(48),
-              child: _Header(tap: () => Scaffold.of(context).openDrawer()),
-            ),
-            body: BagoListView(),
-            floatingActionButton: HomeFloatingAction(
-                action: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreatePostView(
-                        filter: model.filter,
-                        index: model.index,
-                      ),
-                    ))));
+           
+              backgroundColor: Colors.blueGrey[50],
+              appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(48),
+                child: _Header(tap: () => Scaffold.of(context).openDrawer()),
+              ),
+              body: BagoListView(),
+              floatingActionButton: HomeFloatingAction(
+        action: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreatePostView(
+                filter: model.filter,
+                index: model.index,
+              ),
+            ))));
       },
       viewModelBuilder: () => HomeViewModel(),
     );

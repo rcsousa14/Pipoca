@@ -15,14 +15,11 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
   final _location = locator<LocationService>();
   final _authenticationService = locator<AuthenticationService>();
 
-
   int _currentIndex = 1;
   int get currentIndex => _currentIndex;
 
   bool _isVisible = false;
   bool get isVisible => _isVisible;
-
-
 
   bool get filter => _authenticationService.filter;
 
@@ -31,10 +28,15 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
     notifyListeners();
   }
 
-  Future refreshFeed() async {
-   
+  setVisible(bool visibility) {
+    _authenticationService.setVisible(visibility);
+    notifyListeners();
+  }
 
-    int level = await _callerService.batteryLevel();
+  Future<void> refreshFeed() async {
+    print('this is the refresh btn');
+
+    //int level = await _callerService.batteryLevel();
     // await _callerService.battery(
     //     level,
     //     _feedService.fetchFeed(
@@ -46,7 +48,7 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
     //   filter: filter == false ? 'date' : 'pipocar',
     // )
     //     ));
-    
+
     notifyListeners();
   }
 

@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pipoca/src/constants/widgets/full_screen.dart';
+import 'package:pipoca/src/constants/widgets/helpers/full_screen.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
-import 'package:pipoca/src/constants/widgets/webview_screen.dart';
+import 'package:pipoca/src/constants/widgets/helpers/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:video_player/video_player.dart';
 
@@ -33,6 +33,12 @@ class ContentImage extends StatefulWidget {
 }
 
 class _ContentImageState extends State<ContentImage> {
+
+   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(widget.image, context);
+  }
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;

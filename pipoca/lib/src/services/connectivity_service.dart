@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
+import 'package:pipoca/src/constants/widgets/helpers/connectivity_status.dart';
 import 'package:pipoca/src/interfaces/stoppable_interface.dart';
 import 'package:rxdart/rxdart.dart';
 

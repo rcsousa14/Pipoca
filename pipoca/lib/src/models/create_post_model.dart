@@ -6,7 +6,15 @@ class CreatePost {
   List<String>? links;
 
   CreatePost(
-      {this.content, this.latitude, this.longitude, this.hashes, this.links});
+      {required this.content,
+      this.latitude,
+      this.longitude,
+      this.hashes,
+      this.links});
+      
+  bool checkContent() {
+    return [content, latitude, longitude].contains(null);
+  }
 
   CreatePost.fromJson(Map<String, dynamic> json) {
     content = json['content'];

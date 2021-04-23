@@ -31,7 +31,7 @@ class AuthViewModel extends ReactiveViewModel {
         await _dialogService.showDialog(
             title: 'Autenticação',
             description: '${result.message}',
-            buttonTitle: 'Ok');
+            buttonTitle: 'Tentar Novamente');
         await resetToken();
         break;
     }

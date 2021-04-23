@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
-import 'package:pipoca/src/constants/widgets/busy_btn_widget.dart';
+import 'package:pipoca/src/constants/widgets/helpers/busy_btn_widget.dart';
 
 class NewFormTextField extends StatelessWidget {
   final TextInputType keyboardType;

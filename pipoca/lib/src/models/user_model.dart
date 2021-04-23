@@ -23,12 +23,12 @@ class Usuario {
 
 class User {
   late int id;
-   String? username;
+  late String username;
   late String email;
-   String? bio;
-   String? avatar;
-   String? birthday;
-   String? fcmToken;
+  String? bio;
+  String? avatar;
+  String? birthday;
+  String? fcmToken;
   late String createdAt;
   late int karmaTotal;
   late int interationTotal;
@@ -37,12 +37,12 @@ class User {
 
   User(
       {required this.id,
-      this.username,
+      required this.username,
       required this.email,
-       this.bio,
-       this.avatar,
-       this.birthday,
-       this.fcmToken,
+      this.bio,
+      this.avatar,
+      this.birthday,
+      this.fcmToken,
       required this.createdAt,
       required this.karmaTotal,
       required this.interationTotal,

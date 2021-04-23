@@ -7,7 +7,7 @@ import 'package:pipoca/src/views/login_view/widgets/form.dart';
 import 'package:pipoca/src/views/login_view/widgets/logo.dart';
 import 'package:stacked/stacked.dart';
 
-import 'package:pipoca/src/constants/widgets/network_sensitive.dart';
+import 'package:pipoca/src/constants/widgets/helpers/network_sensitive.dart';
 
 class LoginView extends StatelessWidget {
   final String message;

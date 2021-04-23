@@ -1,19 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/constants/api_helpers/response.dart';
+import 'package:pipoca/src/models/create_post_model.dart';
 
 import 'package:pipoca/src/services/caller.service.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
-import 'package:pipoca/src/services/social_share_service.dart';
+
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class BagoCardViewModel extends BaseViewModel {
   final _feedService = locator<FeedService>();
   final _location = locator<LocationService>();
   final _callerService = locator<CallerService>();
+  final _snackbarService = locator<SnackbarService>();
   final CapturePngService _captureService = locator<CapturePngService>();
-  final UrlLancherService _lancherService = locator<UrlLancherService>();
 
   bool? _isUp;
   bool? _isDown;
@@ -21,6 +26,19 @@ class BagoCardViewModel extends BaseViewModel {
   int? get points => _totalPoints;
   bool? get up => _isUp;
   bool? get down => _isDown;
+  double _progress = 0;
+  double get value => _progress;
+
+  void startTimer() {
+    Timer.periodic(Duration(milliseconds: 300), (timer) {
+      if (_progress == 1) {
+        timer.cancel();
+      } else {
+        _progress += 0.05;
+      }
+      notifyListeners();
+    });
+  }
 
   void getVote(bool isVoted, int vote, int points) {
     _totalPoints = points;
@@ -52,7 +70,6 @@ class BagoCardViewModel extends BaseViewModel {
           points == 0 && isVoted == false) {
         _totalPoints = vote;
       } else {
-        
         --_totalPoints;
         notifyListeners();
       }
@@ -75,26 +92,22 @@ class BagoCardViewModel extends BaseViewModel {
       _isDown = false;
       notifyListeners();
     }
-    //await _pointRepository.postPoint(id.toString(), vote.toString());
-    // int level = await _callerService.batteryLevel();
-    //await _callerService.battery(;
-    //  level,;
-    //  _feedService.getFeed(;
-    //     page: page,;
-    //      lat: _location.currentLocation.latitude,;
-    //     lng: _location.currentLocation.longitude,;
-    //     filter: filter == false ? 'date' : 'pipocar',;
-    //   ));
-    _totalPoints = points;
-    notifyListeners();
+    
+    var result =
+        await _feedService.pointPost(point: PostPoint(postId: id, voted: vote));
+   
+    if (result.status == Status.ERROR) {
+      return _snackbarService.showSnackbar(message: '${result.message}');
+    }
+    if(result.status == Status.COMPLETED){
+      //TODO: need to refresh the list
+    }
+
+    
   }
 
   Future share(key) async {
     return await _captureService.capturePng(key);
-  }
-
-  Future social(uri) async {
-    return await _lancherService.social(uri);
   }
 
 //TODO: navigation to the next page

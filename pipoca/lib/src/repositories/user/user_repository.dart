@@ -19,7 +19,7 @@ class UserRepository {
     final response = await _helper.get(
         query: 'users', header: _header.setTokenHeaders(token));
     Usuario user = Usuario.fromJson(response);
-    print(user);
+
     return user;
   }
 
@@ -53,7 +53,7 @@ class UserRepository {
       header: _header.setHeaders(),
     );
     AuthenticationResponse token = AuthenticationResponse.fromJson(response);
-    print(token);
+
     return token;
   }
 }

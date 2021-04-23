@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class FeedCaller extends StatefulWidget {
-  final Function caller;
+  final Function? caller;
+  final Function? itemCreated;
   final Widget child;
 
-  FeedCaller({Key? key, required this.caller, required this.child}) : super(key: key);
+  FeedCaller({Key? key, this.caller, required this.child, this.itemCreated})
+      : super(key: key);
 
   @override
   _FeedCallerState createState() => _FeedCallerState();
@@ -16,13 +18,16 @@ class _FeedCallerState extends State<FeedCaller> {
   @override
   void initState() {
     super.initState();
+    if (widget.itemCreated != null) {
+      widget.itemCreated!();
+    }
 
-   
-      widget.caller();
- 
-       _timer = Timer.periodic(Duration(minutes: 3), (timer) => widget.caller());
-      
-    
+    if (widget.caller != null) {
+      widget.caller!();
+
+      _timer =
+          Timer.periodic(Duration(seconds: 16), (timer) => widget.caller!());
+    }
   }
 
   @override

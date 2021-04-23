@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:injectable/injectable.dart';
 import 'package:observable_ish/observable_ish.dart';
 import 'package:pipoca/src/app/locator.dart';
@@ -19,6 +18,7 @@ class UserService with ReactiveServiceMixin {
   RxValue<User> _user = RxValue<User>(
     User(
       id: 0,
+      username: '',
       createdAt: '',
       email: '',
       interation: Interation(
@@ -60,6 +60,7 @@ class UserService with ReactiveServiceMixin {
         user: User(
           id: 0,
           createdAt: '',
+          username: '',
           email: '',
           interation: Interation(
             userCommentsTotal: 0,

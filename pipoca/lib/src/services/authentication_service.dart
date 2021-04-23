@@ -19,6 +19,8 @@ class AuthenticationService with ReactiveServiceMixin {
 
   RxValue<Auth> _auth = RxValue<Auth>(Auth(id: 0));
   RxValue<bool> _filter = RxValue<bool>(false);
+  RxValue<bool> _visible = RxValue<bool>(false);
+  bool get visible => _visible.value;
   bool get filter => _filter.value;
   String get token => _auth.value.token;
   bool get loggedIn => _auth.value.token.isNotEmpty ? true : false;
@@ -84,6 +86,10 @@ class AuthenticationService with ReactiveServiceMixin {
   Future setFilter(bool newFilter) async {
     await _localStorage.put('filter', newFilter);
     _filter.value = newFilter;
+  }
+
+  setVisible(bool visibility) {
+    _visible.value = visibility;
   }
 
   Future deleteToken() async {

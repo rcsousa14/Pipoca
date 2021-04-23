@@ -12,7 +12,7 @@ import '../constants/api_helpers/base_helper.dart' as _i3;
 import '../constants/api_helpers/header.dart' as _i4;
 import '../repositories/feed/feed_repository.dart' as _i13;
 import '../repositories/user/auth_repository.dart' as _i5;
-import '../repositories/user/user_repository.dart' as _i20;
+import '../repositories/user/user_repository.dart' as _i19;
 import '../services/authentication_service.dart' as _i6;
 import '../services/battery_service.dart' as _i7;
 import '../services/caller.service.dart' as _i9;
@@ -23,10 +23,9 @@ import '../services/feed_service.dart' as _i14;
 import '../services/location_service.dart' as _i15;
 import '../services/push_notification_service.dart' as _i17;
 import '../services/shared_local_storage_service.dart' as _i18;
-import '../services/social_share_service.dart' as _i19;
-import '../services/third_party_service_model.dart' as _i23;
-import '../services/user_service.dart' as _i21;
-import '../services/validation_service.dart' as _i22;
+import '../services/third_party_service_model.dart' as _i22;
+import '../services/user_service.dart' as _i20;
+import '../services/validation_service.dart' as _i21;
 import '../views/main_view/main_view_model.dart'
     as _i16; // ignore_for_file: unnecessary_lambdas
 
@@ -64,14 +63,13 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i8.SnackbarService>(
       () => thirdPartyServicesModule.snackbarService);
   gh.lazySingleton<_i5.SocialRepository>(() => _i5.SocialRepository());
-  gh.lazySingleton<_i19.UrlLancherService>(() => _i19.UrlLancherService());
-  gh.lazySingleton<_i20.UserRepository>(() => _i20.UserRepository());
-  gh.lazySingleton<_i21.UserService>(() => _i21.UserService());
-  gh.lazySingleton<_i22.ValidationService>(() => _i22.ValidationService());
+  gh.lazySingleton<_i19.UserRepository>(() => _i19.UserRepository());
+  gh.lazySingleton<_i20.UserService>(() => _i20.UserService());
+  gh.lazySingleton<_i21.ValidationService>(() => _i21.ValidationService());
   return get;
 }
 
-class _$ThirdPartyServicesModule extends _i23.ThirdPartyServicesModule {
+class _$ThirdPartyServicesModule extends _i22.ThirdPartyServicesModule {
   @override
   _i8.BottomSheetService get bottomSheetService => _i8.BottomSheetService();
   @override

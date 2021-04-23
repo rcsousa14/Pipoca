@@ -176,6 +176,10 @@ class Links {
       this.video,
       this.site});
 
+bool checkUrl() {
+    return [url,image].contains(null);
+  }
+
   Links.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     title = json['title'];

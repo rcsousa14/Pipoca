@@ -1,6 +1,6 @@
 import 'package:battery/battery.dart';
 import 'package:flutter/material.dart';
-import 'package:pipoca/src/constants/widgets/connectivity_status.dart';
+import 'package:pipoca/src/constants/widgets/helpers/connectivity_status.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:provider/provider.dart';
 

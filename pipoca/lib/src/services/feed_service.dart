@@ -25,7 +25,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
   Sink<ApiResponse<Feed>> get feedSink => _feedController.sink;
   Stream<ApiResponse<Feed>> get feedStream => _feedController.stream;
-  RxValue<CreatePost> _newPost = RxValue<CreatePost>(CreatePost());
+  RxValue<CreatePost> _newPost = RxValue<CreatePost>(CreatePost(content: ''));
 
   // new post rxValue
   CreatePost get newPost => _newPost.value;
@@ -50,34 +50,34 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
         page: info.page,
         filter: info.filter!,
       );
-      _newPost.value = CreatePost();
+      print(data);
+      _newPost.value = CreatePost(content: '');
       feedSink.add(ApiResponse.completed(data));
     } catch (e) {
       feedSink.add(ApiResponse.error(e.toString()));
     }
   }
 
-  Future postFeed({required CreatePost post}) async {
+  Future<ApiResponse<Generic>> postFeed({required CreatePost post}) async {
     ApiResponse.loading('posting...');
     _newPost.value = post;
     try {
       Generic data = await _api.postFeedData(post);
       _newPost.value = post;
-      ApiResponse.completed(data);
-      
+     return ApiResponse.completed(data);
     } catch (e) {
-      ApiResponse.error(e.toString());
-      _newPost.value = CreatePost();
+      _newPost.value = CreatePost(content: '');
+     return ApiResponse.error(e.toString());
     }
   }
 
-  Future pointPost({required PostPoint point}) async {
+  Future<ApiResponse<Generic>> pointPost({required PostPoint point}) async {
     ApiResponse.loading('loading');
     try {
       Generic data = await _api.postPointData(point);
-      ApiResponse.completed(data);
+     return ApiResponse.completed(data);
     } catch (e) {
-      ApiResponse.error(e.toString());
+    return ApiResponse.error(e.toString());
     }
   }
 

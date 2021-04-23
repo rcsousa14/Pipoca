@@ -48,7 +48,7 @@ class SocialRepository {
         };
 
         UserAuth user = UserAuth.fromJson(userData);
-        print(jsonEncode(user));
+      
         return user;
       }
       if (result.status == LoginStatus.cancelled) {

@@ -31,7 +31,7 @@ class FeedRepository {
         query: 'user/feed?$queryString',
         header: _header.setTokenHeaders(_authenticationService.token));
 
-    print(response['posts']);
+ 
 
     Feed feed = Feed.fromJson(response);
     return feed;
