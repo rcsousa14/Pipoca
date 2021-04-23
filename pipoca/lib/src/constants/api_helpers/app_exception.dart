@@ -2,30 +2,30 @@
 
 class AppException implements Exception {
   final _message; 
-  final _prefix; 
+ 
 
-  AppException([this._message, this._prefix]);
+  AppException([this._message]);
 
   @override
     String toString() {
-      return "$_prefix$_message";
+      return "$_message";
     }
 }
 
  
 class FetchDataException extends AppException {
   FetchDataException([String? message])
-      : super(message, "Erro durante a comunicação:\n");
+      : super(message);
 }
 
 class BadRequestException extends AppException {
-  BadRequestException([String? message]) : super(message, "Pedido Inválido:\n");
+  BadRequestException([String? message]) : super(message);
 }
 
 class UnauthorisedException extends AppException {
-  UnauthorisedException([String? message]) : super(message, "Não Autorizado:\n");
+  UnauthorisedException([String? message]) : super(message);
 }
 
 class InvalidInputException extends AppException {
-  InvalidInputException([String? message]) : super(message, "Entrada Inválida:\n");
+  InvalidInputException([String? message]) : super(message);
 }

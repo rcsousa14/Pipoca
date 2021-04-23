@@ -32,14 +32,12 @@ class CreatePostView extends StatelessWidget {
 }
 
 class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
-  const _StringTextField({
-    Key? key,
-  }) : super(key: key, reactive: true);
+  const _StringTextField({Key? key}) : super(key: key, reactive: true);
 
   @override
   Widget buildViewModelWidget(BuildContext context, CreatePostViewModel model) {
     var text = useTextEditingController();
-    //  User user = model.user.user;
+      User user = model.user;
     return Container(
       height: MediaQuery.of(context).size.height,
       color: Colors.white,
@@ -65,10 +63,10 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                         decoration: BoxDecoration(
                           color: Colors.grey[350],
                           shape: BoxShape.circle,
-                          // image: DecorationImage(
-                          //   image: NetworkImage(user.avatar),
-                          //   fit: BoxFit.cover,
-                          // ),
+                          image: DecorationImage(
+                            image: NetworkImage(user.avatar!),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       Expanded(
@@ -101,13 +99,13 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                                       counterText: "",
                                     ),
                                   )),
-                              model.gif != null
-                                  ? Container(
-                                      height: 300,
-                                      width: double.infinity,
-                                      color: Colors.grey,
-                                    )
-                                  : Container()
+                              // model.gif != null
+                              //     ? Container(
+                              //         height: 300,
+                              //         width: double.infinity,
+                              //         color: Colors.grey,
+                              //       )
+                              //     : Container()
                             ],
                           ),
                         ),
@@ -150,17 +148,13 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                           margin: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               border: Border.all(
-                                // color: model.links.length > 0
-                                //     ? Colors.grey
-                                //     : Colors.blue[400],
+                               color: model.links.isEmpty ? Colors.blue.shade400 : Colors.grey
                               ),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(4))),
                           child: Icon(
                             Icons.gif,
-                            color: model.links.length > 0
-                                ? Colors.grey
-                                : Colors.blue[400],
+                            color: model.links.isEmpty ? Colors.blue.shade400 : Colors.grey
                           )),
                     )
                   ],
@@ -196,7 +190,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
 class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
   final bool filter;
   final int page;
-  const _AppBarNewPost(this.filter, this.page, {Key? key})
+  const _AppBarNewPost(this.filter, this.page, {Key? key} )
       : super(key: key, reactive: false);
 
   @override
@@ -205,7 +199,7 @@ class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
         elevation: 0,
         automaticallyImplyLeading: false,
         leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
+          onTap: () => model.goBack(),
           child: Container(
             child: Icon(Icons.clear, size: 27),
           ),

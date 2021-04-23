@@ -3,41 +3,39 @@ import 'package:detectable_text_field/functions.dart';
 
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
-import 'package:pipoca/src/repositories/feed/feed_repository.dart';
 import 'package:pipoca/src/services/caller.service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
-
 import 'package:pipoca/src/services/location_service.dart';
-
-
+import 'package:pipoca/src/services/user_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class CreatePostViewModel extends BaseViewModel {
   final _feedService = locator<FeedService>();
+  final _userService = locator<UserService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  final DialogService _dialogService = locator<DialogService>();
- 
+  final _navigationService = locator<NavigationService>();
   final _location = locator<LocationService>();
   final _callerService = locator<CallerService>();
-  final FeedRepository _feedRepository = locator<FeedRepository>();
+
   String? _gif;
   String _text = '';
   String get text => _text;
   String get gif => _gif!;
+  User get user => _userService.user;
 
   List<String> _hashes = [];
   List<String> _links = [];
   List<String> get links => _links;
 
- 
-  //extractDetections("#Hello World #Flutter Dart #Thank you", hashTagRegExp);
-
   void updateString(String value) {
     _text = value;
     _hashes = extractDetections(_text, hashTagRegExp);
     _links = extractDetections(_text, urlRegex);
+
     notifyListeners();
   }
 
@@ -46,10 +44,19 @@ class CreatePostViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future addPost(int index, bool filter) async {
-    setBusy(true);
+  goBack() {
+    return _navigationService.back();
+  }
 
-   // var result = await _feedRepository.postFeed(CreatePost(
+  Future addPost(int index, bool filter) async {
+    var result = await _feedService.postFeed(
+        post: CreatePost(
+            content: _text,
+            hashes: _hashes,
+            links: _links,
+            latitude: _location.currentLocation.latitude,
+            longitude: _location.currentLocation.longitude));
+    // var result = await _feedRepository.postFeed(CreatePost(
     //  latitude: _location.currentLocation.latitude,
     //  longitude: _location.currentLocation.longitude,
     //   content: _text,
@@ -63,21 +70,20 @@ class CreatePostViewModel extends BaseViewModel {
     //   await refreshFeed(index, filter);
     //   _snackbarService.showSnackbar(message: 'seu Bago foi enviado');
     // }
-
-    setBusy(false);
   }
 
-  Future refreshFeed(int index, bool filter) async {
-    // int level = await _callerService.batteryLevel();
-    // var result = await _callerService.battery(
-    //     level,
-    //     _feedService.getFeed(
-    //       page: index,
-    //       lat: _location.currentLocation.latitude,
-    //       lng: _location.currentLocation.longitude,
-    //       filter: filter == false ? 'date' : 'pipocar',
-    //     ));
-    // notifyListeners();
-    // return result;
+  Future<void> refreshFeed(int index, bool filter) async {
+    int level = await _callerService.batteryLevel();
+    await _callerService.battery(
+        level,
+        _feedService.fetchFeed(FeedInfo(
+          coordinates: Coordinates(
+              latitude: _location.currentLocation.latitude,
+              longitude: _location.currentLocation.longitude),
+          page: index,
+          filter: filter == false ? 'date' : 'pipocar',
+        )));
+
+    notifyListeners();
   }
 }

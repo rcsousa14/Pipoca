@@ -6,7 +6,6 @@ import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/caller.service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
-import 'package:pipoca/src/services/shared_local_storage_service.dart';
 import 'package:stacked/stacked.dart';
 
 class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
@@ -34,20 +33,16 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
   }
 
   Future<void> refreshFeed() async {
-    print('this is the refresh btn');
-
-    //int level = await _callerService.batteryLevel();
-    // await _callerService.battery(
-    //     level,
-    //     _feedService.fetchFeed(
-    //       FeedInfo(
-    //   coordinates: Coordinates(
-    //       latitude: _location.currentLocation.latitude,
-    //       longitude: _location.currentLocation.longitude),
-    //   page: _currentIndex,
-    //   filter: filter == false ? 'date' : 'pipocar',
-    // )
-    //     ));
+    int level = await _callerService.batteryLevel();
+    await _callerService.battery(
+        level,
+        _feedService.fetchFeed(FeedInfo(
+          coordinates: Coordinates(
+              latitude: _location.currentLocation.latitude,
+              longitude: _location.currentLocation.longitude),
+          page: _currentIndex,
+          filter: filter == false ? 'date' : 'pipocar',
+        )));
 
     notifyListeners();
   }

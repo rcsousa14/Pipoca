@@ -11,16 +11,19 @@ import 'package:stacked/stacked.dart';
 
 import '../views/auth_view/auth_view.dart';
 import '../views/login_view/login_view.dart';
+import '../views/main_view/home_navigator/create_post_view/create_post_view.dart';
 import '../views/main_view/main_view.dart';
 
 class Routes {
   static const String authView = '/';
   static const String loginView = '/login-view';
   static const String mainView = '/main-view';
+  static const String createPostView = '/create-post-view';
   static const all = <String>{
     authView,
     loginView,
     mainView,
+    createPostView,
   };
 }
 
@@ -31,6 +34,7 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes.authView, page: AuthView),
     RouteDef(Routes.loginView, page: LoginView),
     RouteDef(Routes.mainView, page: MainView),
+    RouteDef(Routes.createPostView, page: CreatePostView),
   ];
   @override
   Map<Type, StackedRouteFactory> get pagesMap => _pagesMap;
@@ -56,6 +60,17 @@ class StackedRouter extends RouterBase {
         settings: data,
       );
     },
+    CreatePostView: (data) {
+      var args = data.getArgs<CreatePostViewArguments>(nullOk: false);
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => CreatePostView(
+          key: args.key,
+          filter: args.filter,
+          index: args.index,
+        ),
+        settings: data,
+      );
+    },
   };
 }
 
@@ -67,4 +82,13 @@ class StackedRouter extends RouterBase {
 class LoginViewArguments {
   final String message;
   LoginViewArguments({this.message = ''});
+}
+
+/// CreatePostView arguments holder class
+class CreatePostViewArguments {
+  final Key? key;
+  final bool filter;
+  final int index;
+  CreatePostViewArguments(
+      {this.key, required this.filter, required this.index});
 }

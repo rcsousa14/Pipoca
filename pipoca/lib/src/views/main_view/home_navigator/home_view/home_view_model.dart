@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/app/router.router.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
@@ -16,8 +17,8 @@ class HomeViewModel extends ReactiveViewModel {
   final _userService = locator<UserService>();
   final _feedService = locator<FeedService>();
   final _location = locator<LocationService>();
+  final _navigationService = locator<NavigationService>();
   final _bottomSheetService = locator<BottomSheetService>();
-
 
   bool get filter => _authenticationService.filter;
   User get user => _userService.user;
@@ -50,6 +51,11 @@ class HomeViewModel extends ReactiveViewModel {
       page: _currentIndex,
       filter: filter == false ? 'date' : 'pipocar',
     ));
+  }
+
+  goTocreate(bool filter, int index) {
+    return _navigationService.navigateTo(Routes.createPostView,
+        arguments: CreatePostViewArguments(filter: filter, index: index));
   }
 
   @override

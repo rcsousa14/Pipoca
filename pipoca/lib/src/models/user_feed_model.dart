@@ -8,10 +8,21 @@ class FeedInfo {
   FeedInfo({this.coordinates, this.filter, required this.page});
 }
 
+class CheckData {
+  late String creator;
+  late String createdAt;
+  late String content;
+
+  CheckData(
+      {required this.content, required this.createdAt, required this.creator});
+
+ 
+}
+
 class Feed {
   bool? success;
   String? message;
-   Posts? posts;
+  Posts? posts;
 
   Feed({this.message, required this.posts});
 
@@ -25,9 +36,9 @@ class Feed {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
-    
-      data['posts'] = this.posts!.toJson();
-    
+
+    data['posts'] = this.posts!.toJson();
+
     return data;
   }
 }
@@ -176,8 +187,8 @@ class Links {
       this.video,
       this.site});
 
-bool checkUrl() {
-    return [url,image].contains(null);
+  bool checkUrl() {
+    return [url, image].contains(null);
   }
 
   Links.fromJson(Map<String, dynamic> json) {
@@ -206,7 +217,7 @@ class Creator {
   late String email;
   late String username;
   late String avatar;
-   String? fcmToken;
+  String? fcmToken;
   late String type;
   late bool active;
 
@@ -215,7 +226,7 @@ class Creator {
       required this.email,
       required this.username,
       required this.avatar,
-       this.fcmToken,
+      this.fcmToken,
       required this.type,
       required this.active});
 

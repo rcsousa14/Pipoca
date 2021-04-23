@@ -80,7 +80,7 @@ class HomeFloatingAction extends StatelessWidget {
         child: FloatingActionButton(
           backgroundColor: red,
           elevation: 1,
-          onPressed:()=> action,
+          onPressed:()=> action(),
           child: Icon(
             PipocaBasics.quill,
           ),

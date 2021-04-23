@@ -3,6 +3,7 @@ import 'package:pipoca/src/app/router.router.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
+import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/user_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -12,6 +13,7 @@ class MainDrawerViewModel extends BaseViewModel {
   final _authenticationService = locator<AuthenticationService>();
   final _dialogService = locator<DialogService>();
   final _userService = locator<UserService>();
+  final _feedService = locator<FeedService>();
 
   User get user => _userService.user;
 
@@ -21,10 +23,11 @@ class MainDrawerViewModel extends BaseViewModel {
         await _authenticationService.logout(_authenticationService.token);
     if (result.status == Status.COMPLETED) {
       _userService.logoutUser();
+      _feedService.logoutFeed();
       return _navigationService.clearTillFirstAndShow(Routes.loginView);
     }
     if (result.status == Status.ERROR) {
-   await _dialogService.showDialog(
+      await _dialogService.showDialog(
           title: 'Login', description: '${result.message}', buttonTitle: 'Ok');
     }
 

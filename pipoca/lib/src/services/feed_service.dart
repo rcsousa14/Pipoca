@@ -16,33 +16,35 @@ import 'package:stacked/stacked.dart';
 class FeedService extends IstoppableService with ReactiveServiceMixin {
   final _api = locator<FeedRepository>();
 
+  // ignore: close_sinks
   late BehaviorSubject<FeedInfo> _infoController;
   Sink<FeedInfo> get feedInfo => _infoController.sink;
 
   // this will get the feed
 
+  // ignore: close_sinks
   late BehaviorSubject<ApiResponse<Feed>> _feedController;
 
   Sink<ApiResponse<Feed>> get feedSink => _feedController.sink;
   Stream<ApiResponse<Feed>> get feedStream => _feedController.stream;
   RxValue<CreatePost> _newPost = RxValue<CreatePost>(CreatePost(content: ''));
+  RxValue<CheckData> _indexContent =
+      RxValue<CheckData>(CheckData(creator: '', createdAt: '', content: ''));
 
   // new post rxValue
   CreatePost get newPost => _newPost.value;
+  CheckData get checkNew => _indexContent.value;
 
   FeedService() {
-    listenToReactiveValues([_newPost]);
+    listenToReactiveValues([_newPost, _indexContent]);
     _feedController = BehaviorSubject<ApiResponse<Feed>>();
     _infoController = BehaviorSubject<FeedInfo>();
     _infoController.stream.listen((FeedInfo info) async {
-      print('I have changed the info:: $info');
       fetchFeed(info);
     });
   }
 
-  fetchFeed(FeedInfo info) async {
-    feedSink.add(ApiResponse.loading('loading ..'));
-
+  Future fetchFeed(FeedInfo info) async {
     try {
       Feed data = await _api.getFeedData(
         lat: info.coordinates!.latitude,
@@ -51,11 +53,23 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
         filter: info.filter!,
       );
       print(data);
+      _indexContent.value = CheckData(
+          creator: data.posts!.data.first.post.creator.username,
+          createdAt: data.posts!.data.first.post.createdAt,
+          content: data.posts!.data.first.post.content);
       _newPost.value = CreatePost(content: '');
+
       feedSink.add(ApiResponse.completed(data));
+      Future.delayed(Duration(seconds: 5));
+      _indexContent.value = CheckData(creator: '', createdAt: '', content: '');
     } catch (e) {
       feedSink.add(ApiResponse.error(e.toString()));
     }
+  }
+
+  logoutFeed() {
+  
+    feedSink.add(ApiResponse.loading('loading...'));
   }
 
   Future<ApiResponse<Generic>> postFeed({required CreatePost post}) async {
@@ -64,10 +78,10 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     try {
       Generic data = await _api.postFeedData(post);
       _newPost.value = post;
-     return ApiResponse.completed(data);
+      return ApiResponse.completed(data);
     } catch (e) {
       _newPost.value = CreatePost(content: '');
-     return ApiResponse.error(e.toString());
+      return ApiResponse.error(e.toString());
     }
   }
 
@@ -75,9 +89,9 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     ApiResponse.loading('loading');
     try {
       Generic data = await _api.postPointData(point);
-     return ApiResponse.completed(data);
+      return ApiResponse.completed(data);
     } catch (e) {
-    return ApiResponse.error(e.toString());
+      return ApiResponse.error(e.toString());
     }
   }
 
@@ -89,8 +103,5 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   @override
   void stop() {
     super.stop();
-
-    _feedController.close();
-    _infoController.close();
   }
 }

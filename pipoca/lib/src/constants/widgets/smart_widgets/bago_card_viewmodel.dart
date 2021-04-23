@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
 
 import 'package:pipoca/src/services/caller.service.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
@@ -61,7 +63,7 @@ class BagoCardViewModel extends BaseViewModel {
     required int vote,
     required bool isVoted,
     bool? filter,
-    int? page,
+    required int page,
     required int points,
   }) async {
     if (vote == -1) {
@@ -100,7 +102,16 @@ class BagoCardViewModel extends BaseViewModel {
       return _snackbarService.showSnackbar(message: '${result.message}');
     }
     if(result.status == Status.COMPLETED){
-      //TODO: need to refresh the list
+      int level = await _callerService.batteryLevel();
+    await _callerService.battery(
+        level,
+        _feedService.fetchFeed(FeedInfo(
+          coordinates: Coordinates(
+              latitude: _location.currentLocation.latitude,
+              longitude: _location.currentLocation.longitude),
+          page: page,
+          filter: filter == false ? 'date' : 'pipocar',
+        )));
     }
 
     

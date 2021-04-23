@@ -17,31 +17,34 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.reactive(
+      disposeViewModel: false,
       onModelReady: (model) {
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
         ));
-       model.pushFeed();
+        model.pushFeed();
       },
       builder: (context, model, child) {
         return Scaffold(
-           
-              backgroundColor: Colors.blueGrey[50],
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(48),
-                child: _Header(tap: () => Scaffold.of(context).openDrawer()),
-              ),
-              body: BagoListView(),
-              floatingActionButton: HomeFloatingAction(
-        action: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CreatePostView(
-                filter: model.filter,
-                index: model.index,
-              ),
-            ))));
+            backgroundColor: Colors.blueGrey[50],
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(48),
+              child: _Header(tap: () => Scaffold.of(context).openDrawer()),
+            ),
+            body: BagoListView(),
+            floatingActionButton: HomeFloatingAction(
+              action: () => model.goTocreate(model.filter, model.index)
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => CreatePostView(
+              //       filter: model.filter,
+              //       index: model.index,
+              //     ),
+              //   ),
+              // ),
+            ));
       },
       viewModelBuilder: () => HomeViewModel(),
     );
