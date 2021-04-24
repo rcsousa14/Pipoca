@@ -23,12 +23,12 @@ class BatteryService extends IstoppableService {
 
 
   
-
+late StreamSubscription _subscription;
 
 
   BatteryService() {
   
-        battery.onBatteryStateChanged.listen((BatteryState state) {
+    _subscription = battery.onBatteryStateChanged.listen((BatteryState state) {
       batteryController.add(state);
   
       batteryController.onCancel = () {
@@ -43,12 +43,14 @@ class BatteryService extends IstoppableService {
   @override
   void start() {
     super.start();
+
+    _subscription.resume();
   }
 
   @override
   void stop() {
     super.stop();
-  
-    
+ _subscription.pause();
+   
   }
 }

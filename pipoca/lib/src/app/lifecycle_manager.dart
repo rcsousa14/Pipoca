@@ -4,7 +4,6 @@ import 'package:pipoca/src/services/battery_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
-import 'package:pipoca/src/services/shared_local_storage_service.dart';
 
 import 'locator.dart';
 
@@ -24,9 +23,7 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
     locator<BatteryService>(),
     locator<FeedService>(),
   ];
-  final feedService = locator<FeedService>();
-  final location = locator<LocationService>();
-  final storage = locator<SharedLocalStorageService>();
+  
   @override
   void initState() {
     WidgetsBinding.instance?.addObserver(this);
@@ -47,9 +44,7 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
       
          
         service.start();
-      }
-      if (state == AppLifecycleState.paused ||
-          state == AppLifecycleState.inactive) {
+      } else {
         service.stop();
       }
     });
@@ -57,8 +52,6 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: widget.child,
-    );
+    return widget.child;
   }
 }

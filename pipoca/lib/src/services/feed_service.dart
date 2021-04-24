@@ -35,11 +35,13 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   CreatePost get newPost => _newPost.value;
   CheckData get checkNew => _indexContent.value;
 
+ late StreamSubscription _subscription;
+
   FeedService() {
     listenToReactiveValues([_newPost, _indexContent]);
     _feedController = BehaviorSubject<ApiResponse<Feed>>();
     _infoController = BehaviorSubject<FeedInfo>();
-    _infoController.stream.listen((FeedInfo info) async {
+  _subscription =  _infoController.stream.listen((FeedInfo info) async {
       fetchFeed(info);
     });
   }
@@ -98,10 +100,12 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   @override
   void start() {
     super.start();
+    _subscription.resume();
   }
 
   @override
   void stop() {
     super.stop();
+    _subscription.pause();
   }
 }

@@ -6,6 +6,7 @@ import 'package:pipoca/src/constants/widgets/smart_widgets/link_caller_model.dar
 import 'package:pipoca/src/constants/widgets/helpers/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:stacked/stacked.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class LinkCaller extends StatelessWidget {
   final Links links;
@@ -29,12 +30,14 @@ class LinkCaller extends StatelessWidget {
     String via = links.site != null ? links.site! : 'Postimg';
     return ViewModelBuilder<LinkViewModel>.reactive(
       builder: (context, model, child) {
-       
-        return links.url!.contains('giphy')
+        String key = 'bago-' + index.toString();
+        return links.url!.contains('giphy') && links.video != null
             ? ContentVideo(url: links.video!)
             : links.url!.contains('imgflip') ||
                     links.url!.contains('postimg') ||
-                    links.url!.contains('w3w')
+                    links.url!.contains('w3w') ||
+                    links.url!.contains('giphy') ||
+                    links.url!.contains('tenor')
                 ? links.video == null || links.video!.isEmpty
                     ? Container(
                         margin: const EdgeInsets.only(bottom: 20),
@@ -51,10 +54,12 @@ class LinkCaller extends StatelessWidget {
                                   isVoted: isVoted,
                                   filter: filter,
                                   isLink: false,
-                                  image: NetworkImage(
+                                  image: CachedNetworkImageProvider(
+                               
                                     links.image!.isNotEmpty
                                         ? links.image!
                                         : links.url!,
+                                        cacheKey: key
                                   )),
                               SizedBox(height: 5),
                               Padding(
@@ -107,9 +112,13 @@ class LinkCaller extends StatelessWidget {
                             ContentImage(
                               isLink: true,
                               links: links,
-                              image: NetworkImage(
-                                links.image!,
-                              ),
+                              image: CachedNetworkImageProvider(
+                               
+                                    links.image!.isNotEmpty
+                                        ? links.image!
+                                        : links.url!,
+                                        cacheKey: key
+                                  )
                             )
                           ],
                           Container(

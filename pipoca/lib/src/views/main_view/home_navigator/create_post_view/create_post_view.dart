@@ -143,20 +143,21 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                       )),
                     ),
                     SizedBox(width: 15),
-                    GestureDetector(
-                      child: Container(
-                          margin: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                               color: model.links.isEmpty ? Colors.blue.shade400 : Colors.grey
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4))),
-                          child: Icon(
-                            Icons.gif,
-                            color: model.links.isEmpty ? Colors.blue.shade400 : Colors.grey
-                          )),
-                    )
+                    //TODO: for later on ability to add gif
+                    // GestureDetector(
+                    //   child: Container(
+                    //       margin: const EdgeInsets.all(5),
+                    //       decoration: BoxDecoration(
+                    //           border: Border.all(
+                    //            color: model.links.isEmpty ? Colors.blue.shade400 : Colors.grey
+                    //           ),
+                    //           borderRadius:
+                    //               BorderRadius.all(Radius.circular(4))),
+                    //       child: Icon(
+                    //         Icons.gif,
+                    //         color: model.links.isEmpty ? Colors.blue.shade400 : Colors.grey
+                    //       )),
+                    // )
                   ],
                 ),
                 Container(

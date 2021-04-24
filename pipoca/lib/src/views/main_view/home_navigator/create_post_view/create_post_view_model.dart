@@ -2,6 +2,7 @@ import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/functions.dart';
 
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
@@ -21,14 +22,14 @@ class CreatePostViewModel extends BaseViewModel {
   final _location = locator<LocationService>();
   final _callerService = locator<CallerService>();
 
-  String? _gif;
   String _text = '';
   String get text => _text;
-  String get gif => _gif!;
+
   User get user => _userService.user;
 
   List<String> _hashes = [];
   List<String> _links = [];
+  List<String> _gif = [];
   List<String> get links => _links;
 
   void updateString(String value) {
@@ -49,27 +50,38 @@ class CreatePostViewModel extends BaseViewModel {
   }
 
   Future addPost(int index, bool filter) async {
+    String text = '';
+    RegExp exp = urlRegex;
+    if (_gif.length == 0) {
+      RegExpMatch? match = exp.firstMatch(_text);
+      if (match != null) {
+        var link = _text.substring(match.start, match.end);
+        text = _text.replaceAll(link, '').trim();
+        notifyListeners();
+      }
+    }
     var result = await _feedService.postFeed(
-        post: CreatePost(
-            content: _text,
-            hashes: _hashes,
-            links: _links,
-            latitude: _location.currentLocation.latitude,
-            longitude: _location.currentLocation.longitude));
-    // var result = await _feedRepository.postFeed(CreatePost(
-    //  latitude: _location.currentLocation.latitude,
-    //  longitude: _location.currentLocation.longitude,
-    //   content: _text,
-    //   links: _links,
-    //   hashes: _hashes,
-    // ));
-    // if (result != 201) {
-    //   await _dialogService.showDialog(
-    //       title: 'Não foi possível criar Bago', description: 'not possible');
-    // } else {
-    //   await refreshFeed(index, filter);
-    //   _snackbarService.showSnackbar(message: 'seu Bago foi enviado');
-    // }
+      post: CreatePost(
+        content: text,
+        hashes: _hashes,
+        links: _gif.length > 0 ? _gif : _links,
+        latitude: _location.currentLocation.latitude,
+        longitude: _location.currentLocation.longitude,
+      ),
+    );
+    if (result.status == Status.LOADING) {
+      _navigationService.back();
+    }
+    if (result.status == Status.ERROR) {
+      //_navigationService.back();
+      _snackbarService.showSnackbar(message: result.message!);
+      return await refreshFeed(index, filter);
+    }
+    if (result.status == Status.COMPLETED) {
+      // _navigationService.back();
+      _snackbarService.showSnackbar(message: result.message!);
+      return await refreshFeed(index, filter);
+    }
   }
 
   Future<void> refreshFeed(int index, bool filter) async {

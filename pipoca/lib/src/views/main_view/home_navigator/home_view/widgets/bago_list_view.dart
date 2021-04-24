@@ -18,7 +18,7 @@ class BagoListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<BagoListViewModel>.reactive(
         builder: (context, model, child) {
-          if (!model.dataReady) {
+          if (!model.dataReady || model.data!.status == Status.LOADING) {
             return Center(
               child: CircularProgressIndicator(),
             );

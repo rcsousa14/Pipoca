@@ -15,11 +15,11 @@ class LocationService extends IstoppableService {
   Location get permission => location;
 
   Stream<Coordinates> get getStreamData => locationController.stream;
-
+  late StreamSubscription _subscription;
   LocationService() {
     location.requestPermission().then((locationPermission) {
       if (locationPermission == PermissionStatus.granted) {
-    location.onLocationChanged.listen((location) {
+   _subscription = location.onLocationChanged.listen((location) {
           locationController.add(
             Coordinates(
               longitude: location.longitude!,
@@ -38,13 +38,13 @@ class LocationService extends IstoppableService {
   void start() {
     super.start();
 
-    
+    _subscription.resume();
   }
 
   @override
   void stop() {
     super.stop();
-
+ _subscription.pause();
    
   }
 }

@@ -1,5 +1,5 @@
 class CreatePost {
-  String? content;
+ late String content;
   double? latitude;
   double? longitude;
   List<String>? hashes;

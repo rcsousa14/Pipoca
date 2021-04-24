@@ -22,7 +22,7 @@ class NewPostView extends StatelessWidget {
             filtered: model.filter,
             vote: 0,
             points: 0,
-            text: model.post.content!,
+            text: model.post.content,
             commentsTotal: 0,
             date: DateTime.now().toString(),
           
