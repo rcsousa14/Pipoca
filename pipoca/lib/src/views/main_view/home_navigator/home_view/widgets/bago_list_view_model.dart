@@ -14,6 +14,7 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
   final _location = locator<LocationService>();
   final _authenticationService = locator<AuthenticationService>();
 
+  List<Data> get posts => _feedService.posts;
   int _currentIndex = 1;
   int get currentIndex => _currentIndex;
 
@@ -34,34 +35,36 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
     notifyListeners();
   }
 
-  Future<void> refreshFeed() async {
+  Future<void> refreshFeed(bool isError) async {
     int level = await _callerService.batteryLevel();
+    _currentIndex = isError == true ? 1 : _currentIndex;
+    notifyListeners();
     await _callerService.battery(
         level,
         _feedService.fetchFeed(
             info: FeedInfo(
-          coordinates: Coordinates(
-              latitude: _location.currentLocation.latitude,
-              longitude: _location.currentLocation.longitude),
-          page: _currentIndex,
-          filter: filter == false ? 'date' : 'pipocar',
-        )));
+              coordinates: Coordinates(
+                  latitude: _location.currentLocation.latitude,
+                  longitude: _location.currentLocation.longitude),
+              page: _currentIndex,
+              filter: filter == false ? 'date' : 'pipocar',
+            ),
+           ));
 
     notifyListeners();
   }
 
   Future handleItemCreated(int index, Feed feed) async {
-    print(feed.posts!.total);
-    print(feed.posts!.limit);
+   
     var itemPosition = index + 1;
     var itemRequestThreshold = feed.posts!.limit;
-    var requestMoreData = itemPosition % itemRequestThreshold == 0;
+    var requestMoreData = itemPosition % itemRequestThreshold == 10;
     var pageToRequest = feed.posts!.nextPage;
     if (requestMoreData && pageToRequest > _currentIndex) {
       _currentIndex = pageToRequest;
       notifyListeners();
       _showLoadingIndicator();
-      await refreshFeed().then((value) => _removeLoadingIndicator());
+      await refreshFeed(false).then((value) => _removeLoadingIndicator());
     }
   }
 

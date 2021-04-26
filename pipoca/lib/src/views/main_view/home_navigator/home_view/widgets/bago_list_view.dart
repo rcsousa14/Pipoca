@@ -43,7 +43,7 @@ class BagoListView extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                         ElevatedButton(
-                          onPressed: () => model.refreshFeed(),
+                          onPressed: () => model.refreshFeed(true),
                           child: Text('Tentar Novamente'),
                         )
                       ],
@@ -80,20 +80,19 @@ class BagoListView extends StatelessWidget {
                           child: FeedCaller(
                             caller: () => model.isVisible == true &&
                                     model.data!.status == Status.COMPLETED
-                                ? model.refreshFeed()
+                                ? model.refreshFeed(false)
                                 : null,
                             child: RefreshIndicator(
-                              onRefresh: () => model.refreshFeed(),
+                              onRefresh: () => model.refreshFeed(false),
                               child: ListView.builder(
                                   key: Key('list-key'),
                                   physics: BouncingScrollPhysics(),
                                   itemCount:
                                       model.data!.status == Status.COMPLETED
-                                          ? model.data!.data!.posts!.data.length
+                                          ? model.posts.length
                                           : 0,
                                   itemBuilder: (context, index) {
-                                    List<Data> posts =
-                                        model.data!.data!.posts!.data;
+                                    List<Data> posts = model.posts;
 
                                     return FeedCaller(
                                       itemCreated: () {

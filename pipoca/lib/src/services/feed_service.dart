@@ -24,7 +24,8 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   Sink<bool> get newSink => _newdata.sink;
   Stream<bool> get newStream => _newdata.stream;
 
-  //List<Data> posts = [];
+  List<Data> _posts = [];
+  List<Data> get posts => _posts;
 
   // this will get the feed
 
@@ -45,7 +46,8 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     });
   }
 
-  Future fetchFeed({required FeedInfo info, bool? isNew}) async {
+  Future fetchFeed(
+      {required FeedInfo info, bool? isNew}) async {
     bool newBool = isNew != null ? isNew : false;
     newSink.add(newBool);
     try {
@@ -56,6 +58,9 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
         filter: info.filter!,
       );
       
+        _posts.addAll(data.posts!.data);
+      
+
       print(data);
 
       newSink.add(false);

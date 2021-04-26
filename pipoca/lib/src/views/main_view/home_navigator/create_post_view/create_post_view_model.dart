@@ -74,20 +74,20 @@ class CreatePostViewModel extends BaseViewModel {
     var result = await _feedService.postFeed(post: post);
 
     if (result.status == Status.ERROR) {
-      await refreshFeed(index, filter, false);
+      await refreshFeed( filter, false);
       Future.delayed(Duration(seconds: 4));
       return _dialogService.showDialog(
           title: 'Erro', description: '${result.message}');
     }
     if (result.status == Status.COMPLETED) {
-      await refreshFeed(index, filter, true);
+      await refreshFeed( filter, true);
       Future.delayed(Duration(seconds: 4));
       return _snackbarService.showSnackbar(
           message: 'Bago Criado com Successo!');
     }
   }
 
-  Future<void> refreshFeed(int index, bool filter, bool isNew) async {
+  Future<void> refreshFeed( bool filter, bool isNew) async {
     int level = await _callerService.batteryLevel();
     await _callerService.battery(
         level,
@@ -97,9 +97,9 @@ class CreatePostViewModel extends BaseViewModel {
               coordinates: Coordinates(
                   latitude: _location.currentLocation.latitude,
                   longitude: _location.currentLocation.longitude),
-              page: index,
+              page: 1,
               filter: filter == false ? 'date' : 'pipocar',
-            )));
+            ), ));
 
     notifyListeners();
   }

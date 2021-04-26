@@ -286,7 +286,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                                   points: points,
                                   isVoted: isVoted,
                                   filter: filtered,
-                                  page: page);
+                                  );
                             }
                           },
                           child: Container(
@@ -327,7 +327,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                                   points: points,
                                   isVoted: isVoted,
                                   filter: filtered,
-                                  page: page);
+                                 );
                             }
                           },
                           child: Container(

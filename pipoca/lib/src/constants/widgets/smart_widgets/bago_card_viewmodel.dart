@@ -51,7 +51,7 @@ class BagoCardViewModel extends BaseViewModel {
     required int vote,
     required bool isVoted,
     bool? filter,
-    required int page,
+
     required int points,
   }) async {
     if (vote == -1) {
@@ -97,9 +97,9 @@ class BagoCardViewModel extends BaseViewModel {
           coordinates: Coordinates(
               latitude: _location.currentLocation.latitude,
               longitude: _location.currentLocation.longitude),
-          page: page,
+          page: 1,
           filter: filter == false ? 'date' : 'pipocar',
-        )));
+        ),));
     }
 
     
