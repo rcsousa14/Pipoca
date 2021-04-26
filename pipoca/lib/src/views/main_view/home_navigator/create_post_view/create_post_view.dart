@@ -37,7 +37,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
   @override
   Widget buildViewModelWidget(BuildContext context, CreatePostViewModel model) {
     var text = useTextEditingController();
-      User user = model.user;
+    User user = model.user;
     return Container(
       height: MediaQuery.of(context).size.height,
       color: Colors.white,
@@ -191,7 +191,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
 class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
   final bool filter;
   final int page;
-  const _AppBarNewPost(this.filter, this.page, {Key? key} )
+  const _AppBarNewPost(this.filter, this.page, {Key? key})
       : super(key: key, reactive: false);
 
   @override
@@ -212,8 +212,10 @@ class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
           GestureDetector(
             onTap: () {
               if (model.text.length > 0 || !model.isBusy) {
+                
                 model.addPost(page, filter);
-                Navigator.pop(context);
+                model.goBack();
+                
               }
             },
             child: Container(

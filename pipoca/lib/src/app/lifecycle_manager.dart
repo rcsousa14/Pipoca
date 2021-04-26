@@ -9,7 +9,7 @@ import 'locator.dart';
 
 class LifeCycleManager extends StatefulWidget {
   final Widget child;
-  LifeCycleManager({ Key? key,  required this.child}) : super(key: key);
+  LifeCycleManager({Key? key, required this.child}) : super(key: key);
 
   @override
   _LifeCycleManagerState createState() => _LifeCycleManagerState();
@@ -23,7 +23,7 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
     locator<BatteryService>(),
     locator<FeedService>(),
   ];
-  
+
   @override
   void initState() {
     WidgetsBinding.instance?.addObserver(this);
@@ -39,12 +39,12 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    services.forEach((service)  {
+    services.forEach((service) {
       if (state == AppLifecycleState.resumed) {
-      
-         
+        print('life cycle resumed');
         service.start();
       } else {
+        print('life cycle stop');
         service.stop();
       }
     });

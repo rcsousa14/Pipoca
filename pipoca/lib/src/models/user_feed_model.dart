@@ -9,13 +9,16 @@ class FeedInfo {
 }
 
 class CheckData {
-  late String creator;
-  late String createdAt;
-  late String content;
+   String? creator;
+   String? createdAt;
+   String? content;
 
   CheckData(
-      {required this.content, required this.createdAt, required this.creator});
+      {this.content,  this.createdAt, this.creator});
 
+bool checkData() {
+    return [creator, createdAt, content].contains(null);
+  }
  
 }
 

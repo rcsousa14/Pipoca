@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/functions.dart';
 
@@ -17,7 +19,8 @@ import 'package:stacked_services/stacked_services.dart';
 class CreatePostViewModel extends BaseViewModel {
   final _feedService = locator<FeedService>();
   final _userService = locator<UserService>();
-  final SnackbarService _snackbarService = locator<SnackbarService>();
+  final _dialogService = locator<DialogService>();
+  final _snackbarService = locator<SnackbarService>();
   final _navigationService = locator<NavigationService>();
   final _location = locator<LocationService>();
   final _callerService = locator<CallerService>();
@@ -52,7 +55,7 @@ class CreatePostViewModel extends BaseViewModel {
   Future addPost(int index, bool filter) async {
     String text = '';
     RegExp exp = urlRegex;
-    if (_gif.length == 0) {
+    if (_gif.length == 0 && _links.length > 0) {
       RegExpMatch? match = exp.firstMatch(_text);
       if (match != null) {
         var link = _text.substring(match.start, match.end);
@@ -60,41 +63,43 @@ class CreatePostViewModel extends BaseViewModel {
         notifyListeners();
       }
     }
-    var result = await _feedService.postFeed(
-      post: CreatePost(
-        content: text,
-        hashes: _hashes,
-        links: _gif.length > 0 ? _gif : _links,
-        latitude: _location.currentLocation.latitude,
-        longitude: _location.currentLocation.longitude,
-      ),
+    CreatePost post = CreatePost(
+      content: text.isEmpty ? _text.trim() : text.trim(),
+      hashes: _hashes,
+      links: _gif.length > 0 ? _gif : _links,
+      latitude: _location.currentLocation.latitude,
+      longitude: _location.currentLocation.longitude,
     );
-    if (result.status == Status.LOADING) {
-      _navigationService.back();
-    }
+
+    var result = await _feedService.postFeed(post: post);
+
     if (result.status == Status.ERROR) {
-      //_navigationService.back();
-      _snackbarService.showSnackbar(message: result.message!);
-      return await refreshFeed(index, filter);
+      await refreshFeed(index, filter, false);
+      Future.delayed(Duration(seconds: 4));
+      return _dialogService.showDialog(
+          title: 'Erro', description: '${result.message}');
     }
     if (result.status == Status.COMPLETED) {
-      // _navigationService.back();
-      _snackbarService.showSnackbar(message: result.message!);
-      return await refreshFeed(index, filter);
+      await refreshFeed(index, filter, true);
+      Future.delayed(Duration(seconds: 4));
+      return _snackbarService.showSnackbar(
+          message: 'Bago Criado com Successo!');
     }
   }
 
-  Future<void> refreshFeed(int index, bool filter) async {
+  Future<void> refreshFeed(int index, bool filter, bool isNew) async {
     int level = await _callerService.batteryLevel();
     await _callerService.battery(
         level,
-        _feedService.fetchFeed(FeedInfo(
-          coordinates: Coordinates(
-              latitude: _location.currentLocation.latitude,
-              longitude: _location.currentLocation.longitude),
-          page: index,
-          filter: filter == false ? 'date' : 'pipocar',
-        )));
+        _feedService.fetchFeed(
+            isNew: isNew,
+            info: FeedInfo(
+              coordinates: Coordinates(
+                  latitude: _location.currentLocation.latitude,
+                  longitude: _location.currentLocation.longitude),
+              page: index,
+              filter: filter == false ? 'date' : 'pipocar',
+            )));
 
     notifyListeners();
   }

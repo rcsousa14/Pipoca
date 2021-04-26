@@ -34,8 +34,7 @@ class ApiBaseHelper implements IRepository {
     } on IOException {
       throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
-      throw FetchDataException(
-          'Conexão com o servidor fechada⏲️');
+      throw FetchDataException('Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -47,7 +46,7 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-    
+ 
       var response = await client.get(url, headers: header);
 
       responseJson = _returnResponse(response);
@@ -62,8 +61,7 @@ class ApiBaseHelper implements IRepository {
     } on IOException {
       throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
-      throw FetchDataException(
-          'Conexão com o servidor fechada⏲️');
+      throw FetchDataException('Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -92,8 +90,7 @@ class ApiBaseHelper implements IRepository {
     } on IOException {
       throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
-      throw FetchDataException(
-          'Conexão com o servidor fechada⏲️');
+      throw FetchDataException('Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -123,8 +120,7 @@ class ApiBaseHelper implements IRepository {
     } on IOException {
       throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
-      throw FetchDataException(
-          'Conexão com o servidor fechada⏲️');
+      throw FetchDataException('Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
@@ -142,7 +138,7 @@ class ApiBaseHelper implements IRepository {
           headers: header,
           body: body != null ? json.encode(body.toJson()) : null);
       responseJson = _returnResponse(response);
-    }on SocketException {
+    } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
     } on HttpException {
       throw FetchDataException('O que procuras não existe🤷');
@@ -153,15 +149,14 @@ class ApiBaseHelper implements IRepository {
     } on IOException {
       throw FetchDataException('Erro desconhecido🤷');
     } on ClientException {
-      throw FetchDataException(
-          'Conexão com o servidor fechada⏲️');
+      throw FetchDataException('Conexão com o servidor fechada⏲️');
     }
     return responseJson;
   }
 
   dynamic _returnResponse(http.Response response) {
     var msg = json.decode(response.body.toString());
-   
+
     switch (response.statusCode) {
       case 201:
       case 200:

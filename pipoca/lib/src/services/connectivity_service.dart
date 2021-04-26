@@ -15,7 +15,7 @@ class ConnectivityService extends IstoppableService {
   Stream<ConnectivityStatus> get getStreamData =>
       connectionStatusController.stream;
 
-    late StreamSubscription _subscription; 
+     StreamSubscription? _subscription; 
 
   ConnectivityService() {
   _subscription = Connectivity()
@@ -49,13 +49,13 @@ class ConnectivityService extends IstoppableService {
   void start() {
     super.start();
 
-    _subscription.resume();
+    _subscription!.resume();
   }
 
   @override
   void stop() {
     super.stop();
- _subscription.pause();
+ _subscription!.pause();
    
   }
 }

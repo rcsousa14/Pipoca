@@ -23,7 +23,7 @@ class BatteryService extends IstoppableService {
 
 
   
-late StreamSubscription _subscription;
+ StreamSubscription? _subscription;
 
 
   BatteryService() {
@@ -44,13 +44,13 @@ late StreamSubscription _subscription;
   void start() {
     super.start();
 
-    _subscription.resume();
+    _subscription!.resume();
   }
 
   @override
   void stop() {
     super.stop();
- _subscription.pause();
+ _subscription!.pause();
    
   }
 }

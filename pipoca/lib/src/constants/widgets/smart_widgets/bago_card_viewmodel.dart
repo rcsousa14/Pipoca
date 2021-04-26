@@ -28,19 +28,7 @@ class BagoCardViewModel extends BaseViewModel {
   int? get points => _totalPoints;
   bool? get up => _isUp;
   bool? get down => _isDown;
-  double _progress = 0;
-  double get value => _progress;
-
-  void startTimer() {
-    Timer.periodic(Duration(milliseconds: 300), (timer) {
-      if (_progress == 1) {
-        timer.cancel();
-      } else {
-        _progress += 0.05;
-      }
-      notifyListeners();
-    });
-  }
+  
 
   void getVote(bool isVoted, int vote, int points) {
     _totalPoints = points;
@@ -105,7 +93,7 @@ class BagoCardViewModel extends BaseViewModel {
       int level = await _callerService.batteryLevel();
     await _callerService.battery(
         level,
-        _feedService.fetchFeed(FeedInfo(
+        _feedService.fetchFeed(info:FeedInfo(
           coordinates: Coordinates(
               latitude: _location.currentLocation.latitude,
               longitude: _location.currentLocation.longitude),

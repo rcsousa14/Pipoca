@@ -41,7 +41,7 @@ class BagoCard extends StatelessWidget {
     return ViewModelBuilder<BagoCardViewModel>.reactive(
       onModelReady: (model) {
         model.getVote(isVoted, vote, points);
-        model.startTimer();
+       
       },
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
@@ -108,14 +108,7 @@ class BagoCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      isNewPost == true
-                          ? LinearProgressIndicator(
-                              value: model.value,
-                              backgroundColor: Colors.grey.shade200,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.blue.shade300),
-                            )
-                          : Container()
+                     
                     ],
                   ),
                 ),
@@ -234,7 +227,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                 padding:
                     EdgeInsets.only(top: 5, bottom: links.checkUrl() ? 30 : 10),
                 child: ParsedText(
-                  text: text,
+                  text: text.trim(),
                   style: TextStyle(color: Colors.grey[800], fontSize: 18),
                   parse: <MatchText>[
                     MatchText(

@@ -20,6 +20,8 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
   bool _isVisible = false;
   bool get isVisible => _isVisible;
 
+  bool _showLoading = false;
+
   bool get filter => _authenticationService.filter;
 
   void changeVisibility(bool visible) {
@@ -36,7 +38,8 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
     int level = await _callerService.batteryLevel();
     await _callerService.battery(
         level,
-        _feedService.fetchFeed(FeedInfo(
+        _feedService.fetchFeed(
+            info: FeedInfo(
           coordinates: Coordinates(
               latitude: _location.currentLocation.latitude,
               longitude: _location.currentLocation.longitude),
@@ -44,6 +47,31 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
           filter: filter == false ? 'date' : 'pipocar',
         )));
 
+    notifyListeners();
+  }
+
+  Future handleItemCreated(int index, Feed feed) async {
+    print(feed.posts!.total);
+    print(feed.posts!.limit);
+    var itemPosition = index + 1;
+    var itemRequestThreshold = feed.posts!.limit;
+    var requestMoreData = itemPosition % itemRequestThreshold == 0;
+    var pageToRequest = feed.posts!.nextPage;
+    if (requestMoreData && pageToRequest > _currentIndex) {
+      _currentIndex = pageToRequest;
+      notifyListeners();
+      _showLoadingIndicator();
+      await refreshFeed().then((value) => _removeLoadingIndicator());
+    }
+  }
+
+  void _showLoadingIndicator() {
+    _showLoading = true;
+    notifyListeners();
+  }
+
+  void _removeLoadingIndicator() {
+    _showLoading = false;
     notifyListeners();
   }
 
