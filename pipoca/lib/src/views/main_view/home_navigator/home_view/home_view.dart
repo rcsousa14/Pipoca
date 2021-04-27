@@ -1,21 +1,19 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:pipoca/src/models/user_model.dart';
-import 'package:pipoca/src/views/main_view/home_navigator/create_post_view/create_post_view.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/widgets/bago_list_view.dart';
 import 'package:stacked/stacked.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends HookWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   const HomeView({Key? key, required this.scaffoldKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var controller = useScrollController();
     return ViewModelBuilder<HomeViewModel>.reactive(
       disposeViewModel: false,
       onModelReady: (model) {
@@ -30,21 +28,19 @@ class HomeView extends StatelessWidget {
             backgroundColor: Colors.blueGrey[50],
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(48),
-              child: _Header(tap: () => Scaffold.of(context).openDrawer()),
+              child: GestureDetector(
+                  onDoubleTap: () => controller.animateTo(
+                        0.0,
+                        curve: Curves.easeOut,
+                        duration: const Duration(milliseconds: 450),
+                      ),
+                  child: _Header(tap: () => Scaffold.of(context).openDrawer())),
             ),
-            body: BagoListView(),
+            body: BagoListView(controller: controller),
             floatingActionButton: HomeFloatingAction(
-              action: () => model.goTocreate(model.filter, model.index)
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => CreatePostView(
-              //       filter: model.filter,
-              //       index: model.index,
-              //     ),
-              //   ),
-              // ),
-            ));
+                action: () => model.goTocreate(model.filter, model.index)
+              
+                ));
       },
       viewModelBuilder: () => HomeViewModel(),
     );

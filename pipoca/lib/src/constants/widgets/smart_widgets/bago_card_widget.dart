@@ -41,7 +41,6 @@ class BagoCard extends StatelessWidget {
     return ViewModelBuilder<BagoCardViewModel>.reactive(
       onModelReady: (model) {
         model.getVote(isVoted, vote, points);
-       
       },
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
@@ -103,12 +102,15 @@ class BagoCard extends StatelessWidget {
                                 vote: vote,
                               ),
                               //more button
-                              _MoreBtn()
+                              _MoreBtn(
+                                  index: bagoIndex!,
+                                  filtered: filtered,
+                                  page: page,
+                                  creator: creator)
                             ],
                           ),
                         ),
                       ),
-                     
                     ],
                   ),
                 ),
@@ -147,7 +149,17 @@ class _Avatar extends ViewModelWidget<BagoCardViewModel> {
 }
 
 class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
-  const _MoreBtn({Key? key}) : super(key: key, reactive: true);
+  final int index, page;
+  final String creator;
+  final bool filtered;
+
+  const _MoreBtn(
+      {Key? key,
+      required this.index,
+      required this.creator, 
+      required this.page,
+      required this.filtered})
+      : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
@@ -156,7 +168,7 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
       child: Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: GestureDetector(
-          onTap: () => print('this is the more button'),
+          onTap: () => creator == model.creator? model.delete(id: index, page: page, filter: filtered) : null,
           child: Icon(
             PipocaBasics.menu,
             size: 14,
@@ -286,7 +298,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                                   points: points,
                                   isVoted: isVoted,
                                   filter: filtered,
-                                  );
+                                  page: page);
                             }
                           },
                           child: Container(
@@ -327,7 +339,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                                   points: points,
                                   isVoted: isVoted,
                                   filter: filtered,
-                                 );
+                                  page: page);
                             }
                           },
                           child: Container(

@@ -35,36 +35,40 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
     notifyListeners();
   }
 
-  Future<void> refreshFeed(bool isError) async {
+  Future<void> refreshFeed(bool isError, bool isRefresh) async {
+    setBusy(true);
+ 
     int level = await _callerService.batteryLevel();
     _currentIndex = isError == true ? 1 : _currentIndex;
     notifyListeners();
     await _callerService.battery(
         level,
         _feedService.fetchFeed(
-            info: FeedInfo(
-              coordinates: Coordinates(
-                  latitude: _location.currentLocation.latitude,
-                  longitude: _location.currentLocation.longitude),
-              page: _currentIndex,
-              filter: filter == false ? 'date' : 'pipocar',
-            ),
-           ));
-
+          info: FeedInfo(
+            coordinates: Coordinates(
+                latitude: _location.currentLocation.latitude,
+                longitude: _location.currentLocation.longitude),
+            page: isRefresh == true ? 1 : _currentIndex,
+            filter: filter == false ? 'date' : 'pipocar',
+          ),
+          isRefresh: isRefresh,
+        ));
+setBusy(false);
     notifyListeners();
+    
   }
 
   Future handleItemCreated(int index, Feed feed) async {
-   
-    var itemPosition = index + 1;
+    var itemPosition = index + 5;
     var itemRequestThreshold = feed.posts!.limit;
-    var requestMoreData = itemPosition % itemRequestThreshold == 10;
+    var requestMoreData = itemPosition % itemRequestThreshold == 0;
     var pageToRequest = feed.posts!.nextPage;
     if (requestMoreData && pageToRequest > _currentIndex) {
       _currentIndex = pageToRequest;
       notifyListeners();
       _showLoadingIndicator();
-      await refreshFeed(false).then((value) => _removeLoadingIndicator());
+      await refreshFeed(false, false)
+          .then((value) => _removeLoadingIndicator());
     }
   }
 

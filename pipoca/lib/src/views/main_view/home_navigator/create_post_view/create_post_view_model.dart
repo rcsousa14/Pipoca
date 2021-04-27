@@ -99,7 +99,7 @@ class CreatePostViewModel extends BaseViewModel {
                   longitude: _location.currentLocation.longitude),
               page: 1,
               filter: filter == false ? 'date' : 'pipocar',
-            ), ));
+            ), isRefresh: false, ));
 
     notifyListeners();
   }

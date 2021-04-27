@@ -10,6 +10,7 @@ import 'package:pipoca/src/interfaces/repository_interface.dart';
 @lazySingleton
 class ApiBaseHelper implements IRepository {
   final _client = http.Client();
+  final int sec = 80;
   Client get client => _client;
 
   final String _heroku = "https://pipoca-ao.herokuapp.com/v1";
@@ -21,7 +22,7 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-      var response = await client.delete(url, headers: header);
+      var response = await client.delete(url, headers: header).timeout(Duration(seconds: sec));
       responseJson = _returnResponse(response);
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
@@ -46,8 +47,9 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
- 
-      var response = await client.get(url, headers: header);
+
+      var response =
+          await client.get(url, headers: header).timeout(Duration(seconds: sec));
 
       responseJson = _returnResponse(response);
     } on SocketException {
@@ -75,9 +77,11 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-      var response = await client.patch(url,
-          headers: header,
-          body: body != null ? json.encode(body.toJson()) : null);
+      var response = await client
+          .patch(url,
+              headers: header,
+              body: body != null ? json.encode(body.toJson()) : null)
+          .timeout(Duration(seconds: sec));
       responseJson = _returnResponse(response);
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
@@ -104,9 +108,11 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-      var response = await client.post(url,
-          headers: header,
-          body: body != null ? json.encode(body.toJson()) : null);
+      var response = await client
+          .post(url,
+              headers: header,
+              body: body != null ? json.encode(body.toJson()) : null)
+          .timeout(Duration(seconds: sec));
 
       responseJson = _returnResponse(response);
     } on SocketException {
@@ -134,9 +140,11 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-      var response = await client.put(url,
-          headers: header,
-          body: body != null ? json.encode(body.toJson()) : null);
+      var response = await client
+          .put(url,
+              headers: header,
+              body: body != null ? json.encode(body.toJson()) : null)
+          .timeout(Duration(seconds: sec));
       responseJson = _returnResponse(response);
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');

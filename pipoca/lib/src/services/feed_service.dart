@@ -42,12 +42,12 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     _feedController = BehaviorSubject<ApiResponse<Feed>>();
     _infoController = BehaviorSubject<FeedInfo>();
     _subscription = _infoController.stream.listen((FeedInfo info) async {
-      fetchFeed(info: info);
+      fetchFeed(info: info, isRefresh: true);
     });
   }
 
   Future fetchFeed(
-      {required FeedInfo info, bool? isNew}) async {
+      {required FeedInfo info, bool? isNew, required bool isRefresh}) async {
     bool newBool = isNew != null ? isNew : false;
     newSink.add(newBool);
     try {
@@ -57,9 +57,22 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
         page: info.page,
         filter: info.filter!,
       );
-      
-        _posts.addAll(data.posts!.data);
-      
+
+      if (isRefresh == true) {
+        _posts = data.posts!.data;
+        _posts.sort((b, a) {
+          return a.post.createdAt.compareTo(b.post.createdAt);
+        });
+      } else {
+        data.posts!.data.forEach((data) {
+          if (_posts.any((post) => post.post.id == data.post.id) == false) {
+            _posts.add(data);
+          }
+        });
+        _posts.sort((b, a) {
+          return a.post.createdAt.compareTo(b.post.createdAt);
+        });
+      }
 
       print(data);
 
@@ -92,6 +105,22 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     ApiResponse.loading('loading');
     try {
       Generic data = await _api.postPointData(point);
+      return ApiResponse.completed(data);
+    } catch (e) {
+      return ApiResponse.error(e.toString());
+    }
+  }
+
+  void delete(int id) {
+    print(_posts.length);
+    _posts.removeWhere((element) => element.post.id == id);
+    print(_posts.length);
+  }
+
+  Future<ApiResponse<Generic>> deletPost({required int id}) async {
+    ApiResponse.loading('loading');
+    try {
+      Generic data = await _api.deletePostData(id: id);
       return ApiResponse.completed(data);
     } catch (e) {
       return ApiResponse.error(e.toString());

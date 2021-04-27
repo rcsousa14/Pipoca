@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
+import 'package:pipoca/src/constants/themes/colors.dart';
+import 'package:pipoca/src/constants/widgets/helpers/busy_btn_widget.dart';
 import 'package:pipoca/src/constants/widgets/smart_widgets/bago_card_widget.dart';
 import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
@@ -10,7 +12,9 @@ import 'package:stacked/stacked.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BagoListView extends StatelessWidget {
+  final ScrollController controller;
   const BagoListView({
+    required this.controller,
     Key? key,
   }) : super(key: key);
 
@@ -42,9 +46,15 @@ class BagoListView extends StatelessWidget {
                           model.data!.message!,
                           textAlign: TextAlign.center,
                         ),
-                        ElevatedButton(
-                          onPressed: () => model.refreshFeed(true),
-                          child: Text('Tentar Novamente'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 80.0),
+                          child: BusyBtn(
+                            tap: () => model.refreshFeed(true, true),
+                            text: 'Tentar Novamente',
+                            txtColor: Colors.white, 
+                            btnColor: red,
+                           busy: model.isBusy,
+                          ),
                         )
                       ],
                     ),
@@ -80,11 +90,12 @@ class BagoListView extends StatelessWidget {
                           child: FeedCaller(
                             caller: () => model.isVisible == true &&
                                     model.data!.status == Status.COMPLETED
-                                ? model.refreshFeed(false)
+                                ? model.refreshFeed(false, false)
                                 : null,
                             child: RefreshIndicator(
-                              onRefresh: () => model.refreshFeed(false),
+                              onRefresh: () => model.refreshFeed(false, true),
                               child: ListView.builder(
+                                controller: controller,
                                   key: Key('list-key'),
                                   physics: BouncingScrollPhysics(),
                                   itemCount:
