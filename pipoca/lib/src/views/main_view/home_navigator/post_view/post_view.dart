@@ -1,12 +1,16 @@
+import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
+import 'package:detectable_text_field/widgets/detectable_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pipoca/src/constants/widgets/smart_widgets/bago_card_widget.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/post_view/post_view_model.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 
-class PostView extends StatelessWidget {
+class PostView extends HookWidget {
   final Data bago;
   final bool isCreator, filter;
   final int page;
@@ -20,8 +24,25 @@ class PostView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<PostViewModel>.nonReactive(
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+    var focus = useFocusNode();
+    var text = useTextEditingController();
+    return ViewModelBuilder<PostViewModel>.reactive(
       builder: (context, model, child) {
+        Widget loadingIndicator = focus.hasFocus == true
+            ? GestureDetector(
+                onTap: () {
+                  focus.unfocus();
+                  text.clear();
+                },
+                child: new Container(
+                  color: Colors.black.withOpacity(0.6),
+                  width: width,
+                  height: height,
+                ),
+              )
+            : Container();
         return Scaffold(
           backgroundColor: Colors.blueGrey[50],
           appBar: PreferredSize(
@@ -31,32 +52,55 @@ class PostView extends StatelessWidget {
                 isCreator: isCreator,
                 report: () => print('report button'),
               )),
-          body: ListView(
-            physics: BouncingScrollPhysics(),
+          body: Stack(
             children: [
-              BagoCard(
-                filtered: filter,
-                links: bago.post.links,
-                page: page,
-                bagoIndex: bago.post.id,
-                text: bago.post.content,
-                date: bago.post.createdAt,
-                points: bago.post.votesTotal,
-                creator: bago.post.creator.username,
-                image: bago.post.creator.avatar,
-                vote: bago.userVote,
-                isVoted: bago.userVoted,
-                commentsTotal: bago.post.commentsTotal,
+              ListView(
+                physics: BouncingScrollPhysics(),
+                children: [
+                  BagoCard(
+                    filtered: filter,
+                    links: bago.post.links,
+                    page: page,
+                    bagoIndex: bago.post.id,
+                    text: bago.post.content,
+                    date: bago.post.createdAt,
+                    points: bago.post.votesTotal,
+                    creator: bago.post.creator.username,
+                    image: bago.post.creator.avatar,
+                    vote: bago.userVote,
+                    isVoted: bago.userVoted,
+                    commentsTotal: bago.post.commentsTotal,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          'COMENTÁRIOS RECENTES',
+                          style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Icon(Icons.arrow_drop_down_rounded,
+                            color: Colors.grey.shade600)
+                      ],
+                    ),
+                  ),
+                  Container(
+                    color: Colors.grey.shade50,
+                    height: 1000,
+                    width: double.infinity,
+                  )
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                   
-                    Text('COMENTÁRIOS RECENTES', style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.bold),),
-                    Icon(Icons.arrow_drop_down_rounded, color: Colors.grey.shade600)
-                  ],
-                ),
+              Align(
+                child: loadingIndicator,
+                alignment: FractionalOffset.center,
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _StringTextField(focus: focus, controller: text),
               )
             ],
           ),
@@ -69,6 +113,7 @@ class PostView extends StatelessWidget {
 
 class _Header extends ViewModelWidget<PostViewModel> {
   final Function tap, report;
+
   final bool isCreator;
   const _Header({
     Key? key,
@@ -83,6 +128,52 @@ class _Header extends ViewModelWidget<PostViewModel> {
       back: () => tap(),
       isCreator: isCreator,
       report: () => report(),
+    );
+  }
+}
+
+class _StringTextField extends ViewModelWidget<PostViewModel> {
+  final FocusNode focus;
+  final TextEditingController controller;
+  const _StringTextField(
+      {Key? key, required this.focus, required this.controller})
+      : super(key: key, reactive: true);
+
+  @override
+  Widget build(BuildContext context, PostViewModel model) {
+    return Material(
+      elevation: 8,
+      child: Container(
+          // height: MediaQuery.of(context).size.height * 0.1,
+          color: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+          child: DetectableTextField(
+            textInputAction: TextInputAction.send,
+            onSubmitted: (value) {
+              print(value);
+
+              controller.clear();
+            },
+            focusNode: focus,
+            textCapitalization: TextCapitalization.sentences,
+            basicStyle: TextStyle(
+              fontSize: 16,
+            ),
+            decoratedStyle: TextStyle(fontSize: 16, color: Colors.blue[400]),
+            detectionRegExp: detectionRegExp(atSign: false)!,
+            autofocus: false,
+            cursorColor: Colors.blue[400],
+            controller: controller,
+            maxLength: 200,
+            maxLines: null,
+            // onChanged: (string) => print(string),
+            decoration: InputDecoration(
+              hintText: 'adicionar comentário...',
+              hintStyle: TextStyle(fontSize: 16),
+              border: InputBorder.none,
+              counterText: "",
+            ),
+          )),
     );
   }
 }

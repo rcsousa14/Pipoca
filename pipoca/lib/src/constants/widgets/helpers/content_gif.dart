@@ -176,7 +176,9 @@ class _ContentVideoState extends State<ContentVideo> {
     
     super.initState();
   }
-
+ //TODO: cache
+ //https://pub.dev/packages/flutter_cache_manager
+ //https://www.gitmemory.com/issue/flutter/flutter/28094/612075565
   // @override
   // void dispose() {
   //   controller.dispose();
@@ -211,7 +213,7 @@ class _ContentVideoState extends State<ContentVideo> {
                         controller!.play();
                         controller!.setLooping(true);
 
-                        Future.delayed(Duration(seconds: 15), () {
+                        Future.delayed(Duration(seconds: 65), () {
                           if (mounted) {
                             setState(() {
                               isPressed = false;

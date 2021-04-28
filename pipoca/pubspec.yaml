@@ -47,6 +47,7 @@ dependencies:
   location: ^4.1.1
   permission_handler: ^6.1.1
   provider: ^5.0.0
+  flutter_cache_manager: ^3.0.1
   video_player: ^2.1.1
   stacked: ^2.0.4
   detectable_text_field: ^2.0.1
