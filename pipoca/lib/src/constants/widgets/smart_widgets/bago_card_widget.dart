@@ -11,17 +11,19 @@ import 'package:pipoca/src/constants/widgets/smart_widgets/bago_card_viewmodel.d
 import 'package:stacked/stacked.dart';
 
 class BagoCard extends StatelessWidget {
-  final bool isVoted, filtered, isNewPost;
+  final bool isVoted, filtered;
   final Links? links;
   final int? bagoIndex;
   final int points, commentsTotal, page, vote;
   final String creator, image, text, date;
+  final Function? goToPage;
 
   const BagoCard({
     Key? key,
     this.bagoIndex,
-    required this.isNewPost,
+ 
     required this.text,
+    this.goToPage,
     this.links,
     required this.filtered,
     required this.date,
@@ -60,59 +62,53 @@ class BagoCard extends StatelessWidget {
 
         return RepaintBoundary(
           key: key,
-          child: IgnorePointer(
-            ignoring: isNewPost == true ? true : false,
-            child: Container(
+          child: GestureDetector(
+              onTap: () => goToPage != null ? goToPage!() : null,
+                      child: Container(
               decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border(
                       bottom:
                           BorderSide(color: Colors.grey.shade200, width: 1))),
-              child: GestureDetector(
-                onTap: () => print('this is the share button'),
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Opacity(
-                        opacity: isNewPost == true ? 0.5 : 1,
-                        child: Container(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              //image
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          //image
 
-                              _Avatar(image: image),
+                          _Avatar(image: image),
 
-                              //need to separate these
-                              _Content(
-                                globalKey: key,
-                                page: page,
-                                filtered: filtered,
-                                text: text,
-                                links: links!,
-                                index: bagoIndex!,
-                                creator: creator,
-                                timeNow: timeNow,
-                                points: points,
-                                commentsTotal: commentsTotal,
-                                isVoted: isVoted,
-                                vote: vote,
-                              ),
-                              //more button
-                              _MoreBtn(
-                                  index: bagoIndex!,
-                                  filtered: filtered,
-                                  page: page,
-                                  creator: creator)
-                            ],
+                          //need to separate these
+                          _Content(
+                            globalKey: key,
+                            page: page,
+                            filtered: filtered,
+                            text: text,
+                            links: links!,
+                            index: bagoIndex!,
+                            creator: creator,
+                            timeNow: timeNow,
+                            points: points,
+                            commentsTotal: commentsTotal,
+                            isVoted: isVoted,
+                            vote: vote,
                           ),
-                        ),
+                          //more button
+                          _MoreBtn(
+                              index: bagoIndex!,
+                              filtered: filtered,
+                              page: page,
+                              creator: creator)
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -156,7 +152,7 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
   const _MoreBtn(
       {Key? key,
       required this.index,
-      required this.creator, 
+      required this.creator,
       required this.page,
       required this.filtered})
       : super(key: key, reactive: true);
@@ -168,7 +164,9 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
       child: Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: GestureDetector(
-          onTap: () => creator == model.creator? model.delete(id: index, page: page, filter: filtered) : null,
+          onTap: () => creator == model.creator
+              ? model.delete(id: index, page: page, filter: filtered)
+              : null,
           child: Icon(
             PipocaBasics.menu,
             size: 14,

@@ -19,11 +19,15 @@ class ApiBaseHelper implements IRepository {
   Future delete(
       {required String query, required Map<String, String> header}) async {
     var responseJson;
+    
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-      var response = await client.delete(url, headers: header).timeout(Duration(seconds: sec));
+      var response = await client
+          .delete(url, headers: header)
+          .timeout(Duration(seconds: sec));
       responseJson = _returnResponse(response);
+      
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
     } on HttpException {
@@ -48,10 +52,12 @@ class ApiBaseHelper implements IRepository {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
 
-      var response =
-          await client.get(url, headers: header).timeout(Duration(seconds: sec));
+      var response = await client
+          .get(url, headers: header)
+          .timeout(Duration(seconds: sec));
 
       responseJson = _returnResponse(response);
+        
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
     } on HttpException {
@@ -83,6 +89,7 @@ class ApiBaseHelper implements IRepository {
               body: body != null ? json.encode(body.toJson()) : null)
           .timeout(Duration(seconds: sec));
       responseJson = _returnResponse(response);
+        
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
     } on HttpException {
@@ -115,6 +122,7 @@ class ApiBaseHelper implements IRepository {
           .timeout(Duration(seconds: sec));
 
       responseJson = _returnResponse(response);
+        
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
     } on HttpException {
@@ -146,6 +154,7 @@ class ApiBaseHelper implements IRepository {
               body: body != null ? json.encode(body.toJson()) : null)
           .timeout(Duration(seconds: sec));
       responseJson = _returnResponse(response);
+        
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
     } on HttpException {

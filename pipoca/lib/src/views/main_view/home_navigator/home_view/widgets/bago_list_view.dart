@@ -113,6 +113,7 @@ class BagoListView extends StatelessWidget {
                                                     index, model.data!.data!));
                                       },
                                       child: BagoCard(
+                                        goToPage: ()=> model.post( bago:posts[index], isCreator: posts[index].post.creator.username == model.creator, filter: model.filter, page: model.currentIndex),
                                         filtered: model.filter,
                                         links: posts[index].post.links,
                                         page: model.currentIndex,
@@ -127,7 +128,7 @@ class BagoListView extends StatelessWidget {
                                         isVoted: posts[index].userVoted,
                                         commentsTotal:
                                             posts[index].post.commentsTotal,
-                                        isNewPost: false,
+                                     
                                       ),
                                     );
                                   }),

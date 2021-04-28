@@ -9,6 +9,7 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 
+import '../models/user_feed_model.dart';
 import '../views/auth_view/auth_view.dart';
 import '../views/login_view/login_view.dart';
 import '../views/main_view/home_navigator/create_post_view/create_post_view.dart';
@@ -76,8 +77,15 @@ class StackedRouter extends RouterBase {
       );
     },
     PostView: (data) {
+      var args = data.getArgs<PostViewArguments>(nullOk: false);
       return MaterialPageRoute<dynamic>(
-        builder: (context) => const PostView(),
+        builder: (context) => PostView(
+          key: args.key,
+          bago: args.bago,
+          isCreator: args.isCreator,
+          page: args.page,
+          filter: args.filter,
+        ),
         settings: data,
       );
     },
@@ -101,4 +109,19 @@ class CreatePostViewArguments {
   final int index;
   CreatePostViewArguments(
       {this.key, required this.filter, required this.index});
+}
+
+/// PostView arguments holder class
+class PostViewArguments {
+  final Key? key;
+  final Data bago;
+  final bool isCreator;
+  final int page;
+  final bool filter;
+  PostViewArguments(
+      {this.key,
+      required this.bago,
+      required this.isCreator,
+      required this.page,
+      required this.filter});
 }

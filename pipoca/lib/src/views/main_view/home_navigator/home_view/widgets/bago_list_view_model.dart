@@ -1,4 +1,5 @@
 import 'package:pipoca/src/app/locator.dart';
+import 'package:pipoca/src/app/router.router.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
@@ -6,13 +7,19 @@ import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/caller.service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
+import 'package:pipoca/src/services/user_service.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
   final _feedService = locator<FeedService>();
   final _callerService = locator<CallerService>();
   final _location = locator<LocationService>();
   final _authenticationService = locator<AuthenticationService>();
+  final _userService = locator<UserService>();
+  final _navigationService = locator<NavigationService>();
+
+  String get creator => _userService.user.username;
 
   List<Data> get posts => _feedService.posts;
   int _currentIndex = 1;
@@ -37,7 +44,7 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
 
   Future<void> refreshFeed(bool isError, bool isRefresh) async {
     setBusy(true);
- 
+
     int level = await _callerService.batteryLevel();
     _currentIndex = isError == true ? 1 : _currentIndex;
     notifyListeners();
@@ -53,9 +60,12 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
           ),
           isRefresh: isRefresh,
         ));
-setBusy(false);
+    setBusy(false);
     notifyListeners();
-    
+  }
+
+  Future post({required Data bago, required bool isCreator, required bool filter, required int page}) async {
+    return await _navigationService.navigateTo(Routes.postView, arguments: PostViewArguments(bago: bago, isCreator: isCreator, page: page, filter: filter));
   }
 
   Future handleItemCreated(int index, Feed feed) async {
