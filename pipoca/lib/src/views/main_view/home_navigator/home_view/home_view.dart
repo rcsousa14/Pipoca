@@ -29,10 +29,10 @@ class HomeView extends HookWidget {
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(48),
               child: GestureDetector(
-                  onDoubleTap: () => controller.animateTo(
+                  onTap: () => controller.animateTo(
                         0.0,
                         curve: Curves.easeOut,
-                        duration: const Duration(milliseconds: 450),
+                        duration: const Duration(milliseconds: 300),
                       ),
                   child: _Header(tap: () => Scaffold.of(context).openDrawer())),
             ),
