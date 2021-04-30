@@ -108,15 +108,15 @@ exports.show = async({ params, query, decoded }, res, next) => {
         if (distance <= 950) isNear = true;
         if (distance > 950) isNear = false;
 
-        const votes = await models.post_vote.findOne({
-            raw: true,
-            where: { user_id: decoded.id, post_id: posts.id },
-            attributes: {
-                exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
-            },
-        });
+        // const votes = await models.post_vote.findOne({
+        //     raw: true,
+        //     where: { user_id: decoded.id, post_id: posts.id },
+        //     attributes: {
+        //         exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
+        //     },
+        // });
 
-        const isVoted = votes ? true : false;
+        const isVoted = false; //votes ? true : false;
 
         let linkInfo = {};
         if (posts.links.length > 0) {
