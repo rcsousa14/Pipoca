@@ -22,50 +22,52 @@ exports.store = async({ params, body, decoded }, res, next) => {
                 }
             }
         });
-        if (result) {
-            next(ApiError.badRequestException("Ninguém gosta de spam"));
-            return;
-        }
-        var point = {
-            type: "Point",
-            coordinates: [longitude, latitude],
-            crs: { type: "name", properties: { name: "EPSG:4326" } },
-        };
 
-        const comment = await models.comment.create({
-            user_id: decoded.id,
-            post_id: postId,
-            content,
-            coordinates: point,
-        });
+        return res.status(200).json({ result });
+        // if (result) {
+        //     next(ApiError.badRequestException("Ninguém gosta de spam"));
+        //     return;
+        // }
+        // var point = {
+        //     type: "Point",
+        //     coordinates: [longitude, latitude],
+        //     crs: { type: "name", properties: { name: "EPSG:4326" } },
+        // };
 
-        if (!hashes.length == 0 && hashes.length > 0) {
-            for (var hash of hashes) {
-                const [tag] = await models.tag.findOrCreate({
-                    where: { hash: hash },
-                });
+        // const comment = await models.comment.create({
+        //     user_id: decoded.id,
+        //     post_id: postId,
+        //     content,
+        //     coordinates: point,
+        // });
 
-                await models.post_tag.create({
-                    comment_id: comment.id,
-                    tag_id: tag.id,
-                });
-            }
-        }
-        if (!links.length == 0 && links.length > 0) {
-            const [link] = await models.link.findOrCreate({
-                where: { url: links[0] },
-            });
+        // if (!hashes.length == 0 && hashes.length > 0) {
+        //     for (var hash of hashes) {
+        //         const [tag] = await models.tag.findOrCreate({
+        //             where: { hash: hash },
+        //         });
 
-            await models.post_link.create({
-                comment_id: comment.id,
-                link_id: link.id,
-            });
-        }
+        //         await models.post_tag.create({
+        //             comment_id: comment.id,
+        //             tag_id: tag.id,
+        //         });
+        //     }
+        // }
+        // if (!links.length == 0 && links.length > 0) {
+        //     const [link] = await models.link.findOrCreate({
+        //         where: { url: links[0] },
+        //     });
 
-        return res.status(201).json({
-            success: true,
-            message: "Comentário criado com sucesso!",
-        });
+        //     await models.post_link.create({
+        //         comment_id: comment.id,
+        //         link_id: link.id,
+        //     });
+        // }
+
+        // return res.status(201).json({
+        //     success: true,
+        //     message: "Comentário criado com sucesso!",
+        // });
     } catch (error) {
         return res.status(500).json({ error })
             // next(
