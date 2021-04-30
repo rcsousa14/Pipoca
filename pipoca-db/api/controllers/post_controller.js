@@ -121,9 +121,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
         //     },
         // });
 
-        let isVoted = false; //votes ? true : false;
+        // let isVoted = false; //votes ? true : false;
 
-        let linkInfo = {};
+        //  let linkInfo = {};
         // if (posts.links.length > 0) {
         //     const { url } = posts.links[0];
         //     linkInfo = await scrapeMetaTags(url);
@@ -158,16 +158,16 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "id": posts.id,
                 "content": posts.content,
                 //  "links": linkInfo,
-                "comments_total": posts.comments_total,
-                "votes_total": votes_total,
-                " flags": posts.flags,
-                "is_flagged": posts.isFlagged,
-                "is_deleted": posts.isDeleted,
-                "created_at": posts.createdAt,
+                // "comments_total": posts.comments_total,
+                // "votes_total": votes_total,
+                // " flags": posts.flags,
+                // "is_flagged": posts.isFlagged,
+                // "is_deleted": posts.isDeleted,
+                // "created_at": posts.createdAt,
                 "creator": posts.creator,
             },
         };
-        return res.json(data);
+        return res.json({ data });
         //const data = { success: true, message: ` Bago ${id} para ti`, post };
 
         // return res.status(200).json(data);
