@@ -25,8 +25,8 @@ exports.index = async({ query }, res) => {
                 // "password",
                 //             ],
                 //         },
-                //     }, 
-                // ] 
+                //     },
+                // ]
             })
             return res.status(200).send({ message: `🍿 Bago ${id}  para ti 🥳`, post_tags });
         }
@@ -128,9 +128,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         let post = {
 
-            "user_voted": isVoted,
-            "user_vote": 0, //votes == null ? 0 : votes.voted,
-            "user_isNear": false, //isNear,
+            // "user_voted": isVoted,
+            // "user_vote": 0, //votes == null ? 0 : votes.voted,
+            // "user_isNear": false, //isNear,
             "post": {
 
                 "id": posts.id,
