@@ -52,7 +52,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         var posts = await models.post.findOne({
 
 
-            group: ["post.id", "creator.id"],
+            group: ["post.id"],
             where: { id: id },
             attributes: [
                 'id',
@@ -94,19 +94,19 @@ exports.show = async({ params, query, decoded }, res, next) => {
             ],
         });
 
-        if (!posts) {
-            next(ApiError.badRequestException(`Bago ${id} não existe`));
-            return;
-        }
+        // if (!posts) {
+        //     next(ApiError.badRequestException(`Bago ${id} não existe`));
+        //     return;
+        // }
 
 
-        let distance;
-        if (lat && lng) {
-            distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
-        }
-        let isNear;
-        if (distance <= 950) isNear = true;
-        if (distance > 950) isNear = false;
+        // let distance;
+        // if (lat && lng) {
+        //     distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
+        // }
+        // let isNear;
+        // if (distance <= 950) isNear = true;
+        // if (distance > 950) isNear = false;
 
         // const votes = await models.post_vote.findOne({
         //     raw: true,
@@ -128,8 +128,8 @@ exports.show = async({ params, query, decoded }, res, next) => {
         let post = {
 
             user_voted: isVoted,
-            user_vote: votes == null ? 0 : votes.voted,
-            user_isNear: isNear,
+            user_vote: 0, //votes == null ? 0 : votes.voted,
+            user_isNear: false, //isNear,
             post: {
 
                 id: posts.id,
