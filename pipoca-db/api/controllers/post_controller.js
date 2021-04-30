@@ -131,7 +131,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         }
 
 
-        let data = {
+        let post = {
             "user_voted": isVoted,
             "user_vote": votes == null ? 0 : votes.voted,
             "user_isNear": isNear,
