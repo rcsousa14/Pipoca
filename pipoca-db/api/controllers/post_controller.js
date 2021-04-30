@@ -49,7 +49,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const { id } = params;
         const { lat, lng } = query;
         var posts = await models.post.findOne({
-            //group: ["post.id"],
+
             where: { id: id },
             attributes: [
                 "id",
@@ -152,7 +152,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         const data = { success: true, message: ` Bago ${id} para ti`, post };
 
-        return res.status(200).json(data);
+        return res.status(200).json({ data, posts });
     } catch (error) {
         return res.status(500).json({ error });
         // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
