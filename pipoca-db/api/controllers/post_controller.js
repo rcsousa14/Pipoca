@@ -158,16 +158,16 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "id": posts.id,
                 "content": posts.content,
                 //  "links": linkInfo,
-                // "comments_total": posts.comments_total,
-                // "votes_total": votes_total,
-                // " flags": posts.flags,
-                // "is_flagged": posts.isFlagged,
+                "comments_total": posts.comments_total,
+                "votes_total": votes_total,
+                " flags": posts.flags,
+                "is_flagged": posts.is_flagged,
                 // "is_deleted": posts.isDeleted,
-                // "created_at": posts.createdAt,
+                "created_at": posts.createdAt,
                 "creator": posts.creator,
             },
         };
-        return res.json({ data });
+        return res.json(data);
         //const data = { success: true, message: ` Bago ${id} para ti`, post };
 
         // return res.status(200).json(data);
