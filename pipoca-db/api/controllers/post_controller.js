@@ -148,13 +148,13 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "creator": posts.creator
             }
         }
-        return res.status(200).json(data);
-        //const data = { success: true, message: ` Bago ${id} para ti`, post };
 
-        // return res.status(200).json(data);
+        const data = { success: true, message: ` Bago ${id} para ti`, post };
+
+        return res.status(200).json(data);
     } catch (error) {
-        return res.json({ error });
-        // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+
+        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
         return;
     }
 };
