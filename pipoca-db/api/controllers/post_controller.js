@@ -46,55 +46,55 @@ exports.show = async({ params, query, decoded }, res, next) => {
     try {
         const { id } = params;
         const { lat, lng } = query;
-        return res.json({ id, lat, lng })
 
-        // const { id } = params;
-        // const { lat, lng } = query;
-        // var posts = await models.post.findOne({
-        //     distinct: true,
-        //     raw: true,
-        //     group: ["post.id"],
-        //     where: { id: id },
-        //     attributes: [
-        //         'id',
-        //         'content',
-        //         'flags',
-        //         'is_flagged',
-        //         'is_deleted',
-        //         'createdAt',
-        //         'coordinates',
 
-        //         [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`), 'votes_total'],
-        //         [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'comments_total'],
-        //     ],
-        //     include: [{
-        //             model: models.user,
-        //             as: "creator",
-        //             attributes: {
-        //                 exclude: [
-        //                     "createdAt",
-        //                     "updatedAt",
-        //                     "birthday",
-        //                     "reset_password_token",
-        //                     "reset_password_expiration",
-        //                     "refresh_token",
-        //                     "role_id",
-        //                     "bio",
-        //                     "password",
-        //                 ],
-        //             },
-        //         },
-        //         {
-        //             model: models.link,
-        //             as: 'links',
-        //             required: false,
-        //             attributes: ['url'],
-        //             through: { attributes: [] },
-        //         }
+        const { id } = params;
+        const { lat, lng } = query;
+        var posts = await models.post.findOne({
 
-        //     ],
-        // });
 
+            group: ["post.id"],
+            where: { id: id },
+            attributes: [
+                'id',
+                'content',
+                'flags',
+                'is_flagged',
+                'is_deleted',
+                'createdAt',
+                'coordinates',
+
+                [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`), 'votes_total'],
+                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'comments_total'],
+            ],
+            include: [{
+                    model: models.user,
+                    as: "creator",
+                    attributes: {
+                        exclude: [
+                            "createdAt",
+                            "updatedAt",
+                            "birthday",
+                            "reset_password_token",
+                            "reset_password_expiration",
+                            "refresh_token",
+                            "role_id",
+                            "bio",
+                            "password",
+                        ],
+                    },
+                },
+                {
+                    model: models.link,
+                    as: 'links',
+                    required: false,
+                    attributes: ['url'],
+                    through: { attributes: [] },
+                }
+
+            ],
+        });
+        return res.json({ posts });
         // if (!posts) {
         //     next(ApiError.badRequestException(`Bago ${id} não existe`));
         //     return;
