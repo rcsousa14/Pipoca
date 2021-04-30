@@ -109,7 +109,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         // if (lat && lng) {
         //     distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
         // }
-        // let isNear;
+        let isNear = false;
         // if (distance <= 950) isNear = true;
         // if (distance > 950) isNear = false;
 
@@ -121,53 +121,34 @@ exports.show = async({ params, query, decoded }, res, next) => {
         //     },
         // });
 
-        // let isVoted = false; //votes ? true : false;
+        let isVoted = false; //votes ? true : false;
 
-        //  let linkInfo = {};
+        let linkInfo = {};
         // if (posts.links.length > 0) {
         //     const { url } = posts.links[0];
         //     linkInfo = await scrapeMetaTags(url);
 
         // }
 
-        // let post = {
 
-        //     // "user_voted": isVoted,
-        //     // "user_vote": 0, //votes == null ? 0 : votes.voted,
-        //     // "user_isNear": false, //isNear,
-        //     "post": {
-
-        //         "id": posts.id,
-        //         "content": posts.content,
-        //         "links": linkInfo,
-        //         "comments_total": posts.comments_total,
-        //         "votes_total": votes_total == null ? 0 : votes_total,
-        //         "flags": posts.flags,
-        //         "is_flagged": posts.isFlagged,
-        //         "is_deleted": posts.isDeleted,
-        //         "created_at": posts.createdAt,
-        //         "creator": posts.creator
-
-        //     },
-        // };
         let data = {
-            // "user_voted": isVoted,
-            // "user_vote": 0, //votes == null ? 0 : votes.voted,
-            // "user_isNear": false, //isNear,
-            post: {
+            "user_voted": isVoted,
+            "user_vote": 0, //vote == null ? 0 : vote.voted,
+            "user_isNear": isNear,
+            "post": {
                 "id": posts.id,
                 "content": posts.content,
-                //  "links": linkInfo,
+                "links": linkInfo,
+                "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
                 "comments_total": posts.comments_total,
-                "votes_total": votes_total,
-                " flags": posts.flags,
+                "flags": posts.flags,
                 "is_flagged": posts.is_flagged,
-                // "is_deleted": posts.isDeleted,
+                "is_deleted": posts.is_deleted,
                 "created_at": posts.createdAt,
-                "creator": posts.creator,
-            },
-        };
-        return res.json(posts);
+                "creator": posts.creator
+            }
+        }
+        return res.json(posts, data);
         //const data = { success: true, message: ` Bago ${id} para ti`, post };
 
         // return res.status(200).json(data);
