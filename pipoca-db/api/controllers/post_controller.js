@@ -167,7 +167,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "creator": posts.creator,
             },
         };
-        return res.json(data);
+        return res.json(posts);
         //const data = { success: true, message: ` Bago ${id} para ti`, post };
 
         // return res.status(200).json(data);
