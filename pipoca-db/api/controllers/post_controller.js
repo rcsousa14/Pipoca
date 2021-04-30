@@ -44,8 +44,7 @@ exports.index = async({ query }, res) => {
 };
 exports.show = async({ params, query, decoded }, res, next) => {
     try {
-        const { id } = params;
-        const { lat, lng } = query;
+
 
 
         const { id } = params;
