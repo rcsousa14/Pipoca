@@ -166,7 +166,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             },
         };
-        return res.json(data);
+        return res.json({
+            data
+        });
         //const data = { success: true, message: ` Bago ${id} para ti`, post };
 
 
