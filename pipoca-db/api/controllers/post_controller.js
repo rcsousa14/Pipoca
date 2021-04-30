@@ -52,7 +52,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         var posts = await models.post.findOne({
 
 
-            group: ["post.id"],
+            //group: ["post.id"],
             where: { id: id },
             attributes: [
                 'id',
@@ -119,11 +119,11 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const isVoted = false; //votes ? true : false;
 
         let linkInfo = {};
-        if (posts.links.length > 0) {
-            const { url } = posts.links[0];
-            linkInfo = await scrapeMetaTags(url);
+        // if (posts.links.length > 0) {
+        //     const { url } = posts.links[0];
+        //     linkInfo = await scrapeMetaTags(url);
 
-        }
+        // }
 
         let post = {
 
