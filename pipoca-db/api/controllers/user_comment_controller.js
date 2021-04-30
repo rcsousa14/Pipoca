@@ -23,7 +23,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
             }
         });
 
-        return res.status(200).json({ result });
+        return res.status(200).json({ postId });
         // if (result) {
         //     next(ApiError.badRequestException("Ninguém gosta de spam"));
         //     return;
