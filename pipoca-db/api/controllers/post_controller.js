@@ -133,24 +133,24 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             linkInfo = await scrapeMetaTags(url);
         }
-        let data = posts;
-        // let data = {
-        //     "user_voted": isVoted,
-        //     "user_vote": votes == null ? 0 : votes.voted,
-        //     "user_isNear": isNear,
-        //     "post": {
-        //         //  id: posts.id,
-        //         //  content: posts.content,
-        //         //  links: linkInfo,
-        //         //  votes_total: posts.votes_total == null ? 0 : posts.votes_total,
-        //         "comments_total": posts.comments_total,
-        //         // flags: posts.flags,
-        //         // is_flagged: posts.is_flagged,
-        //         // is_deleted: posts.is_deleted,
-        //         // created_at: posts.createdAt,
-        //         // creator: posts.creator,
-        //     },
-        // };
+
+        let data = {
+            "user_voted": isVoted,
+            "user_vote": votes == null ? 0 : votes.voted,
+            "user_isNear": isNear,
+            "post": {
+                "id": posts.id,
+                "content": posts.content,
+                "links": linkInfo,
+                "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
+                "comments_total": posts.comments_total != 0 ? posts.comments_total : 0,
+                "flags": posts.flags,
+                "is_flagged": posts.is_flagged,
+                "is_deleted": posts.is_deleted,
+                "created_at": posts.createdAt,
+                "creator": posts.creator,
+            },
+        };
 
         const post = { success: true, message: ` Bago ${id} para ti`, data };
 
