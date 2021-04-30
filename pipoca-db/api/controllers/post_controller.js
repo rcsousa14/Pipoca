@@ -49,7 +49,6 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const { id } = params;
         const { lat, lng } = query;
         var posts = await models.post.findOne({
-
             where: { id: id },
             attributes: [
                 "id",
@@ -108,55 +107,57 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         let distance;
         if (lat && lng) {
-            distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
+            distance = getDistance({ latitude: lat, longitude: lng }, {
+                latitude: posts.coordinates.coordinates[1],
+                longitude: posts.coordinates.coordinates[0],
+            });
         }
         let isNear;
         if (distance <= 950) isNear = true;
         if (distance > 950) isNear = false;
 
-        // const votes = await models.post_vote.findOne({
-        //     raw: true,
-        //     where: { user_id: decoded.id, post_id: posts.id },
-        //     attributes: {
-        //         exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
-        //     },
-        // });
+        const votes = await models.post_vote.findOne({
+            raw: true,
+            where: { user_id: decoded.id, post_id: posts.id },
+            attributes: {
+                exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
+            },
+        });
 
-        //let isVoted = votes ? true : false;
+        let isVoted = votes ? true : false;
 
         let linkInfo = {};
         if (posts.links.length > 0) {
-            // const { url } = posts.links[0];
+            const { url } = posts.links[0];
 
-            linkInfo = await scrapeMetaTags("https://www.youtube.com/watch?v=kM6a_ftsKFs&t=1s");
-
+            linkInfo = await scrapeMetaTags(url);
         }
 
+        let post = {
+            user_voted: isVoted,
+            user_vote: votes == null ? 0 : votes.voted,
+            user_isNear: isNear,
+            post: {
+                id: posts.id,
+                content: posts.content,
+                links: linkInfo,
+                votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+                comments_total: posts.comments_total,
+                flags: posts.flags,
+                is_flagged: posts.is_flagged,
+                is_deleted: posts.is_deleted,
+                created_at: posts.createdAt,
+                creator: posts.creator,
+            },
+        };
 
-        // let post = {
-        //     "user_voted": isVoted,
-        //     "user_vote": votes == null ? 0 : votes.voted,
-        //     "user_isNear": isNear,
-        //     "post": {
-        //         "id": posts.id,
-        //         "content": posts.content,
-        //         "links": linkInfo,
-        //         "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
-        //         "comments_total": posts.comments_total,
-        //         "flags": posts.flags,
-        //         "is_flagged": posts.is_flagged,
-        //         "is_deleted": posts.is_deleted,
-        //         "created_at": posts.createdAt,
-        //         "creator": posts.creator
-        //     }
-        // }
+        const data = { success: true, message: ` Bago ${id} para ti`, post };
 
-        // const data = { success: true, message: ` Bago ${id} para ti`, post };
-
-        return res.status(200).json({ linkInfo });
+        return res.status(200).json(data);
     } catch (error) {
-        return res.status(500).json({ error });
-        // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
-        // return;
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
