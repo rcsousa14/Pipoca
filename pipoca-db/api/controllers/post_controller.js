@@ -1,6 +1,6 @@
-import { getDistance } from 'geolib';
-const { scrapeMetaTags } = require('../utils/paginate');
-import ApiError from '../errors/api_error';
+import { getDistance } from "geolib";
+const { scrapeMetaTags } = require("../utils/paginate");
+import ApiError from "../errors/api_error";
 const Sequelize = require("sequelize");
 const models = require("../models");
 
@@ -8,7 +8,7 @@ exports.index = async({ query }, res) => {
     try {
         const { lat, lng, search } = query;
         if (search && lat && lng) {
-            const tag = await models.tag.findOne({ where: { hash: search } })
+            const tag = await models.tag.findOne({ where: { hash: search } });
             const [rows, count] = await models.post_tag.findAndCountAll({
                 where: { tag_id: tag.id },
                 // include:[
@@ -27,8 +27,10 @@ exports.index = async({ query }, res) => {
                 //         },
                 //     },
                 // ]
-            })
-            return res.status(200).send({ message: `🍿 Bago ${id}  para ti 🥳`, post_tags });
+            });
+            return res
+                .status(200)
+                .send({ message: `🍿 Bago ${id}  para ti 🥳`, post_tags });
         }
         /**
          * TODO: this is the index to see all the posts update the isnear to enable commenting
@@ -44,27 +46,32 @@ exports.index = async({ query }, res) => {
 };
 exports.show = async({ params, query, decoded }, res, next) => {
     try {
-
-
-
         const { id } = params;
         const { lat, lng } = query;
         var posts = await models.post.findOne({
-
-
             //group: ["post.id"],
             where: { id: id },
             attributes: [
-                'id',
-                'content',
-                'flags',
-                'is_flagged',
-                'is_deleted',
-                'createdAt',
-                'coordinates',
+                "id",
+                "content",
+                "flags",
+                "is_flagged",
+                "is_deleted",
+                "createdAt",
+                "coordinates",
 
-                [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`), 'votes_total'],
-                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'comments_total'],
+                [
+                    Sequelize.literal(
+                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`
+                    ),
+                    "votes_total",
+                ],
+                [
+                    Sequelize.literal(
+                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`
+                    ),
+                    "comments_total",
+                ],
             ],
             include: [{
                     model: models.user,
@@ -85,21 +92,18 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 },
                 {
                     model: models.link,
-                    as: 'links',
+                    as: "links",
                     required: false,
-                    attributes: ['url'],
+                    attributes: ["url"],
                     through: { attributes: [] },
-                }
-
+                },
             ],
         });
-
 
         // if (!posts) {
         //     next(ApiError.badRequestException(`Bago ${id} não existe`));
         //     return;
         // }
-
 
         // let distance;
         // if (lat && lng) {
@@ -147,30 +151,24 @@ exports.show = async({ params, query, decoded }, res, next) => {
         //     },
         // };
         let data = {
-
             // "user_voted": isVoted,
             // "user_vote": 0, //votes == null ? 0 : votes.voted,
             // "user_isNear": false, //isNear,
-            "post": {
-
+            post: {
                 "id": posts.id,
                 "content": posts.content,
                 //  "links": linkInfo,
                 "comments_total": posts.comments_total,
                 "votes_total": votes_total,
-                "flags": posts.flags,
+                " flags": posts.flags,
                 "is_flagged": posts.isFlagged,
                 "is_deleted": posts.isDeleted,
                 "created_at": posts.createdAt,
-                "creator": posts.creator
-
+                "creator": posts.creator,
             },
         };
-        return res.json({
-            data
-        });
+        return res.json(data);
         //const data = { success: true, message: ` Bago ${id} para ti`, post };
-
 
         // return res.status(200).json(data);
     } catch (error) {
