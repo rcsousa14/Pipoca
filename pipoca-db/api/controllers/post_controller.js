@@ -100,40 +100,40 @@ exports.show = async({ params, query, decoded }, res, next) => {
             ],
         });
 
-        // if (!posts) {
-        //     next(ApiError.badRequestException(`Bago ${id} não existe`));
-        //     return;
-        // }
+        if (!posts) {
+            next(ApiError.badRequestException(`Bago ${id} não existe`));
+            return;
+        }
 
-        // let distance;
-        // if (lat && lng) {
-        //     distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
-        // }
-        let isNear = false;
-        // if (distance <= 950) isNear = true;
-        // if (distance > 950) isNear = false;
+        let distance;
+        if (lat && lng) {
+            distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
+        }
+        let isNear;
+        if (distance <= 950) isNear = true;
+        if (distance > 950) isNear = false;
 
-        // const votes = await models.post_vote.findOne({
-        //     raw: true,
-        //     where: { user_id: decoded.id, post_id: posts.id },
-        //     attributes: {
-        //         exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
-        //     },
-        // });
+        const votes = await models.post_vote.findOne({
+            raw: true,
+            where: { user_id: decoded.id, post_id: posts.id },
+            attributes: {
+                exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
+            },
+        });
 
-        let isVoted = false; //votes ? true : false;
+        let isVoted = votes ? true : false;
 
         let linkInfo = {};
-        // if (posts.links.length > 0) {
-        //     const { url } = posts.links[0];
-        //     linkInfo = await scrapeMetaTags(url);
+        if (posts.links.length > 0) {
+            const { url } = posts.links[0];
+            linkInfo = await scrapeMetaTags(url);
 
-        // }
+        }
 
 
         let data = {
             "user_voted": isVoted,
-            "user_vote": 0, //vote == null ? 0 : vote.voted,
+            "user_vote": votes == null ? 0 : votes.voted,
             "user_isNear": isNear,
             "post": {
                 "id": posts.id,
