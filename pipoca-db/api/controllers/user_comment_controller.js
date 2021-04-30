@@ -67,10 +67,11 @@ exports.store = async({ params, body, decoded }, res, next) => {
             message: "Comentário criado com sucesso!",
         });
     } catch (error) {
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+        return res.status(500).json({ error })
+            // next(
+            //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
+            // );
+            // return;
     }
 };
 
