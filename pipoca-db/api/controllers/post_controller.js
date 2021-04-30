@@ -66,32 +66,32 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`), 'votes_total'],
                 [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'comments_total'],
             ],
-            // include: [{
-            //         model: models.user,
-            //         as: "creator",
-            //         attributes: {
-            //             exclude: [
-            //                 "createdAt",
-            //                 "updatedAt",
-            //                 "birthday",
-            //                 "reset_password_token",
-            //                 "reset_password_expiration",
-            //                 "refresh_token",
-            //                 "role_id",
-            //                 "bio",
-            //                 "password",
-            //             ],
-            //         },
-            //     },
-            //     {
-            //         model: models.link,
-            //         as: 'links',
-            //         required: false,
-            //         attributes: ['url'],
-            //         through: { attributes: [] },
-            //     }
+            include: [{
+                    model: models.user,
+                    as: "creator",
+                    attributes: {
+                        exclude: [
+                            "createdAt",
+                            "updatedAt",
+                            "birthday",
+                            "reset_password_token",
+                            "reset_password_expiration",
+                            "refresh_token",
+                            "role_id",
+                            "bio",
+                            "password",
+                        ],
+                    },
+                },
+                {
+                    model: models.link,
+                    as: 'links',
+                    required: false,
+                    attributes: ['url'],
+                    through: { attributes: [] },
+                }
 
-            // ],
+            ],
         });
         return res.json({ posts });
         // if (!posts) {
