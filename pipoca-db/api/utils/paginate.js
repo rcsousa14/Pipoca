@@ -7,7 +7,7 @@ const Op = Sequelize.Op;
 
 require('dotenv').config();
 
-const scrapeMetaTags = async(url) => {
+exports.scrapeMetaTags = async(url) => {
     const res = await axios.get(url);
     const html = res.data;
     const $ = cheerio.load(html);
