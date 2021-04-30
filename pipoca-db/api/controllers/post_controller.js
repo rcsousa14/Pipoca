@@ -52,7 +52,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         var posts = await models.post.findOne({
 
 
-            // group: ["post.id"],
+
             where: { id: id },
             attributes: [
                 'id',
@@ -93,62 +93,62 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             ],
         });
-        return res.json({ posts });
-        // if (!posts) {
-        //     next(ApiError.badRequestException(`Bago ${id} não existe`));
-        //     return;
-        // }
+
+        if (!posts) {
+            next(ApiError.badRequestException(`Bago ${id} não existe`));
+            return;
+        }
 
 
-        // let distance;
-        // if (lat && lng) {
-        //     distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
-        // }
-        // let isNear;
-        // if (distance <= 950) isNear = true;
-        // if (distance > 950) isNear = false;
+        let distance;
+        if (lat && lng) {
+            distance = getDistance({ latitude: lat, longitude: lng }, { latitude: posts.coordinates.coordinates[1], longitude: posts.coordinates.coordinates[0] });
+        }
+        let isNear;
+        if (distance <= 950) isNear = true;
+        if (distance > 950) isNear = false;
 
-        // const votes = await models.post_vote.findOne({
-        //     raw: true,
-        //     where: { userId: decoded.id, post_id: posts.id },
-        //     attributes: {
-        //         exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
-        //     },
-        // });
+        const votes = await models.post_vote.findOne({
+            raw: true,
+            where: { userId: decoded.id, post_id: posts.id },
+            attributes: {
+                exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
+            },
+        });
 
-        // const isVoted = votes ? true : false;
+        const isVoted = votes ? true : false;
 
-        // let linkInfo = {};
-        // if (posts.links.length > 0) {
-        //     const { url } = posts.links[0];
-        //     linkInfo = await scrapeMetaTags(url);
+        let linkInfo = {};
+        if (posts.links.length > 0) {
+            const { url } = posts.links[0];
+            linkInfo = await scrapeMetaTags(url);
 
-        // }
+        }
 
-        // let post = {
+        let post = {
 
-        //     user_voted: isVoted,
-        //     user_vote: votes == null ? 0 : votes.voted,
-        //     user_isNear: isNear,
-        //     post: {
+            user_voted: isVoted,
+            user_vote: votes == null ? 0 : votes.voted,
+            user_isNear: isNear,
+            post: {
 
-        //         id: posts.id,
-        //         content: posts.content,
-        //         links: linkInfo,
-        //         comments_total: posts.comments_total,
-        //         votes_total: votes_total == null ? 0 : votes_total,
-        //         flags: posts.flags,
-        //         is_flagged: posts.isFlagged,
-        //         is_deleted: posts.isDeleted,
-        //         created_at: posts.createdAt,
-        //         creator: posts.creator
+                id: posts.id,
+                content: posts.content,
+                links: linkInfo,
+                comments_total: posts.comments_total,
+                votes_total: votes_total == null ? 0 : votes_total,
+                flags: posts.flags,
+                is_flagged: posts.isFlagged,
+                is_deleted: posts.isDeleted,
+                created_at: posts.createdAt,
+                creator: posts.creator
 
-        //     },
-        // };
-        // const data = { success: true, message: ` Bago ${id} para ti`, post };
+            },
+        };
+        const data = { success: true, message: ` Bago ${id} para ti`, post };
 
 
-        // return res.status(200).send(data);
+        return res.status(200).json(data);
     } catch (error) {
         return res.json({ error });
         // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
