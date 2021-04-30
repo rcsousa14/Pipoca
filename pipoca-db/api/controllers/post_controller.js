@@ -133,7 +133,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             linkInfo = await scrapeMetaTags(url);
         }
 
-        let post = {
+        let data = {
             user_voted: isVoted,
             user_vote: votes == null ? 0 : votes.voted,
             user_isNear: isNear,
@@ -151,9 +151,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
             },
         };
 
-        const data = { success: true, message: ` Bago ${id} para ti`, post };
+        const post = { success: true, message: ` Bago ${id} para ti`, data };
 
-        return res.status(200).json(data);
+        return res.status(200).json(post);
     } catch (error) {
         next(
             ApiError.internalException("Não conseguiu se comunicar com o servidor")
