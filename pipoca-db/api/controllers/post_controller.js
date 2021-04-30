@@ -86,6 +86,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                             "refresh_token",
                             "role_id",
                             "bio",
+                            "type",
                             "password",
                         ],
                     },

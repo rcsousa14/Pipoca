@@ -189,6 +189,7 @@ exports.index = async({ query, decoded }, res, next) => {
                         "refresh_token",
                         "role_id",
                         "bio",
+                        "type",
                         "password",
                     ],
                 },
