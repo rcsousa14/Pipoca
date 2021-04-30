@@ -54,18 +54,18 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             // group: ["post.id"],
             where: { id: id },
-            // attributes: [
-            //     'id',
-            //     'content',
-            //     'flags',
-            //     'is_flagged',
-            //     'is_deleted',
-            //     'createdAt',
-            //     'coordinates',
+            attributes: [
+                'id',
+                'content',
+                'flags',
+                'is_flagged',
+                'is_deleted',
+                'createdAt',
+                'coordinates',
 
-            //     [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`), 'votes_total'],
-            //     [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'comments_total'],
-            // ],
+                [Sequelize.literal(`(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`), 'votes_total'],
+                [Sequelize.literal(`(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`), 'comments_total'],
+            ],
             // include: [{
             //         model: models.user,
             //         as: "creator",
@@ -150,7 +150,8 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         // return res.status(200).send(data);
     } catch (error) {
-        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+        return res.json({ error });
+        // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
         return;
     }
 };
