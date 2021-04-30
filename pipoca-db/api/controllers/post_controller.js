@@ -124,12 +124,12 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         let isVoted = votes ? true : false;
 
-        let linkInfo = {};
-        if (posts.links.length > 0) {
-            const { url } = posts.links[0];
-            linkInfo = await scrapeMetaTags(url);
+        // let linkInfo = {};
+        // if (posts.links.length > 0) {
+        //     const { url } = posts.links[0];
+        //     linkInfo = await scrapeMetaTags(url);
 
-        }
+        // }
 
 
         let post = {
@@ -139,7 +139,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             "post": {
                 "id": posts.id,
                 "content": posts.content,
-                "links": linkInfo,
+                // "links": linkInfo,
                 "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
                 "comments_total": posts.comments_total,
                 "flags": posts.flags,
