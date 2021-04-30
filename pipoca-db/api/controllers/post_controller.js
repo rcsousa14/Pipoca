@@ -148,7 +148,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const data = { success: true, message: ` Bago ${id} para ti`, post };
 
 
-        return res.status(200).send(data);
+        return res.status(200).json(data);
     } catch (error) {
         return res.json({ error });
         // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
