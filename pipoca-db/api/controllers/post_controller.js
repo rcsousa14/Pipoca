@@ -46,7 +46,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
     try {
         const { id } = params;
         const { lat, lng } = query;
-        return res.json(id, lat, lng)
+        return res.json({ id, lat, lng })
 
         // const { id } = params;
         // const { lat, lng } = query;
