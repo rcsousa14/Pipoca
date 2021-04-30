@@ -143,7 +143,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "content": posts.content,
                 "links": linkInfo,
                 "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
-                "comments_total": 0,
+                "comments_total": posts.comments_total == null ? 0 : posts.comments_total,
                 "flags": posts.flags,
                 "is_flagged": posts.is_flagged,
                 "is_deleted": posts.is_deleted,
