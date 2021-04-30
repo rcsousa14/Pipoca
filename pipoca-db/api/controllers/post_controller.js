@@ -110,7 +110,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         const votes = await models.post_vote.findOne({
             raw: true,
-            where: { userId: decoded.id, post_id: posts.id },
+            where: { user_id: decoded.id, post_id: posts.id },
             attributes: {
                 exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
             },
