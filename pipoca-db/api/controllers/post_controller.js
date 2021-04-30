@@ -143,7 +143,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "content": posts.content,
                 "links": linkInfo,
                 "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
-                "comments_total": posts.comments_total,
+                "comments_total": 0,
                 "flags": posts.flags,
                 "is_flagged": posts.is_flagged,
                 "is_deleted": posts.is_deleted,
@@ -151,9 +151,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "creator": posts.creator,
             },
         };
-        const obj = JSON.parse(data);
 
-        const post = { success: true, message: ` Bago ${id} para ti`, obj };
+
+        const post = { success: true, message: ` Bago ${id} para ti`, data };
 
         return res.status(200).json(post);
     } catch (error) {
