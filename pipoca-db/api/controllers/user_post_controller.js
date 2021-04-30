@@ -1,11 +1,9 @@
 import ApiError from "../errors/api_error";
-import CacheService from "../utils/cache";
+
 const { paginate } = require("../utils/paginate");
 const models = require("../models");
 const Sequelize = require("sequelize");
-const ttl = 10;
-const cache = new CacheService(ttl);
-const cachePost = new CacheService(60);
+
 
 const Op = Sequelize.Op;
 
@@ -13,8 +11,19 @@ exports.store = async({ body, decoded }, res, next) => {
     try {
         const { content, links, hashes, longitude, latitude } = body;
 
-        const result = cachePost.get(`user_post_${decoded.id}`);
-        if (result && result == content) {
+        const TODAY_START = new Date().setHours(0, 0, 0, 0);
+        const NOW = new Date();
+        const result = await models.post.findOne({
+            where: {
+                content: content,
+                user_id: decoded.id,
+                createdAt: {
+                    [Op.gt]: NOW,
+                    [Op.lt]: TODAY_START,
+                }
+            }
+        });
+        if (result) {
             next(ApiError.badRequestException("Ninguém gosta de spam"));
             return;
         }
@@ -46,9 +55,9 @@ exports.store = async({ body, decoded }, res, next) => {
             await models.post_link.create({ post_id: post.id, link_id: link.id });
         }
 
-        cachePost.set(`user_post_${decoded.id}`, post.content);
 
-        cache.del(`user_posts_${decoded.id}`);
+
+
         return res.status(201).json({
             success: true,
             message: "Bago criado com sucesso!",
@@ -235,11 +244,7 @@ exports.soft = async({ params, decoded }, res, next) => {
             },
         });
         if (updated) {
-            cache.del(`user_posts_${decoded.id}`);
-            return res.status(200).json({
-                success: true,
-                message: `Bago ${id} foi eliminado com sucesso`,
-            });
+
         } else {
             next({});
             return;
@@ -254,7 +259,7 @@ exports.soft = async({ params, decoded }, res, next) => {
 // shows all posts by user
 exports.show = async({ query, decoded }, res, next) => {
     try {
-        const result = cache.get(`user_posts_${decoded.id}`);
+
         if (result) {
             return res.status(200).json(result);
         }
@@ -337,7 +342,7 @@ exports.show = async({ query, decoded }, res, next) => {
             message: `Todos os teu Bagos!`,
             posts
         };
-        cache.set(`user_posts_${decoded.id}`, data);
+
 
         return res.status(200).json(data);
 

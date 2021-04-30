@@ -1,18 +1,28 @@
 import ApiError from "../errors/api_error";
-import CacheService from "../utils/cache";
+
 const models = require("../models");
 const Sequelize = require("sequelize");
 const { paginate } = require("../utils/paginate");
-const ttl = 10;
-const cache = new CacheService(ttl);
-const cachePost = new CacheService(60);
+
+const Op = Sequelize.Op;
 
 exports.store = async({ params, body, decoded }, res, next) => {
     try {
         const { postId } = params;
         const { content, links, hashes, longitude, latitude } = body;
-        const result = cachePost.get(`user_comment_${decoded.id}`);
-        if (result && result == content) {
+        const TODAY_START = new Date().setHours(0, 0, 0, 0);
+        const NOW = new Date();
+        const result = await models.comment.findOne({
+            where: {
+                content: content,
+                user_id: decoded.id,
+                createdAt: {
+                    [Op.gt]: NOW,
+                    [Op.lt]: TODAY_START,
+                }
+            }
+        });
+        if (result) {
             next(ApiError.badRequestException("Ninguém gosta de spam"));
             return;
         }
@@ -51,9 +61,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
                 link_id: link.id,
             });
         }
-        cachePost.set(`user_comment_${decoded.id}`, comment.content);
-        cache.del(`user_comments_feed_${decoded.id}`);
-        cache.del(`user_comments_${decoded.id}`);
+
         return res.status(201).json({
             success: true,
             message: "Comentário criado com sucesso!",
@@ -68,10 +76,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
 
 exports.index = async({ params, query, decoded }, res, next) => {
     try {
-        const result = cache.get(`user_comments_feed_${decoded.id}`);
-        if (result) {
-            return res.status(200).json(result);
-        }
+
         const filtro = "comment";
         const { postId } = params;
         const { lat, lng } = query;
@@ -158,7 +163,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
             message: "Todos os comentários",
             comments,
         };
-        cache.set(`user_comments_feed_${decoded.id}`, data);
+
         return res.status(200).json(data);
     } catch (error) {
         next(
@@ -179,8 +184,7 @@ exports.soft = async({ params, decoded }, res, next) => {
             },
         });
         if (updated) {
-            cache.del(`user_comments_feed_${decoded.id}`);
-            cache.del(`user_comments_${decoded.id}`);
+
             return res.status(200).json({
                 success: true,
                 message: `Comentário ${id} foi eliminado com sucesso`,
@@ -199,10 +203,7 @@ exports.soft = async({ params, decoded }, res, next) => {
 
 exports.show = async({ query, decoded }, res, next) => {
     try {
-        const result = cache.get(`user_comments_${decoded.id}`);
-        if (result) {
-            return res.status(200).json(result);
-        }
+
         const filtro = "comment";
         const { lat, lng } = query;
         const id = decoded.id;
@@ -280,7 +281,7 @@ exports.show = async({ query, decoded }, res, next) => {
             message: "Todos os teus comentários!",
             comments
         };
-        cache.set(`user_comments_${decoded.id}`, data);
+
         return res.status(200).json(result);
     } catch (error) {
         next(

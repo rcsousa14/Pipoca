@@ -44,10 +44,7 @@ exports.index = async({ query }, res) => {
 };
 exports.show = async({ params, query, decoded }, res, next) => {
     try {
-        const result = cache.get(`post_${decoded.id}`);
-        if (result) {
-            return res.status(200).json(result);
-        }
+
         const { id } = params;
         const { lat, lng } = query;
         var posts = await models.post.findOne({
@@ -147,7 +144,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             },
         };
         const data = { success: true, message: ` Bago ${id} para ti`, post };
-        cache.set(`post_${decoded.id}`, data);
+
 
         return res.status(200).send(data);
     } catch (error) {

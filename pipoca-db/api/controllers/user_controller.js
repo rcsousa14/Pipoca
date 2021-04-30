@@ -1,10 +1,9 @@
 import ApiError from "../errors/api_error";
-import CacheService from "../utils/cache";
+
 const Sequelize = require("sequelize");
 const { admin } = require("../utils/paginate");
 const models = require("../models");
-const ttl = 30;
-const cache = new CacheService(ttl);
+
 
 // for the admin need to see how many posts a user has etc etc
 exports.index = async(req, res, next) => {
@@ -34,10 +33,7 @@ exports.index = async(req, res, next) => {
 
 exports.show = async({ decoded }, res, next) => {
     try {
-        const result = cache.get(`user_single_${decoded.id}`);
-        if (result) {
-            return res.status(200).json(result);
-        }
+
 
         if (decoded.id == null) {
             ApiError.badRequestException("Problema com a auth");
@@ -153,7 +149,6 @@ exports.show = async({ decoded }, res, next) => {
                 },
             },
         };
-        cache.set(`user_single_${decoded.id}`, data);
 
         return res.status(200).json(data);
     } catch (error) {
@@ -171,16 +166,7 @@ exports.destroy = async({ decoded }, res, next) => {
                 id: decoded.id,
             },
         });
-        cache.del(`user_single_${decoded.id}`);
-        cache.del(`user_sub_comments_feed_${decoded.id}`);
-        cache.del(`user_sub_comments_${decoded.id}`);
-        cache.del(`user_sub_comment_${decoded.id}`);
-        cache.del(`user_comments_feed_${decoded.id}`);
-        cache.del(`user_comments_${decoded.id}`);
-        cache.del(`user_comment_${decoded.id}`);
-        cache.del(`user_posts_${decoded.id}`);
-        cache.del(`user_post_${decoded.id}`);
-        cache.del(`post_${decoded.id}`);
+
         return res
             .status(200)
             .send({ success: true, message: "Nós odiamos ver você ir. Volto logo!" });
@@ -201,7 +187,7 @@ exports.update = async({ body, decoded }, res, next) => {
                 id: decoded.id,
             },
         });
-        cache.del(`user_single_${decoded.id}`);
+
         return res
             .status(200)
             .send({ success: true, message: "So sucesso! de volta a pipocar" });

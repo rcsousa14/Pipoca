@@ -5,7 +5,6 @@ const nodemailer = require('nodemailer');
 const nodemailerSendgrid = require('nodemailer-sendgrid');
 const ejs = require("ejs");
 import path from 'path';
-import { nextTick } from 'process';
 import ApiError from '../errors/api_error';
 require('dotenv').config();
 const Sequelize = require('sequelize');

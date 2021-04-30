@@ -16,8 +16,7 @@ exports.store = async({ body, decoded }, res, next) => {
             await models.sub_comment_vote.update({ userId: decoded.id, voted, sub_comment_id: subCommentId }, {
                 where: { id: vote.id },
             });
-            cache.del(`user_sub_comments_feed_${decoded.id}`);
-            cache.del(`user_sub_comments_${decoded.id}`);
+
             return res.status(200).json({
                 success: true,
                 message: "updated",
@@ -28,8 +27,7 @@ exports.store = async({ body, decoded }, res, next) => {
             sub_comment_id: subCommentId,
             voted,
         });
-        cache.del(`user_sub_comments_feed_${decoded.id}`);
-        cache.del(`user_sub_comments_${decoded.id}`);
+
         return res.status(201).json({
             success: true,
             message: "added",

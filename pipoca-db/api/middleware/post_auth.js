@@ -60,7 +60,7 @@ export default async(req, res, next) => {
 
 
     ];
-    if (!content) {
+    if (!content && links.length == 0) {
         next(ApiError.badRequestException('Bago é requerido!'));
         return;
 
