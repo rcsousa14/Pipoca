@@ -93,7 +93,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             ],
         });
-        return res.json({ posts });
+
 
         // if (!posts) {
         //     next(ApiError.badRequestException(`Bago ${id} não existe`));
@@ -126,26 +126,27 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         // }
 
-        //     // let post = {
+        let post = {
 
-        //     user_voted: isVoted,
-        //         user_vote: 0, //votes == null ? 0 : votes.voted,
-        //         user_isNear: false, //isNear,
-        //         post: {
+            user_voted: isVoted,
+            user_vote: 0, //votes == null ? 0 : votes.voted,
+            user_isNear: false, //isNear,
+            post: {
 
-        //             id: posts.id,
-        //             content: posts.content,
-        //             links: linkInfo,
-        //             comments_total: posts.comments_total,
-        //             votes_total: votes_total == null ? 0 : votes_total,
-        //             flags: posts.flags,
-        //             is_flagged: posts.isFlagged,
-        //             is_deleted: posts.isDeleted,
-        //             created_at: posts.createdAt,
-        //             creator: posts.creator
+                id: posts.id,
+                content: posts.content,
+                links: linkInfo,
+                comments_total: posts.comments_total,
+                votes_total: votes_total == null ? 0 : votes_total,
+                flags: posts.flags,
+                is_flagged: posts.isFlagged,
+                is_deleted: posts.isDeleted,
+                created_at: posts.createdAt,
+                creator: posts.creator
 
-        //         },
-        // };
+            },
+        };
+        return res.json({ post });
         //const data = { success: true, message: ` Bago ${id} para ti`, post };
 
 
