@@ -126,10 +126,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         let linkInfo = {};
         if (posts.links.length > 0) {
-            const { url } = posts.links[0];
+            // const { url } = posts.links[0];
 
-            linkInfo = await scrapeMetaTags(url);
-            console.log(linkInfo);
+            linkInfo = await scrapeMetaTags("https://www.youtube.com/watch?v=kM6a_ftsKFs&t=1s");
 
         }
 
