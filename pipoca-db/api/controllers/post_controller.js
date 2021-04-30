@@ -52,7 +52,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         var posts = await models.post.findOne({
 
 
-            group: ["post.id"],
+            group: ["post.id", "creator.id"],
             where: { id: id },
             attributes: [
                 'id',
