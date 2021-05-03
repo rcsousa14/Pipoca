@@ -84,7 +84,7 @@ exports.index = async({ query, decoded }, res, next) => {
             if (query.filter == "pipocar") {
                 search = {
                     is_deleted: false,
-                    created_at: {
+                    createdAt: {
                         [Op.lt]: NOW,
                         [Op.gt]: TODAY_START,
                     },
