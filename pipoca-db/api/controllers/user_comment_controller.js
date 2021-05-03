@@ -11,7 +11,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
         const { post_id } = params;
         const { content, links, hashes, longitude, latitude } = body;
         const TODAY_START = new Date().setHours(0, 0, 0, 0);
-        const NOW = new Date.now();
+        const NOW = Date.now();
         const result = await models.comment.findAll({
             where: {
                 content: content,
