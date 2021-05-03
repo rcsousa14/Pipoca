@@ -95,12 +95,12 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
 
         //     attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
         // });
-        // let linkInfo = {};
-        // if (row.links.length > 0) {
-        //     const { url } = row.links[0];
-        //     linkInfo = await scrapeMetaTags(url);
+        let linkInfo = {};
+        if (row.links.length > 0) {
+            const { url } = row.links[0];
+            linkInfo = await this.scrapeMetaTags(url);
 
-        // }
+        }
 
         // const isVoted = vote ? true : false;
 
