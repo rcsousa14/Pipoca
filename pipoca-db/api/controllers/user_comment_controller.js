@@ -81,12 +81,12 @@ exports.index = async({ params, query, decoded }, res, next) => {
     try {
 
         const filtro = "comment";
-        const { postId } = params;
+        const { post_id } = params;
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 15;
-        let search = { post_id: postId };
+        let search = { post_id: post_id };
 
         let order = [];
         let group = ["comment.id"];
