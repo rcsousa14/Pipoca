@@ -88,104 +88,96 @@ exports.index = async({ params, query, decoded }, res, next) => {
         const id = decoded.id;
         const page = parseInt(query.page);
 
-        return res.status(200).json({
-                filter: query.filter,
-                postId: post_id,
-                lat: lat,
-                lng: lng,
-                id: id,
-                page: page
 
-            })
-            // const limit = 15;
-            // let search = { post_id: post_id };
+        const limit = 15;
+        let search = { post_id: post_id };
 
-        // let order = [];
-        // let group = ["comment.id"];
+        let order = [];
+        let group = ["comment.id"];
 
-        // if (query.filter == "date") {
-        //     order.push(["createdAt", "DESC"]);
-        // }
-        // if (query.filter == "pipocar") {
-        //     order.push(
-        //         [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
-        //     );
-        // }
+        if (query.filter == "date") {
+            order.push(["createdAt", "DESC"]);
+        }
+        if (query.filter == "pipocar") {
+            order.push(
+                [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
+            );
+        }
 
-        // let attributes = [
-        //     "id",
-        //     "content",
-        //     "flags",
-        //     "is_flagged",
-        //     "is_deleted",
-        //     "createdAt",
-        //     "coordinates", [
-        //         Sequelize.literal(
-        //             `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
-        //         ),
-        //         "votes_total",
-        //     ],
-        //     [
-        //         Sequelize.literal(
-        //             `(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`
-        //         ),
-        //         "comments_total",
-        //     ],
-        // ];
-        // let include = [{
-        //         model: models.user,
-        //         as: "creator",
-        //         attributes: {
-        //             exclude: [
-        //                 "createdAt",
-        //                 "updatedAt",
-        //                 "birthday",
-        //                 "reset_password_token",
-        //                 "reset_assword_expiration",
-        //                 "refresh_token",
-        //                 "role_id",
-        //                 "bio",
-        //                 "type",
-        //                 "password",
-        //             ],
-        //         },
-        //     },
-        //     {
-        //         model: models.link,
-        //         as: "links",
-        //         required: false,
-        //         attributes: ["url"],
-        //         through: { attributes: [] },
-        //     },
-        // ];
-        // const model = models.comment;
-        // const comments = await paginate(
-        //     model,
-        //     id,
-        //     page,
-        //     limit,
-        //     search,
-        //     order,
-        //     attributes,
-        //     include,
-        //     group,
-        //     lat,
-        //     lng,
-        //     filtro
-        // );
-        // const data = {
-        //     success: true,
-        //     message: "Todos os comentários",
-        //     comments,
-        // };
+        let attributes = [
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "is_deleted",
+            "createdAt",
+            "coordinates", [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
+                ),
+                "votes_total",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = comment.id)`
+                ),
+                "comments_total",
+            ],
+        ];
+        let include = [{
+                model: models.user,
+                as: "creator",
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "birthday",
+                        "reset_password_token",
+                        "reset_assword_expiration",
+                        "refresh_token",
+                        "role_id",
+                        "bio",
+                        "type",
+                        "password",
+                    ],
+                },
+            },
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
+        ];
+        const model = models.comment;
+        const comments = await paginate(
+            model,
+            id,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng,
+            filtro
+        );
+        const data = {
+            success: true,
+            message: "Todos os comentários",
+            comments,
+        };
 
-        //  return res.status(200).json(data);
+        return res.status(200).json(data);
     } catch (error) {
-        return res.status(500).json({ error })
-            // next(
-            //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
-            // );
-            // return;
+
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
 
