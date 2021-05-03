@@ -68,77 +68,81 @@ exports.store = async({ body, decoded }, res, next) => {
 //feed shows all posts that are near by you can sort it for posts with higher points
 exports.index = async({ query, decoded }, res, next) => {
     try {
-        // const filtro = "post";
-        // const { lat, lng } = query;
-        // const id = decoded.id;
-        // const page = parseInt(query.page);
-        // const limit = 25;
+        const filtro = "post";
+        const { lat, lng } = query;
+        const id = decoded.id;
+        const page = parseInt(query.page);
+        const limit = 25;
 
-        // let search;
-        // let order = [];
+        let search;
+        let order = [];
         // let group = ["post.id"];
-        // const NOW = new Date();
-        // const TODAY_START = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+        const NOW = new Date();
+        const TODAY_START = new Date(
+            NOW.getFullYear(),
+            NOW.getMonth(),
+            NOW.getDate() - 5
+        );
 
-        // if (lat && lng) {
-        //     if (query.filter == "pipocar") {
-        //         order.push(
-        //             [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
-        //         );
-        //         search = {
-        //             is_deleted: false,
-        //             createdAt: {
-        //                 [Op.lt]: NOW,
-        //                 [Op.gt]: TODAY_START,
-        //             },
-        //             [Op.and]: Sequelize.where(
-        //                 Sequelize.fn(
-        //                     "ST_DWithin",
-        //                     Sequelize.col("post.coordinates"),
-        //                     Sequelize.fn(
-        //                         "ST_SetSRID",
-        //                         Sequelize.fn("ST_MakePoint", lng, lat),
-        //                         4326
-        //                     ),
-        //                     950
-        //                 ),
-        //                 true
-        //             ),
+        if (lat && lng) {
+            if (query.filter == "pipocar") {
+                order.push(
+                    [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
+                );
+                search = {
+                    is_deleted: false,
+                    createdAt: {
+                        [Op.lt]: NOW,
+                        [Op.gt]: TODAY_START,
+                    },
+                    [Op.and]: Sequelize.where(
+                        Sequelize.fn(
+                            "ST_DWithin",
+                            Sequelize.col("post.coordinates"),
+                            Sequelize.fn(
+                                "ST_SetSRID",
+                                Sequelize.fn("ST_MakePoint", lng, lat),
+                                4326
+                            ),
+                            950
+                        ),
+                        true
+                    ),
 
-        //             /**
-        //                                                      * for location-post
-        //                                                      * Sequelize.where(
-        //                                                      Sequelize.fn('ST_Contains',
-        //                                                         Sequelize.col('location.poly'),
-        //                                                         Sequelize.fn('ST_SetSRID',
-        //                                                             Sequelize.fn('ST_MakePoint',
-        //                                                                 lng, lat),
-        //                                                             4326),
-        //                                                         950),
-        //                                                     true)
-        //                                                      */
-        //         };
-        //     }
-        //     if (query.filter == "date") {
-        //         order.push(["createdAt", "DESC"]);
-        //         search = {
-        //             is_deleted: false,
-        //             [Op.and]: Sequelize.where(
-        //                 Sequelize.fn(
-        //                     "ST_DWithin",
-        //                     Sequelize.col("post.coordinates"),
-        //                     Sequelize.fn(
-        //                         "ST_SetSRID",
-        //                         Sequelize.fn("ST_MakePoint", lng, lat),
-        //                         4326
-        //                     ),
-        //                     950
-        //                 ),
-        //                 true
-        //             ),
-        //         };
-        //     }
-        // }
+                    /**
+                                                             * for location-post
+                                                             * Sequelize.where(
+                                                             Sequelize.fn('ST_Contains',
+                                                                Sequelize.col('location.poly'),
+                                                                Sequelize.fn('ST_SetSRID',
+                                                                    Sequelize.fn('ST_MakePoint',
+                                                                        lng, lat),
+                                                                    4326),
+                                                                950),
+                                                            true)
+                                                             */
+                };
+            }
+            if (query.filter == "date") {
+                order.push(["createdAt", "DESC"]);
+                search = {
+                    is_deleted: false,
+                    [Op.and]: Sequelize.where(
+                        Sequelize.fn(
+                            "ST_DWithin",
+                            Sequelize.col("post.coordinates"),
+                            Sequelize.fn(
+                                "ST_SetSRID",
+                                Sequelize.fn("ST_MakePoint", lng, lat),
+                                4326
+                            ),
+                            950
+                        ),
+                        true
+                    ),
+                };
+            }
+        }
 
         // let attributes = [
         //     "id",
@@ -204,7 +208,11 @@ exports.index = async({ query, decoded }, res, next) => {
         //     lng,
         //     filtro
         // );
-        const posts = await models.post.findAll();
+        const posts = await models.post.findAll({
+            where: search,
+            order: order,
+            limit: limit,
+        });
 
         const data = {
             success: true,
