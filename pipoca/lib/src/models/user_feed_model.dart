@@ -9,17 +9,15 @@ class FeedInfo {
 }
 
 class CheckData {
-   String? creator;
-   String? createdAt;
-   String? content;
+  String? creator;
+  String? createdAt;
+  String? content;
 
-  CheckData(
-      {this.content,  this.createdAt, this.creator});
+  CheckData({this.content, this.createdAt, this.creator});
 
-bool checkData() {
+  bool checkData() {
     return [creator, createdAt, content].contains(null);
   }
- 
 }
 
 class Feed {
@@ -27,7 +25,7 @@ class Feed {
   String? message;
   Posts? posts;
 
-  Feed({this.message, required this.posts});
+  Feed({this.message, this.posts, this.success});
 
   Feed.fromJson(Map<String, dynamic> json) {
     success = json['success'];
@@ -45,6 +43,29 @@ class Feed {
     return data;
   }
 }
+
+class SinglePost {
+  bool? success;
+  String? message;
+  Data? data;
+
+  SinglePost({this.success, this.message, this.data});
+
+  SinglePost.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    data = new Data.fromJson(json['data']);
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    data['data'] = this.data!.toJson();
+    return data;
+  }
+}
+
 
 class Posts {
   late int previousPage;
@@ -221,7 +242,7 @@ class Creator {
   late String username;
   late String avatar;
   String? fcmToken;
-  late String type;
+
   late bool active;
 
   Creator(
@@ -230,7 +251,6 @@ class Creator {
       required this.username,
       required this.avatar,
       this.fcmToken,
-      required this.type,
       required this.active});
 
   Creator.fromJson(Map<String, dynamic> json) {
@@ -239,7 +259,6 @@ class Creator {
     username = json['username'];
     avatar = json['avatar'];
     fcmToken = json['fcm_token'];
-    type = json['type'];
     active = json['active'];
   }
 
@@ -250,7 +269,6 @@ class Creator {
     data['username'] = this.username;
     data['avatar'] = this.avatar;
     data['fcm_token'] = this.fcmToken;
-    data['type'] = this.type;
     data['active'] = this.active;
     return data;
   }
