@@ -170,7 +170,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         nextPage: this.getNextPage(page, limit, count.length),
         total: count.length,
         limit: limit,
-        // data: data
+        data: data
     };
 }
 exports.admin = async(model, page, limit, attributes, include) => {
