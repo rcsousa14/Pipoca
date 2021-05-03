@@ -68,132 +68,128 @@ exports.store = async({ body, decoded }, res, next) => {
 //feed shows all posts that are near by you can sort it for posts with higher points
 exports.index = async({ query, decoded }, res, next) => {
     try {
-        const filtro = "post";
-        const { lat, lng } = query;
-        const id = decoded.id;
-        const page = parseInt(query.page);
-        const limit = 25;
+        // const filtro = "post";
+        // const { lat, lng } = query;
+        // const id = decoded.id;
+        // const page = parseInt(query.page);
+        // const limit = 25;
 
-        let search;
-        let order = [];
-        let group = ["post.id"];
-        const NOW = new Date();
-        const TODAY_START = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+        // let search;
+        // let order = [];
+        // let group = ["post.id"];
+        // const NOW = new Date();
+        // const TODAY_START = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
-        if (lat && lng) {
-            if (query.filter == "pipocar") {
-                search = {
-                    is_deleted: false,
-                    createdAt: {
-                        [Op.lt]: NOW,
-                        [Op.gt]: TODAY_START,
-                    },
-                    [Op.and]: Sequelize.where(
-                        Sequelize.fn(
-                            "ST_DWithin",
-                            Sequelize.col("post.coordinates"),
-                            Sequelize.fn(
-                                "ST_SetSRID",
-                                Sequelize.fn("ST_MakePoint", lng, lat),
-                                4326
-                            ),
-                            950
-                        ),
-                        true
-                    ),
+        // if (lat && lng) {
+        //     if (query.filter == "pipocar") {
+        //         order.push(
+        //             [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
+        //         );
+        //         search = {
+        //             is_deleted: false,
+        //             createdAt: {
+        //                 [Op.lt]: NOW,
+        //                 [Op.gt]: TODAY_START,
+        //             },
+        //             [Op.and]: Sequelize.where(
+        //                 Sequelize.fn(
+        //                     "ST_DWithin",
+        //                     Sequelize.col("post.coordinates"),
+        //                     Sequelize.fn(
+        //                         "ST_SetSRID",
+        //                         Sequelize.fn("ST_MakePoint", lng, lat),
+        //                         4326
+        //                     ),
+        //                     950
+        //                 ),
+        //                 true
+        //             ),
 
-                    /**
-                                                             * for location-post
-                                                             * Sequelize.where(
-                                                             Sequelize.fn('ST_Contains',
-                                                                Sequelize.col('location.poly'),
-                                                                Sequelize.fn('ST_SetSRID',
-                                                                    Sequelize.fn('ST_MakePoint',
-                                                                        lng, lat),
-                                                                    4326),
-                                                                950),
-                                                            true)
-                                                             */
-                };
-            }
-            if (query.filter == "date") {
-                search = {
-                    is_deleted: false,
-                    [Op.and]: Sequelize.where(
-                        Sequelize.fn(
-                            "ST_DWithin",
-                            Sequelize.col("post.coordinates"),
-                            Sequelize.fn(
-                                "ST_SetSRID",
-                                Sequelize.fn("ST_MakePoint", lng, lat),
-                                4326
-                            ),
-                            950
-                        ),
-                        true
-                    ),
-                };
-            }
-        }
+        //             /**
+        //                                                      * for location-post
+        //                                                      * Sequelize.where(
+        //                                                      Sequelize.fn('ST_Contains',
+        //                                                         Sequelize.col('location.poly'),
+        //                                                         Sequelize.fn('ST_SetSRID',
+        //                                                             Sequelize.fn('ST_MakePoint',
+        //                                                                 lng, lat),
+        //                                                             4326),
+        //                                                         950),
+        //                                                     true)
+        //                                                      */
+        //         };
+        //     }
+        //     if (query.filter == "date") {
+        //         order.push(["createdAt", "DESC"]);
+        //         search = {
+        //             is_deleted: false,
+        //             [Op.and]: Sequelize.where(
+        //                 Sequelize.fn(
+        //                     "ST_DWithin",
+        //                     Sequelize.col("post.coordinates"),
+        //                     Sequelize.fn(
+        //                         "ST_SetSRID",
+        //                         Sequelize.fn("ST_MakePoint", lng, lat),
+        //                         4326
+        //                     ),
+        //                     950
+        //                 ),
+        //                 true
+        //             ),
+        //         };
+        //     }
+        // }
 
-        if (query.filter == "pipocar") {
-            order.push(
-                [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
-            );
-        }
-        if (query.filter == "date") {
-            order.push(["createdAt", "DESC"]);
-        }
-        let attributes = [
-            "id",
-            "content",
-            "flags",
-            "is_flagged",
-            "is_deleted",
-            "createdAt",
-            "coordinates",
+        // let attributes = [
+        //     "id",
+        //     "content",
+        //     "flags",
+        //     "is_flagged",
+        //     "is_deleted",
+        //     "createdAt",
+        //     "coordinates",
 
-            [
-                Sequelize.literal(
-                    `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
-                ),
-                "votes_total",
-            ],
-            [
-                Sequelize.literal(
-                    `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
-                ),
-                "comments_total",
-            ],
-        ];
+        //     [
+        //         Sequelize.literal(
+        //             `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
+        //         ),
+        //         "votes_total",
+        //     ],
+        //     [
+        //         Sequelize.literal(
+        //             `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
+        //         ),
+        //         "comments_total",
+        //     ],
+        // ];
 
-        let include = [{
-                model: models.user,
-                as: "creator",
-                attributes: {
-                    exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "type",
-                        "password",
-                    ],
-                },
-            },
-            {
-                model: models.link,
-                as: "links",
-                required: false,
-                attributes: ["url"],
-                through: { attributes: [] },
-            },
-        ];
-        const model = models.post;
+        // let include = [{
+        //         model: models.user,
+        //         as: "creator",
+        //         attributes: {
+        //             exclude: [
+        //                 "createdAt",
+        //                 "updatedAt",
+        //                 "birthday",
+        //                 "reset_password_token",
+        //                 "reset_password_expiration",
+        //                 "refresh_token",
+        //                 "role_id",
+        //                 "bio",
+        //                 "type",
+        //                 "password",
+        //             ],
+        //         },
+        //     },
+        //     {
+        //         model: models.link,
+        //         as: "links",
+        //         required: false,
+        //         attributes: ["url"],
+        //         through: { attributes: [] },
+        //     },
+        // ];
+        // const model = models.post;
         // const posts = await paginate(
         //     model,
         //     id,
@@ -208,23 +204,12 @@ exports.index = async({ query, decoded }, res, next) => {
         //     lng,
         //     filtro
         // );
-        const { count, rows } = await model.findAndCountAll({
-            order: order,
-            limit: limit,
-            offset: offset,
-            where: search,
-            group: group,
-            attributes: attributes,
-            include: include,
-
-        });
+        const posts = await models.post.findAll();
 
         const data = {
             success: true,
             message: "Todos os Bagos proximo de ti",
-            //posts,
-            count,
-            rows
+            posts,
         };
 
         return res.status(200).json(data);
