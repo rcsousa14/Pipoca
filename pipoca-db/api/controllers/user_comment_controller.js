@@ -11,13 +11,13 @@ exports.store = async({ params, body, decoded }, res, next) => {
         const { post_id } = params;
         const { content, links, hashes, longitude, latitude } = body;
         const TODAY_START = new Date().setHours(0, 0, 0, 0);
-        const NOW = Date.now();
+        const NOW = new Date();
         const result = await models.comment.findAll({
             where: {
                 content: content,
                 user_id: decoded.id,
                 post_id: post_id,
-                createdAt: {
+                created_at: {
                     [Op.gt]: NOW,
                     [Op.lt]: TODAY_START,
                 }
