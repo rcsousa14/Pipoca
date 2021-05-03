@@ -113,6 +113,11 @@ exports.index = async({ params, query, decoded }, res, next) => {
             "createdAt",
             "coordinates", [
                 Sequelize.literal(
+                    `(SELECT voted FROM comment_votes WHERE user_id = ${id} AND comment_id = comment.id)`
+                ),
+                "vote"
+            ],[
+                Sequelize.literal(
                     `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
                 ),
                 "votes_total",
@@ -228,6 +233,11 @@ exports.show = async({ query, decoded }, res, next) => {
             "is_flagged",
             "createdAt",
             "coordinates", [
+                Sequelize.literal(
+                    `(SELECT voted FROM comment_votes WHERE user_id = ${id} AND comment_id = comment.id)`
+                ),
+                "vote"
+            ],[
                 Sequelize.literal(
                     `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
                 ),

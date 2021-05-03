@@ -56,9 +56,14 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "content",
                 "flags",
                 "is_flagged",
-                
                 "createdAt",
                 "coordinates",
+                [
+                    Sequelize.literal(
+                        `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = ${id})`
+                    ),
+                    "vote"
+                ],
 
                 [
                     Sequelize.literal(

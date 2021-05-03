@@ -152,7 +152,12 @@ exports.index = async({ query, decoded }, res, next) => {
            
             "createdAt",
             "coordinates",
-
+            [
+                Sequelize.literal(
+                    `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
+                ),
+                "vote"
+            ],
             [
                 Sequelize.literal(
                     `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
@@ -257,7 +262,7 @@ exports.show = async({ query, decoded }, res, next) => {
         const page = parseInt(query.page);
         const limit = 10;
 
-        let search = { user_id: decoded.id };
+        let search = { user_id: id };
         let order = [
             ["createdAt", "DESC"]
         ];
@@ -269,6 +274,11 @@ exports.show = async({ query, decoded }, res, next) => {
             "is_flagged",
             "createdAt",
             "coordinates", [
+                Sequelize.literal(
+                    `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
+                ),
+                "vote"
+            ],[
                 Sequelize.literal(
                     `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
                 ),
