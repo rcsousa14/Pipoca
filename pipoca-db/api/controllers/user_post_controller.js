@@ -76,7 +76,7 @@ exports.index = async({ query, decoded }, res, next) => {
 
         let search;
         let order = [];
-
+        let group = ["post.id"];
         const NOW = new Date();
         const TODAY_START = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
@@ -135,7 +135,7 @@ exports.index = async({ query, decoded }, res, next) => {
                 };
             }
         }
-        let group = ["post.id"];
+
         if (query.filter == "pipocar") {
             order.push(
                 [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
@@ -194,25 +194,37 @@ exports.index = async({ query, decoded }, res, next) => {
             },
         ];
         const model = models.post;
-        const posts = await paginate(
-            model,
-            id,
-            page,
-            limit,
-            search,
-            order,
-            attributes,
-            include,
-            group,
-            lat,
-            lng,
-            filtro
-        );
+        // const posts = await paginate(
+        //     model,
+        //     id,
+        //     page,
+        //     limit,
+        //     search,
+        //     order,
+        //     attributes,
+        //     include,
+        //     group,
+        //     lat,
+        //     lng,
+        //     filtro
+        // );
+        const { count, rows } = await model.findAndCountAll({
+            order: order,
+            limit: limit,
+            offset: offset,
+            where: search,
+            group: group,
+            attributes: attributes,
+            include: include,
+
+        });
 
         const data = {
             success: true,
             message: "Todos os Bagos proximo de ti",
-            posts,
+            //posts,
+            count,
+            rows
         };
 
         return res.status(200).json(data);
