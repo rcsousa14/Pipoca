@@ -89,7 +89,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
         const page = parseInt(query.page);
 
         return res.status(200).json({
-
+                filter: query.filter,
                 postId: post_id,
                 lat: lat,
                 lng: lng,
