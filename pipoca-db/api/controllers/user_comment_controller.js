@@ -8,22 +8,22 @@ const Op = Sequelize.Op;
 
 exports.store = async({ params, body, decoded }, res, next) => {
     try {
-        const { postId } = params;
+        const { post_id } = params;
         const { content, links, hashes, longitude, latitude } = body;
         const TODAY_START = new Date().setHours(0, 0, 0, 0);
         const NOW = new Date();
-        const result = await models.comment.findOne({
-            where: {
-                content: content,
-                user_id: decoded.id,
-                createdAt: {
-                    [Op.gt]: NOW,
-                    [Op.lt]: TODAY_START,
-                }
-            }
-        });
+        // const result = await models.comment.findOne({
+        //     where: {
+        //         content: content,
+        //         user_id: decoded.id,
+        //         createdAt: {
+        //             [Op.gt]: NOW,
+        //             [Op.lt]: TODAY_START,
+        //         }
+        //     }
+        // });
 
-        return res.status(200).json({ postId });
+        return res.status(200).json({ post_id });
         // if (result) {
         //     next(ApiError.badRequestException("Ninguém gosta de spam"));
         //     return;
