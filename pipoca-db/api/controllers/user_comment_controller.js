@@ -12,7 +12,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
         const { content, links, hashes, longitude, latitude } = body;
         const TODAY_START = new Date().setHours(0, 0, 0, 0);
         const NOW = new Date();
-        const result = await models.comment.findAll({
+        const result = await models.comment.findOne({
             where: {
                 content: content,
                 user_id: decoded.id,
