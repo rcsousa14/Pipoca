@@ -45,10 +45,13 @@ module.exports = (sequelize, DataTypes) => {
     flags: DataTypes.INTEGER,
     is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
-    is_deleted: DataTypes.BOOLEAN
+   
   }, {
     sequelize,
     modelName: 'post',
+    paranoid: true,
+    timestamps: true,
+    deletedAt: 'deleted_at'
   });
   return post;
 };

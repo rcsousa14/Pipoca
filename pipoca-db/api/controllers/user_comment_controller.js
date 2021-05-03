@@ -109,7 +109,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
             "content",
             "flags",
             "is_flagged",
-            "is_deleted",
+            
             "createdAt",
             "coordinates", [
                 Sequelize.literal(
@@ -183,9 +183,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
 
 exports.soft = async({ params, decoded }, res, next) => {
     try {
-        const updated = await models.comment.update({
-            is_deleted: true,
-        }, {
+        const updated = await models.comment.destroy({
             where: {
                 user_id: decoded.id,
                 id: params.id,
@@ -218,7 +216,7 @@ exports.show = async({ query, decoded }, res, next) => {
         const page = parseInt(query.page);
         const limit = 10;
 
-        let search = { user_id: id, is_deleted: false };
+        let search = { user_id: id };
         let order = [
             ["createdAt", "DESC"]
         ];
@@ -228,7 +226,6 @@ exports.show = async({ query, decoded }, res, next) => {
             "content",
             "flags",
             "is_flagged",
-            "is_deleted",
             "createdAt",
             "coordinates", [
                 Sequelize.literal(

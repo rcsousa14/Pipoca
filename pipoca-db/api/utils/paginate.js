@@ -7,7 +7,7 @@ const Op = Sequelize.Op;
 
 require('dotenv').config();
 
-exports.scrapeMetaTags = async(url) => {
+exports.scrapeMetaTags = async (url) => {
     const res = await axios.get(url);
     const html = res.data;
     const $ = cheerio.load(html);
@@ -28,7 +28,7 @@ exports.scrapeMetaTags = async(url) => {
 
     }
 }
-exports.paginate = async(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
+exports.paginate = async (model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
 
     const offset = this.getOffset(page, limit);
 
@@ -44,7 +44,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
     });
 
     var data = [];
-    const newRows = rows.map(function(row) {
+    const newRows = rows.map(function (row) {
         return row.toJSON()
     });
     for (var row of newRows) {
@@ -118,7 +118,6 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 "comments_total": row.comments_total,
                 "flags": row.flags,
                 "is_flagged": row.is_flagged,
-                "is_deleted": row.is_deleted,
                 "created_at": row.createdAt,
                 "creator": row.creator
             }
@@ -135,7 +134,6 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 "sub_comments_total": row.comments_total,
                 "flags": row.flags,
                 "is_flagged": row.is_flagged,
-                "is_deleted": row.is_deleted,
                 "created_at": row.createdAt,
                 "creator": row.creator
             }
@@ -151,7 +149,6 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 "votes_total": row.votes_total == null ? 0 : row.votes_total,
                 "flags": row.flags,
                 "is_flagged": row.is_flagged,
-                "is_deleted": row.is_deleted,
                 "created_at": row.createdAt,
                 "creator": row.creator
             }
@@ -173,7 +170,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         data: data
     };
 }
-exports.admin = async(model, page, limit, attributes, include) => {
+exports.admin = async (model, page, limit, attributes, include) => {
     const offset = this.getOffset(page, limit);
     const { count, rows } = await model.findAndCountAll({
         limit: limit,

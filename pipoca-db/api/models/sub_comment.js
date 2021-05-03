@@ -11,15 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.user,{
+      this.belongsTo(models.user, {
         as: 'creator',
         foreignKey: 'user_id'
       });
-      this.belongsTo(models.user,{
+      this.belongsTo(models.user, {
         as: 'replyTo',
         foreignKey: 'user_id'
       });
-      this.belongsTo(models.comment,{
+      this.belongsTo(models.comment, {
         as: 'comment_sub_comment',
         foreignKey: 'comment_id'
       });
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
         through: 'post_tags'
 
       });
-      
+
     }
   };
   sub_comment.init({
@@ -52,10 +52,13 @@ module.exports = (sequelize, DataTypes) => {
     reply_to_id: DataTypes.INTEGER,
     is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
-    is_deleted: DataTypes.BOOLEAN
+   
   }, {
     sequelize,
     modelName: 'sub_comment',
+    paranoid: true,
+    timestamps: true,
+    deletedAt: 'deleted_at'
   });
   return sub_comment;
 };

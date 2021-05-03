@@ -11,18 +11,18 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      comment.belongsTo(models.user,{
+      comment.belongsTo(models.user, {
         as: 'creator',
         foreignKey: 'user_id'
       });
-      comment.belongsTo(models.post,{
+      comment.belongsTo(models.post, {
         as: 'post_comment',
         foreignKey: 'post_id'
       });
       comment.hasMany(models.comment_vote, {
         as: 'comment_votes',
         foreignKey: 'comment_id',
-       
+
       });
       comment.hasMany(models.sub_comment, {
         as: 'comment_sub_comments',
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'tag_id',
         through: 'post_tags'
       });
-      
+
     }
   };
   comment.init({
@@ -51,10 +51,13 @@ module.exports = (sequelize, DataTypes) => {
     flags: DataTypes.INTEGER,
     is_flagged: DataTypes.BOOLEAN,
     coordinates: DataTypes.GEOMETRY('POINT'),
-    is_deleted: DataTypes.BOOLEAN
+   
   }, {
     sequelize,
     modelName: 'comment',
+    paranoid: true,
+    timestamps: true,
+    deletedAt: 'deleted_at'
   });
   return comment;
 };

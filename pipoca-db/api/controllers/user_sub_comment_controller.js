@@ -98,7 +98,6 @@ exports.index = async({ params, query, decoded }, res, next) => {
             "content",
             "flags",
             "is_flagged",
-            "is_deleted",
             "createdAt",
             "coordinates", [
                 Sequelize.literal(
@@ -165,9 +164,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
 
 exports.soft = async({ params, decoded }, res, next) => {
     try {
-        await models.sub_comment.update({
-            isDeleted: true,
-        }, {
+        await models.sub_comment.destroy({
             where: {
                 userId: decoded.id,
                 id: params.id,
@@ -204,7 +201,6 @@ exports.show = async({ query, decoded }, res, next) => {
             "content",
             "flags",
             "is_flagged",
-            "is_deleted",
             "createdAt",
             "coordinates",
 

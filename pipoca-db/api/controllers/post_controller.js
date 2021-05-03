@@ -56,7 +56,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "content",
                 "flags",
                 "is_flagged",
-                "is_deleted",
+                
                 "createdAt",
                 "coordinates",
 
@@ -145,8 +145,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
                 "comments_total": posts.comments_total == null ? 0 : posts.comments_total,
                 "flags": posts.flags,
-                "is_flagged": posts.is_flagged,
-                "is_deleted": posts.is_deleted,
+                "is_flagged": posts.is_flagged,              
                 "created_at": posts.createdAt,
                 "creator": posts.creator,
             },

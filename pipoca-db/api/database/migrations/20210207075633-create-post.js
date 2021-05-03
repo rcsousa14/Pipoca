@@ -34,16 +34,15 @@ module.exports = {
         type: Sequelize.GEOMETRY('POINT'),
         allowNull: false
       },
-      is_deleted: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
       updated_at: {
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deleted_at: {
         type: Sequelize.DATE
       }
     });
