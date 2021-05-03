@@ -90,7 +90,7 @@ exports.index = async({ query, decoded }, res, next) => {
                     [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
                 );
                 search = {
-                    is_deleted: false,
+
                     createdAt: {
                         [Op.lt]: NOW,
                         [Op.gt]: TODAY_START,
@@ -126,7 +126,7 @@ exports.index = async({ query, decoded }, res, next) => {
             if (query.filter == "date") {
                 order.push(["createdAt", "DESC"]);
                 search = {
-                    is_deleted: false,
+
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
                             "ST_DWithin",
@@ -217,11 +217,11 @@ exports.index = async({ query, decoded }, res, next) => {
 
         return res.status(200).json(data);
     } catch (error) {
-        return res.status(500).json({ error });
-        // next(
-        //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        // );
-        // return;
+
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
 // deletes users posts
