@@ -82,19 +82,14 @@ exports.store = async({ params, body, decoded }, res, next) => {
 exports.index = async({ params, query, decoded }, res, next) => {
     try {
 
-        const filtro = "comment";
-        const { post_id } = params;
-        const { lat, lng } = query;
-        const id = decoded.id;
-        const page = parseInt(query.page);
+        // const filtro = "comment";
+        // const { post_id } = params;
+        // const { lat, lng } = query;
+        // const id = decoded.id;
+        // const page = parseInt(query.page);
 
         return res.status(200).json({
-                filter: query.filter,
-                postId: post_id,
-                lat: lat,
-                lng: lng,
-                id: id,
-                page: page
+                msg: 'hello'
 
             })
             // const limit = 15;

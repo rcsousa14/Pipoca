@@ -79,7 +79,7 @@ router.get('/v1/posts', speedLimiter, authorizeMiddleware, user_posts.show); //�
 router.patch('/v1/posts/:id', limiter, speedLimiter, speedLimiter, authorizeMiddleware, user_posts.soft); //☑️
 
 // user comments routes
-router.post('/v1/:post_id/comments', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_comments.store); //☑️❎ cache data and check if is the samething as before for spam
+router.post('/v1/:post_id/comments', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_comments.store); //☑️
 
 router.get('/v1/:post_id/comments', speedLimiter, authorizeMiddleware, user_comments.index); //☑️❎ cache data with redis
 router.get('/v1/comments', speedLimiter, authorizeMiddleware, user_comments.show); //☑️ ❎ cache data with redis
