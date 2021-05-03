@@ -84,18 +84,16 @@ exports.index = async({ query, decoded }, res, next) => {
 
         const NOW = new Date();
         const TODAY_START = new Date(
-            NOW.getFullYear(),
-            NOW.getMonth(),
-            NOW.getDate() - 5
+            Date.now() - 3 * 24 * 60 * 60 * 1000
         );
 
         if (lat && lng) {
             if (query.filter == "pipocar") {
                 search = {
                     is_deleted: false,
-                    createdAt: {
-                        [Op.gt]: NOW,
-                        [Op.lt]: TODAY_START,
+                    created_at: {
+                        [Op.lt]: NOW,
+                        [Op.gt]: TODAY_START,
                     },
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
