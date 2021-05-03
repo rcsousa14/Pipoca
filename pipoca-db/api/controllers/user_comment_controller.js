@@ -92,6 +92,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
 
         let order = [];
         let group = ["comment.id"];
+
         if (query.filter == "date") {
             order.push(["createdAt", "DESC"]);
         }
@@ -100,9 +101,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
                 [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
             );
         }
-        if (query.filter == "date") {
-            order.push(["createdAt", "DESC"]);
-        }
+
         let attributes = [
             "id",
             "content",
