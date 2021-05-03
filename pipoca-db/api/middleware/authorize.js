@@ -6,7 +6,8 @@ require('dotenv').config();
 
 export default (req, res, next) => {
     if (!req.headers.authorization) {
-        return res.status(401).json({ message: ` Unauthorized 💩! ${err}` });
+        next(ApiError.unauthorisedInvalidException("desautorizado : 💩"))
+        return;
     }
 
     const token = req.headers.authorization.split(' ')[1];
