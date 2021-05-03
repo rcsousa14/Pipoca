@@ -76,7 +76,7 @@ exports.index = async({ query, decoded }, res, next) => {
 
         let search;
         let order = [];
-        // let group = ["post.id"];
+        let group = ["post.id"];
         const NOW = new Date();
         const TODAY_START = new Date(
             NOW.getFullYear(),
@@ -144,75 +144,70 @@ exports.index = async({ query, decoded }, res, next) => {
             }
         }
 
-        // let attributes = [
-        //     "id",
-        //     "content",
-        //     "flags",
-        //     "is_flagged",
-        //     "is_deleted",
-        //     "createdAt",
-        //     "coordinates",
+        let attributes = [
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "is_deleted",
+            "createdAt",
+            "coordinates",
 
-        //     [
-        //         Sequelize.literal(
-        //             `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
-        //         ),
-        //         "votes_total",
-        //     ],
-        //     [
-        //         Sequelize.literal(
-        //             `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
-        //         ),
-        //         "comments_total",
-        //     ],
-        // ];
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
+                ),
+                "votes_total",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
+                ),
+                "comments_total",
+            ],
+        ];
 
-        // let include = [{
-        //         model: models.user,
-        //         as: "creator",
-        //         attributes: {
-        //             exclude: [
-        //                 "createdAt",
-        //                 "updatedAt",
-        //                 "birthday",
-        //                 "reset_password_token",
-        //                 "reset_password_expiration",
-        //                 "refresh_token",
-        //                 "role_id",
-        //                 "bio",
-        //                 "type",
-        //                 "password",
-        //             ],
-        //         },
-        //     },
-        //     {
-        //         model: models.link,
-        //         as: "links",
-        //         required: false,
-        //         attributes: ["url"],
-        //         through: { attributes: [] },
-        //     },
-        // ];
-        // const model = models.post;
-        // const posts = await paginate(
-        //     model,
-        //     id,
-        //     page,
-        //     limit,
-        //     search,
-        //     order,
-        //     attributes,
-        //     include,
-        //     group,
-        //     lat,
-        //     lng,
-        //     filtro
-        // );
-        const posts = await models.post.findAll({
-            where: search,
-            order: order,
-            limit: limit,
-        });
+        let include = [{
+                model: models.user,
+                as: "creator",
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "birthday",
+                        "reset_password_token",
+                        "reset_password_expiration",
+                        "refresh_token",
+                        "role_id",
+                        "bio",
+                        "type",
+                        "password",
+                    ],
+                },
+            },
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
+        ];
+        const model = models.post;
+        const posts = await paginate(
+            model,
+            id,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng,
+            filtro
+        );
 
         const data = {
             success: true,
