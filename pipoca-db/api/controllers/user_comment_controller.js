@@ -17,10 +17,10 @@ exports.store = async({ params, body, decoded }, res, next) => {
                 content: content,
                 user_id: decoded.id,
                 post_id: post_id,
-                createdAt: {
-                    [Op.gt]: NOW,
-                    [Op.lt]: TODAY_START,
-                }
+                // createdAt: {
+                //     [Op.gt]: NOW,
+                //     [Op.lt]: TODAY_START,
+                // }
             }
         });
 
