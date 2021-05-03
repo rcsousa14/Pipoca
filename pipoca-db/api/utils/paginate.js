@@ -58,18 +58,18 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         if (distance <= 950) isNear = true;
         if (distance > 950) isNear = false;
 
-        let where;
-        let model;
+        // let where;
+        // let model;
 
-        if (filtro == 'post') {
-            model = models.post_vote;
+        // if (filtro == 'post') {
+        //     model = models.post_vote;
 
-            where = {
-                user_id: id,
-                post_id: row.id,
+        //     where = {
+        //         user_id: id,
+        //         post_id: row.id,
 
-            }
-        }
+        //     }
+        // }
         // if (filtro == 'comment') {
         //     model = models.comment_vote;
 
@@ -95,20 +95,20 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
 
         //     attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
         // });
-        let linkInfo = {};
+        // let linkInfo = {};
         // if (row.links.length > 0) {
         //     const { url } = row.links[0];
         //     linkInfo = await scrapeMetaTags(url);
 
         // }
 
-        const isVoted = vote ? true : false;
+        // const isVoted = vote ? true : false;
 
 
 
         if (filtro == 'post') data.push({
-            "user_voted": isVoted,
-            "user_vote": vote == null ? 0 : vote.voted,
+            //"user_voted": isVoted,
+            //"user_vote": vote == null ? 0 : vote.voted,
             "user_isNear": isNear,
             "post": {
                 "id": row.id,
