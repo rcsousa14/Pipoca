@@ -72,9 +72,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             return;
         }
 
-        const rows = posts.map(function(row) {
-            return row.toJSON()
-        });
+
 
         // let distance;
         // if (lat && lng) {
@@ -118,7 +116,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         // }
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, posts, rows };
+        const post = { success: true, message: ` Bago ${id} para ti`, posts };
 
         return res.status(200).json(post);
     } catch (error) {
