@@ -47,7 +47,7 @@ exports.index = async({ query }, res) => {
 exports.show = async({ params, query, decoded }, res, next) => {
     try {
         const { id } = params;
-        // const { lat, lng } = query;
+        const { lat, lng } = query;
 
         var posts = await models.post.findAll({
             where: { id: id },
@@ -125,16 +125,17 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
         let linkInfo = {};
-        if (posts.links.length > 0) {
-            const { url } = posts[0].links[0];
 
-            linkInfo = await scrapeMetaTags(url);
-        }
-        let data;
+        let data = {};
         const rows = posts.map(function(row) {
             return row.toJSON()
         });
         for (var newData of rows) {
+            if (newData.links.length > 0) {
+                const { url } = newData.links[0];
+
+                linkInfo = await scrapeMetaTags(url);
+            }
             data = {
                 user_voted: vote ? true : false,
                 user_vote: vote == null ? 0 : vote,
@@ -158,9 +159,10 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         return res.status(200).json(post);
     } catch (error) {
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+        return res.status(500).json(error);
+        // next(
+        //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        // );
+        // return;
     }
 };
