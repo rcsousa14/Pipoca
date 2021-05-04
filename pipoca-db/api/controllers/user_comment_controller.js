@@ -109,14 +109,15 @@ exports.index = async({ params, query, decoded }, res, next) => {
             "content",
             "flags",
             "is_flagged",
-            
+
             "createdAt",
             "coordinates", [
                 Sequelize.literal(
                     `(SELECT voted FROM comment_votes WHERE user_id = ${id} AND comment_id = comment.id)`
                 ),
                 "vote"
-            ],[
+            ],
+            [
                 Sequelize.literal(
                     `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
                 ),
@@ -136,6 +137,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
                     exclude: [
                         "createdAt",
                         "updatedAt",
+                        "deleted_at",
                         "birthday",
                         "reset_password_token",
                         "reset_assword_expiration",
@@ -237,7 +239,8 @@ exports.show = async({ query, decoded }, res, next) => {
                     `(SELECT voted FROM comment_votes WHERE user_id = ${id} AND comment_id = comment.id)`
                 ),
                 "vote"
-            ],[
+            ],
+            [
                 Sequelize.literal(
                     `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = comment.id)`
                 ),
@@ -258,6 +261,7 @@ exports.show = async({ query, decoded }, res, next) => {
                     exclude: [
                         "createdAt",
                         "updatedAt",
+                        "deleted_at",
                         "birthday",
                         "reset_password_token",
                         "reset_password_expiration",
@@ -297,7 +301,7 @@ exports.show = async({ query, decoded }, res, next) => {
             comments
         };
 
-        return res.status(200).json(result);
+        return res.status(200).json(data);
     } catch (error) {
         next(
             ApiError.internalException("Não conseguiu se comunicar com o servidor")

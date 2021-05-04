@@ -104,7 +104,8 @@ exports.index = async({ params, query, decoded }, res, next) => {
                     `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
                 ),
                 "vote"
-            ],[
+            ],
+            [
                 Sequelize.literal(
                     `(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`
                 ),
@@ -118,6 +119,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
                     exclude: [
                         "createdAt",
                         "updatedAt",
+                        "deleted_at",
                         "birthday",
                         "reset_password_token",
                         "reset_password_expiration",
@@ -207,8 +209,7 @@ exports.show = async({ query, decoded }, res, next) => {
             "flags",
             "is_flagged",
             "createdAt",
-            "coordinates",
-            [
+            "coordinates", [
                 Sequelize.literal(
                     `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
                 ),
@@ -228,6 +229,7 @@ exports.show = async({ query, decoded }, res, next) => {
                     exclude: [
                         "createdAt",
                         "updatedAt",
+                        "deleted_at",
                         "birthday",
                         "reset_password_token",
                         "reset_password_expiration",

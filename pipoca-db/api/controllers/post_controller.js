@@ -57,8 +57,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "flags",
                 "is_flagged",
                 "createdAt",
-                "coordinates",
-                [
+                "coordinates", [
                     Sequelize.literal(
                         `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = ${id})`
                     ),
@@ -85,6 +84,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                         exclude: [
                             "createdAt",
                             "updatedAt",
+                            "deleted_at",
                             "birthday",
                             "reset_password_token",
                             "reset_password_expiration",
@@ -150,7 +150,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
                 "comments_total": posts.comments_total == null ? 0 : posts.comments_total,
                 "flags": posts.flags,
-                "is_flagged": posts.is_flagged,              
+                "is_flagged": posts.is_flagged,
                 "created_at": posts.createdAt,
                 "creator": posts.creator,
             },
