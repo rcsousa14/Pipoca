@@ -97,26 +97,29 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             linkInfo = await scrapeMetaTags(url);
         }
-        let data = {
-            // user_voted: vote ? true : false,
-            // user_vote: vote == null ? 0 : vote,
-            user_isNear: isNear,
-            info: {
-                id: posts.id,
-                content: posts.content,
-                links: linkInfo,
-                // votes_total: posts.votes_total == null ? 0 : posts.votes_total,
-                comments_total: posts.comments_total,
-                flags: posts.flags,
-                is_flagged: posts.is_flagged,
-                created_at: posts.createdAt,
-                creator: posts.creator,
-            },
-        };
+        const newRows = posts.map(function(row) {
+            return row.toJSON()
+        });
+        // let data = {
+        //     user_voted: vote ? true : false,
+        //     user_vote: vote == null ? 0 : vote,
+        //     user_isNear: isNear,
+        //     info: {
+        //         id: posts.id,
+        //         content: posts.content,
+        //         links: linkInfo,
+        //         votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+        //         comments_total: posts.comments_total,
+        //         flags: posts.flags,
+        //         is_flagged: posts.is_flagged,
+        //         created_at: posts.createdAt,
+        //         creator: posts.creator,
+        //     },
+        // };
 
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, data };
+        const post = { success: true, message: ` Bago ${id} para ti`, newRows };
 
         return res.status(200).json(post);
     } catch (error) {
