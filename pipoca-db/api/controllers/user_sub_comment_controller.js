@@ -15,9 +15,10 @@ exports.store = async({ params, body, decoded }, res, next) => {
             where: {
                 content: content,
                 user_id: decoded.id,
+                comment_id: comment_id,
                 createdAt: {
-                    [Op.gt]: NOW,
-                    [Op.lt]: TODAY_START,
+                    [Op.lt]: NOW,
+                    [Op.gt]: TODAY_START,
                 },
             },
         });
@@ -33,9 +34,9 @@ exports.store = async({ params, body, decoded }, res, next) => {
 
         const sub_comment = await models.sub_comment.create({
             user_id: decoded.id,
-            reply_to_id,
+            reply_to_id: reply_to_id,
             comment_id: comment_id,
-            content,
+            content: content,
             coordinates: point,
         });
 
@@ -67,10 +68,11 @@ exports.store = async({ params, body, decoded }, res, next) => {
             message: " Sub comentário criado com sucesso!",
         });
     } catch (error) {
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+        return res.status(500).send({ error })
+            // next(
+            //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
+            // );
+            // return;
     }
 };
 
