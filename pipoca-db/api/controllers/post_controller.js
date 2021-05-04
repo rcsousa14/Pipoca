@@ -89,30 +89,30 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        // let linkInfo = {};
+        let linkInfo = {};
 
 
 
 
-        // if (posts.links.length > 0) {
-        //     const { url } = posts.links[0];
+        if (posts.links.url != null) {
+            const { url } = posts.links.url;
 
-        //     linkInfo = await scrapeMetaTags(url);
-        // }
+            linkInfo = await scrapeMetaTags(url);
+        }
 
         let data = {
-            user_voted: posts.vote == null ? false : true,
-            user_vote: posts.vote == null ? 0 : posts.vote,
-            user_isNear: isNear,
+            //user_voted: posts.vote == null ? false : true,
+            // user_vote: posts.vote == null ? 0 : posts.vote,
+            // user_isNear: isNear,
             info: {
-                id: posts.id,
-                content: posts.content,
-                //links: linkInfo,
-                votes_total: posts.votes_total == null ? 0 : posts.votes_total,
-                comments_total: posts.comments_total == null ? 0 : posts.comments_total,
-                flags: posts.flags,
-                is_flagged: posts.is_flagged,
-                created_at: posts.createdAt,
+                // id: posts.id,
+                // content: posts.content,
+                links: linkInfo,
+                //votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+                // comments_total: posts.comments_total == null ? 0 : posts.comments_total,
+                // flags: posts.flags,
+                //is_flagged: posts.is_flagged,
+                //created_at: posts.createdAt,
                 //creator: posts.creator,
             }
         }
@@ -121,7 +121,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, posts };
+        const post = { success: true, message: ` Bago ${id} para ti`, data };
 
         return res.status(200).json(post);
     } catch (error) {
