@@ -68,7 +68,7 @@ exports.store = async({ body, decoded }, res, next) => {
 //feed shows all posts that are near by you can sort it for posts with higher points
 exports.index = async({ query, decoded }, res, next) => {
     try {
-        const filtro = "post";
+
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -199,9 +199,9 @@ exports.index = async({ query, decoded }, res, next) => {
             },
         ];
         const model = models.post;
-        const posts = await paginate(
+        const bagos = await paginate(
             model,
-            id,
+
             page,
             limit,
             search,
@@ -211,13 +211,13 @@ exports.index = async({ query, decoded }, res, next) => {
             group,
             lat,
             lng,
-            filtro
+
         );
 
         const data = {
             success: true,
             message: "Todos os Bagos proximo de ti",
-            posts,
+            bagos,
         };
 
         return res.status(200).json(data);
@@ -239,7 +239,12 @@ exports.soft = async({ params, decoded }, res, next) => {
                 user_id: decoded.id,
             },
         });
-        if (updated) {} else {
+        if (updated) {
+            return res.status(200).json({
+                success: true,
+                message: `Usuario ${id} foi eliminado com sucesso`,
+            });
+        } else {
             next({});
             return;
         }
@@ -256,7 +261,7 @@ exports.show = async({ query, decoded }, res, next) => {
         if (result) {
             return res.status(200).json(result);
         }
-        const filtro = "post";
+
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -323,7 +328,7 @@ exports.show = async({ query, decoded }, res, next) => {
         const model = models.post;
         const posts = await paginate(
             model,
-            id,
+
             page,
             limit,
             search,
@@ -333,7 +338,7 @@ exports.show = async({ query, decoded }, res, next) => {
             group,
             lat,
             lng,
-            filtro
+
         );
 
         const data = {

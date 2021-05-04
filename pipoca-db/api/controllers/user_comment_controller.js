@@ -82,7 +82,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
 exports.index = async({ params, query, decoded }, res, next) => {
     try {
 
-        const filtro = "comment";
+
         const { post_id } = params;
         const { lat, lng } = query;
         const id = decoded.id;
@@ -158,9 +158,9 @@ exports.index = async({ params, query, decoded }, res, next) => {
             },
         ];
         const model = models.comment;
-        const comments = await paginate(
+        const bagos = await paginate(
             model,
-            id,
+
             page,
             limit,
             search,
@@ -170,12 +170,12 @@ exports.index = async({ params, query, decoded }, res, next) => {
             group,
             lat,
             lng,
-            filtro
+
         );
         const data = {
             success: true,
             message: "Todos os comentários",
-            comments,
+            bagos,
         };
 
         return res.status(200).json(data);
@@ -217,7 +217,7 @@ exports.soft = async({ params, decoded }, res, next) => {
 exports.show = async({ query, decoded }, res, next) => {
     try {
 
-        const filtro = "comment";
+
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -281,9 +281,9 @@ exports.show = async({ query, decoded }, res, next) => {
             },
         ];
         const model = models.comment;
-        const comments = await paginate(
+        const bagos = await paginate(
             model,
-            id,
+
             page,
             limit,
             search,
@@ -293,12 +293,12 @@ exports.show = async({ query, decoded }, res, next) => {
             group,
             lat,
             lng,
-            filtro
+
         );
         const data = {
             success: true,
             message: "Todos os teus comentários!",
-            comments
+            bagos
         };
 
         return res.status(200).json(data);

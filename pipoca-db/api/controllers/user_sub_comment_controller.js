@@ -4,7 +4,6 @@ const models = require("../models");
 const Sequelize = require("sequelize");
 const { paginate } = require("../utils/paginate");
 
-
 exports.store = async({ params, body, decoded }, res, next) => {
     try {
         const { commentId } = params;
@@ -19,8 +18,8 @@ exports.store = async({ params, body, decoded }, res, next) => {
                 createdAt: {
                     [Op.gt]: NOW,
                     [Op.lt]: TODAY_START,
-                }
-            }
+                },
+            },
         });
         if (result) {
             next(ApiError.badRequestException("Ninguém gosta de spam"));
@@ -63,7 +62,6 @@ exports.store = async({ params, body, decoded }, res, next) => {
             });
         }
 
-
         return res.status(201).send({
             success: true,
             message: " Sub comentário criado com sucesso!",
@@ -78,8 +76,6 @@ exports.store = async({ params, body, decoded }, res, next) => {
 
 exports.index = async({ params, query, decoded }, res, next) => {
     try {
-
-        const filtro = "sub";
         const { commentId } = params;
         const { lat, lng } = query;
         const id = decoded.id;
@@ -104,7 +100,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
                 Sequelize.literal(
                     `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
                 ),
-                "vote"
+                "vote",
             ],
             [
                 Sequelize.literal(
@@ -153,7 +149,8 @@ exports.index = async({ params, query, decoded }, res, next) => {
                         "active",
                     ],
                 },
-            }, {
+            },
+            {
                 model: models.link,
                 as: "links",
                 required: false,
@@ -162,9 +159,9 @@ exports.index = async({ params, query, decoded }, res, next) => {
             },
         ];
         const model = models.sub_comment;
-        const sub_comments = await paginate(
+        const bagos = await paginate(
             model,
-            id,
+
             page,
             limit,
             search,
@@ -173,13 +170,12 @@ exports.index = async({ params, query, decoded }, res, next) => {
             include,
             group,
             lat,
-            lng,
-            filtro
+            lng
         );
         const data = {
             success: true,
             message: "Todos os sub comentários ",
-            sub_comments,
+            bagos,
         };
 
         return res.status(200).send(data);
@@ -214,8 +210,6 @@ exports.soft = async({ params, decoded }, res, next) => {
 
 exports.show = async({ query, decoded }, res, next) => {
     try {
-
-        const filtro = "sub";
         const page = parseInt(query.page);
         const { lat, lng } = query;
         const limit = 9;
@@ -235,7 +229,7 @@ exports.show = async({ query, decoded }, res, next) => {
                 Sequelize.literal(
                     `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
                 ),
-                "vote"
+                "vote",
             ],
             [
                 Sequelize.literal(
@@ -261,7 +255,8 @@ exports.show = async({ query, decoded }, res, next) => {
                         "password",
                     ],
                 },
-            }, {
+            },
+            {
                 model: models.user,
                 as: "replyTo",
                 attributes: {
@@ -292,9 +287,9 @@ exports.show = async({ query, decoded }, res, next) => {
             },
         ];
         const model = models.sub_comment;
-        const sub_comments = await paginate(
+        const bagos = await paginate(
             model,
-            id,
+
             page,
             limit,
             search,
@@ -303,13 +298,12 @@ exports.show = async({ query, decoded }, res, next) => {
             include,
             group,
             lat,
-            lng,
-            filtro
+            lng
         );
         const data = {
             success: true,
             message: "Todos os teus sub comentários!",
-            sub_comments,
+            bagos,
         };
 
         return res.status(200).send(data);

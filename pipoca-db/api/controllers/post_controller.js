@@ -49,7 +49,6 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const { id } = params;
         const { lat, lng } = query;
         var posts = await models.post.findOne({
-
             where: { id: id },
             attributes: [
                 "id",
@@ -61,7 +60,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                     Sequelize.literal(
                         `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = ${id})`
                     ),
-                    "vote"
+                    "vote",
                 ],
 
                 [
@@ -122,16 +121,6 @@ exports.show = async({ params, query, decoded }, res, next) => {
         if (distance <= 950) isNear = true;
         if (distance > 950) isNear = false;
 
-        const votes = await models.post_vote.findOne({
-            raw: true,
-            where: { user_id: decoded.id, post_id: posts.id },
-            attributes: {
-                exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
-            },
-        });
-
-        let isVoted = votes ? true : false;
-
         let linkInfo = {};
         if (posts.links.length > 0) {
             const { url } = posts.links[0];
@@ -140,22 +129,22 @@ exports.show = async({ params, query, decoded }, res, next) => {
         }
 
         let data = {
-            "user_voted": isVoted,
-            "user_vote": votes == null ? 0 : votes.voted,
-            "user_isNear": isNear,
-            "post": {
-                "id": posts.id,
-                "content": posts.content,
-                "links": linkInfo,
-                "votes_total": posts.votes_total == null ? 0 : posts.votes_total,
-                "comments_total": posts.comments_total == null ? 0 : posts.comments_total,
-                "flags": posts.flags,
-                "is_flagged": posts.is_flagged,
-                "created_at": posts.createdAt,
-                "creator": posts.creator,
+            user_voted: posts.vote ? true : false,
+            user_vote: posts.vote == null ? 0 : posts.vote,
+            user_isNear: isNear,
+            reply_to: "",
+            info: {
+                id: posts.id,
+                content: posts.content,
+                links: linkInfo,
+                votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+                comments_total: posts.comments_total == null ? 0 : posts.comments_total,
+                flags: posts.flags,
+                is_flagged: posts.is_flagged,
+                created_at: posts.createdAt,
+                creator: posts.creator,
             },
         };
-
 
         const post = { success: true, message: ` Bago ${id} para ti`, data };
 

@@ -28,7 +28,7 @@ exports.scrapeMetaTags = async(url) => {
 
     }
 }
-exports.paginate = async(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
+exports.paginate = async(model, page, limit, search, order, attributes, include, group, lat, lng) => {
 
     const offset = this.getOffset(page, limit);
 
@@ -76,10 +76,10 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
 
         data.push({
             "user_voted": row.vote ? true : false,
-            "user_vote": row.vote == null ? 0 : vote.voted,
+            "user_vote": row.vote == null ? 0 : row.vote,
             "user_isNear": isNear,
             "reply_to": row.replyTo != null ? row.replyTo : '',
-            "bago": {
+            "info": {
                 "id": row.id,
                 "content": row.content,
                 "links": linkInfo,
