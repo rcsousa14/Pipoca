@@ -7,7 +7,7 @@ const Op = Sequelize.Op;
 
 require('dotenv').config();
 
-exports.scrapeMetaTags = async (url) => {
+exports.scrapeMetaTags = async(url) => {
     const res = await axios.get(url);
     const html = res.data;
     const $ = cheerio.load(html);
@@ -28,7 +28,7 @@ exports.scrapeMetaTags = async (url) => {
 
     }
 }
-exports.paginate = async (model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
+exports.paginate = async(model, id, page, limit, search, order, attributes, include, group, lat, lng, filtro) => {
 
     const offset = this.getOffset(page, limit);
 
@@ -44,7 +44,7 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
     });
 
     var data = [];
-    const newRows = rows.map(function (row) {
+    const newRows = rows.map(function(row) {
         return row.toJSON()
     });
     for (var row of newRows) {
@@ -58,43 +58,43 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
         if (distance <= 950) isNear = true;
         if (distance > 950) isNear = false;
 
-        let where;
-        let model;
+        //let where;
+        //let model;
 
-        if (filtro == 'post') {
-            model = models.post_vote;
+        // if (filtro == 'post') {
+        //     model = models.post_vote;
 
-            where = {
-                user_id: id,
-                post_id: row.id,
+        //     where = {
+        //         user_id: id,
+        //         post_id: row.id,
 
-            }
-        }
-        if (filtro == 'comment') {
-            model = models.comment_vote;
+        //     }
+        // }
+        // if (filtro == 'comment') {
+        //     model = models.comment_vote;
 
-            where = {
-                user_id: id,
-                comment_id: row.id
-            }
-        }
-        if (filtro == 'sub') {
-            model = models.sub_comment_vote;
+        //     where = {
+        //         user_id: id,
+        //         comment_id: row.id
+        //     }
+        // }
+        // if (filtro == 'sub') {
+        //     model = models.sub_comment_vote;
 
-            where = {
-                user_id: id,
-                subComment_id: row.id
-            }
-        }
+        //     where = {
+        //         user_id: id,
+        //         subComment_id: row.id
+        //     }
+        // }
 
 
         // this gets if current user upvoted/downvoted and the value
-        const vote = await model.findOne({
-            raw: true,
-            where: where,
+        // const vote = await model.findOne({
+        //     raw: true,
+        //     where: where,
 
-            attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
-        });
+        //     attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
+        // });
         let linkInfo = {};
         if (row.links.length > 0) {
             const { url } = row.links[0];
@@ -102,13 +102,13 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
 
         }
 
-        const isVoted = vote ? true : false;
+        // const isVoted = vote ? true : false;
 
 
 
         if (filtro == 'post') data.push({
-            "user_voted": isVoted,
-            "user_vote": vote == null ? 0 : vote.voted,
+            "user_voted": row.vote ? true : false,
+            "user_vote": row.vote == null ? 0 : vote.voted,
             "user_isNear": isNear,
             "post": {
                 "id": row.id,
@@ -170,7 +170,7 @@ exports.paginate = async (model, id, page, limit, search, order, attributes, inc
         data: data
     };
 }
-exports.admin = async (model, page, limit, attributes, include) => {
+exports.admin = async(model, page, limit, attributes, include) => {
     const offset = this.getOffset(page, limit);
     const { count, rows } = await model.findAndCountAll({
         limit: limit,
