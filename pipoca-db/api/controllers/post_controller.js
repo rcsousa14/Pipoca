@@ -10,9 +10,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const { id } = params;
         const { lat, lng } = query;
         const userId = decoded.id;
-        var posts = await models.post.findAll({
+        var posts = await models.post.findOne({
             where: { id: id },
-            limit: 1,
+
             attributes: [
                 "id",
                 "content",
@@ -21,7 +21,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "createdAt",
                 "coordinates", [
                     Sequelize.literal(
-                        `(SELECT voted FROM post_votes WHERE user_id = ${userId} AND post_id = post.id)`
+                        `(SELECT voted FROM post_votes WHERE user_id = ${userId} AND post_id = ${id})`
                     ),
                     "vote"
                 ],
@@ -72,25 +72,27 @@ exports.show = async({ params, query, decoded }, res, next) => {
             return;
         }
 
-        let distance;
-        if (lat && lng) {
-            distance = getDistance({ latitude: lat, longitude: lng }, {
-                latitude: posts.coordinates.coordinates[1],
-                longitude: posts.coordinates.coordinates[0],
-            });
-        }
-        let isNear;
-        if (distance <= 950) isNear = true;
-        if (distance > 950) isNear = false;
+        const rows = posts.map(function(row) {
+            return row.toJSON()
+        });
+
+        // let distance;
+        // if (lat && lng) {
+        //     distance = getDistance({ latitude: lat, longitude: lng }, {
+        //         latitude: posts.coordinates.coordinates[1],
+        //         longitude: posts.coordinates.coordinates[0],
+        //     });
+        // }
+        // let isNear;
+        // if (distance <= 950) isNear = true;
+        // if (distance > 950) isNear = false;
 
 
 
         //let linkInfo = {};
 
         //  let data = {};
-        const rows = posts.map(function(row) {
-            return row.toJSON()
-        });
+
         // for (var newData of rows) {
         //     if (newData.links.length > 0) {
         //         const { url } = newData.links[0];
@@ -116,7 +118,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         // }
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, rows };
+        const post = { success: true, message: ` Bago ${id} para ti`, posts, rows };
 
         return res.status(200).json(post);
     } catch (error) {
