@@ -78,6 +78,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
             "user_voted": row.vote ? true : false,
             "user_vote": row.vote == null ? 0 : vote.voted,
             "user_isNear": isNear,
+            "reply_to": row.replyTo != null ? row.replyTo : '',
             "bago": {
                 "id": row.id,
                 "content": row.content,
@@ -90,37 +91,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 "creator": row.creator
             }
         });
-        // if (filtro == 'comment') data.push({
-        //     "user_voted": isVoted,
-        //     "user_vote": vote == null ? 0 : vote.voted,
-        //     "user_isNear": isNear,
-        //     "comment": {
-        //         "id": row.id,
-        //         "content": row.content,
-        //         "links": linkInfo,
-        //         "votes_total": row.votes_total == null ? 0 : row.votes_total,
-        //         "sub_comments_total": row.comments_total,
-        //         "flags": row.flags,
-        //         "is_flagged": row.is_flagged,
-        //         "created_at": row.createdAt,
-        //         "creator": row.creator
-        //     }
-        // });
-        // if (filtro == 'sub') data.push({
-        //     "user_voted": isVoted,
-        //     "user_vote": vote == null ? 0 : vote.voted,
-        //     "user_isNear": isNear,
-        //     "sub_comment": {
-        //         "id": row.id,
-        //         "content": row.content,
-        //         "links": linkInfo,
-        //         "votes_total": row.votes_total == null ? 0 : row.votes_total,
-        //         "flags": row.flags,
-        //         "is_flagged": row.is_flagged,
-        //         "created_at": row.createdAt,
-        //         "creator": row.creator
-        //     }
-        // });
+
 
 
 
