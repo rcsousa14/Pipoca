@@ -99,6 +99,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
             "flags",
             "is_flagged",
             "createdAt",
+
             "coordinates", [
                 Sequelize.literal(
                     `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`

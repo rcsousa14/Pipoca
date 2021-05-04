@@ -47,6 +47,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
     const newRows = rows.map(function(row) {
         return row.toJSON()
     });
+
     for (var row of newRows) {
         let distance;
         if (lat && lng) {
@@ -58,43 +59,10 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         if (distance <= 950) isNear = true;
         if (distance > 950) isNear = false;
 
-        //let where;
-        //let model;
-
-        // if (filtro == 'post') {
-        //     model = models.post_vote;
-
-        //     where = {
-        //         user_id: id,
-        //         post_id: row.id,
-
-        //     }
-        // }
-        // if (filtro == 'comment') {
-        //     model = models.comment_vote;
-
-        //     where = {
-        //         user_id: id,
-        //         comment_id: row.id
-        //     }
-        // }
-        // if (filtro == 'sub') {
-        //     model = models.sub_comment_vote;
-
-        //     where = {
-        //         user_id: id,
-        //         subComment_id: row.id
-        //     }
-        // }
 
 
-        // this gets if current user upvoted/downvoted and the value
-        // const vote = await model.findOne({
-        //     raw: true,
-        //     where: where,
 
-        //     attributes: { exclude: ['user_id', 'post_id', 'createdAt', 'updatedAt', 'id'] }
-        // });
+
         let linkInfo = {};
         if (row.links.length > 0) {
             const { url } = row.links[0];
@@ -102,15 +70,15 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
 
         }
 
-        // const isVoted = vote ? true : false;
 
 
 
-        if (filtro == 'post') data.push({
+
+        data.push({
             "user_voted": row.vote ? true : false,
             "user_vote": row.vote == null ? 0 : vote.voted,
             "user_isNear": isNear,
-            "post": {
+            "bago": {
                 "id": row.id,
                 "content": row.content,
                 "links": linkInfo,
@@ -122,37 +90,37 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
                 "creator": row.creator
             }
         });
-        if (filtro == 'comment') data.push({
-            "user_voted": isVoted,
-            "user_vote": vote == null ? 0 : vote.voted,
-            "user_isNear": isNear,
-            "comment": {
-                "id": row.id,
-                "content": row.content,
-                "links": linkInfo,
-                "votes_total": row.votes_total == null ? 0 : row.votes_total,
-                "sub_comments_total": row.comments_total,
-                "flags": row.flags,
-                "is_flagged": row.is_flagged,
-                "created_at": row.createdAt,
-                "creator": row.creator
-            }
-        });
-        if (filtro == 'sub') data.push({
-            "user_voted": isVoted,
-            "user_vote": vote == null ? 0 : vote.voted,
-            "user_isNear": isNear,
-            "sub_comment": {
-                "id": row.id,
-                "content": row.content,
-                "links": linkInfo,
-                "votes_total": row.votes_total == null ? 0 : row.votes_total,
-                "flags": row.flags,
-                "is_flagged": row.is_flagged,
-                "created_at": row.createdAt,
-                "creator": row.creator
-            }
-        });
+        // if (filtro == 'comment') data.push({
+        //     "user_voted": isVoted,
+        //     "user_vote": vote == null ? 0 : vote.voted,
+        //     "user_isNear": isNear,
+        //     "comment": {
+        //         "id": row.id,
+        //         "content": row.content,
+        //         "links": linkInfo,
+        //         "votes_total": row.votes_total == null ? 0 : row.votes_total,
+        //         "sub_comments_total": row.comments_total,
+        //         "flags": row.flags,
+        //         "is_flagged": row.is_flagged,
+        //         "created_at": row.createdAt,
+        //         "creator": row.creator
+        //     }
+        // });
+        // if (filtro == 'sub') data.push({
+        //     "user_voted": isVoted,
+        //     "user_vote": vote == null ? 0 : vote.voted,
+        //     "user_isNear": isNear,
+        //     "sub_comment": {
+        //         "id": row.id,
+        //         "content": row.content,
+        //         "links": linkInfo,
+        //         "votes_total": row.votes_total == null ? 0 : row.votes_total,
+        //         "flags": row.flags,
+        //         "is_flagged": row.is_flagged,
+        //         "created_at": row.createdAt,
+        //         "creator": row.creator
+        //     }
+        // });
 
 
 
@@ -169,6 +137,7 @@ exports.paginate = async(model, id, page, limit, search, order, attributes, incl
         limit: limit,
         data: data
     };
+
 }
 exports.admin = async(model, page, limit, attributes, include) => {
     const offset = this.getOffset(page, limit);
