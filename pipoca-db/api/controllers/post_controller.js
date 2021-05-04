@@ -13,7 +13,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         var posts = await models.post.findOne({
             where: { id: id },
             distinct: true,
-            group: ["posts.id", "creator.id"],
+
             attributes: [
                 "id",
                 "content",
@@ -22,19 +22,19 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "createdAt",
                 "coordinates", [
                     Sequelize.literal(
-                        `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = posts.id)`
+                        `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = ${id})`
                     ),
                     "vote"
                 ],
                 [
                     Sequelize.literal(
-                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = posts.id)`
+                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`
                     ),
                     "votes_total",
                 ],
                 [
                     Sequelize.literal(
-                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = posts.id)`
+                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`
                     ),
                     "comments_total",
                 ],
