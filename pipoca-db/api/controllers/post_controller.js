@@ -51,7 +51,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const { lat, lng } = query;
         var posts = await models.post.findAll({
             where: { id: id },
-
+            group: ["post.id"],
             attributes: [
                 "id",
                 "content",
