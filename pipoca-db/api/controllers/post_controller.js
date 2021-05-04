@@ -97,10 +97,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             linkInfo = await scrapeMetaTags(url);
         }
-        const {
-            comments_total,
-            votes_total
-        } = posts;
+
         let data = {
             user_voted: posts.vote == null ? false : true,
             user_vote: posts.vote == null ? 0 : posts.vote,
@@ -118,8 +115,11 @@ exports.show = async({ params, query, decoded }, res, next) => {
             }
         }
 
-        data.info.comments_total = comments_total;
-        data.info.votes_total = votes_total;
+        let something = JSON.parse(posts);
+        const {
+            comments_total,
+            votes_total
+        } = something;
 
 
 
