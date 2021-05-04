@@ -10,7 +10,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const { id } = params;
         const { lat, lng } = query;
 
-        var posts = await models.post.findOne({
+        const posts = await models.post.findOne({
             where: { id: id },
             distinct: true,
 
@@ -98,8 +98,8 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             linkInfo = await scrapeMetaTags(url);
         }
-        let { votes_total } = posts;
-
+        let newData = posts;
+        const { votes_total } = newData;
         // let data = {
         //     user_voted: posts.vote == null ? false : true,
         //     user_vote: posts.vote == null ? 0 : posts.vote,
