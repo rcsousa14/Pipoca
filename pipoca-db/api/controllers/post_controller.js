@@ -74,49 +74,49 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        // let distance;
-        // if (lat && lng) {
-        //     distance = getDistance({ latitude: lat, longitude: lng }, {
-        //         latitude: posts.coordinates.coordinates[1],
-        //         longitude: posts.coordinates.coordinates[0],
-        //     });
-        // }
-        // let isNear;
-        // if (distance <= 950) isNear = true;
-        // if (distance > 950) isNear = false;
+        let distance;
+        if (lat && lng) {
+            distance = getDistance({ latitude: lat, longitude: lng }, {
+                latitude: posts.coordinates.coordinates[1],
+                longitude: posts.coordinates.coordinates[0],
+            });
+        }
+        let isNear;
+        if (distance <= 950) isNear = true;
+        if (distance > 950) isNear = false;
 
 
 
-        //let linkInfo = {};
-
-        //  let data = {};
-
-        // for (var newData of rows) {
-        //     if (newData.links.length > 0) {
-        //         const { url } = newData.links[0];
-
-        //         linkInfo = await scrapeMetaTags(url);
-        //     }
-        //     data = {
-        //         user_voted: vote ? true : false,
-        //         user_vote: vote == null ? 0 : vote,
-        //         user_isNear: isNear,
-        //         info: {
-        //             id: newData.id,
-        //             content: newData.content,
-        //             links: linkInfo,
-        //             votes_total: newData.votes_total == null ? 0 : newData.votes_total,
-        //             comments_total: newData.comments_total,
-        //             flags: newData.flags,
-        //             is_flagged: newData.is_flagged,
-        //             created_at: newData.createdAt,
-        //             creator: newData.creator,
-        //         },
-        //     };
-        // }
+        let linkInfo = {};
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, posts };
+
+
+        if (posts.links.length > 0) {
+            const { url } = posts.links[0];
+
+            linkInfo = await scrapeMetaTags(url);
+        }
+        let data = {
+            // user_voted: vote ? true : false,
+            // user_vote: vote == null ? 0 : vote,
+            user_isNear: isNear,
+            info: {
+                id: posts.id,
+                content: posts.content,
+                links: linkInfo,
+                // votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+                // comments_total: posts.comments_total,
+                flags: posts.flags,
+                is_flagged: posts.is_flagged,
+                created_at: posts.createdAt,
+                creator: posts.creator,
+            },
+        };
+
+
+
+        const post = { success: true, message: ` Bago ${id} para ti`, data };
 
         return res.status(200).json(post);
     } catch (error) {
