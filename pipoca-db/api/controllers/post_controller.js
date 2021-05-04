@@ -152,9 +152,10 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         return res.status(200).json(post);
     } catch (error) {
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+        return res.status(500).send(error)
+            // next(
+            //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
+            // );
+            // return;
     }
 };
