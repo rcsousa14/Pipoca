@@ -47,36 +47,18 @@ exports.index = async({ query }, res) => {
 exports.show = async({ params, query, decoded }, res, next) => {
     try {
         const { id } = params;
-        const userId = decoded.id;
         const { lat, lng } = query;
-        var posts = await models.post.findAll({
+        var sum = await models.post_vote.sum(voted, { where: { post_id: id } });
+        var count = await models.comment.count({ where: { post_id: id } });
+        var posts = await models.post.findOne({
             where: { id: id },
-            group: ["post.id"],
             attributes: [
                 "id",
                 "content",
                 "flags",
                 "is_flagged",
                 "createdAt",
-                "coordinates", [
-                    Sequelize.literal(
-                        `(SELECT voted FROM post_votes WHERE user_id = ${userId} AND post_id = post.id)`
-                    ),
-                    "vote",
-                ],
-
-                [
-                    Sequelize.literal(
-                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
-                    ),
-                    "votes_total",
-                ],
-                [
-                    Sequelize.literal(
-                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
-                    ),
-                    "comments_total",
-                ],
+                "coordinates",
             ],
             include: [{
                     model: models.user,
@@ -123,28 +105,37 @@ exports.show = async({ params, query, decoded }, res, next) => {
         if (distance <= 950) isNear = true;
         if (distance > 950) isNear = false;
 
+        const votes = await models.post_vote.findOne({
+            raw: true,
+            where: { user_id: decoded.id, post_id: posts.id },
+            attributes: {
+                exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
+            },
+        });
+
+        let isVoted = votes ? true : false;
+
         let linkInfo = {};
         if (posts.links.length > 0) {
-            const { url } = posts[0].links[0];
+            const { url } = posts.links[0];
 
             linkInfo = await scrapeMetaTags(url);
         }
 
         let data = {
-            user_voted: posts[0].vote ? true : false,
-            user_vote: posts[0].vote == null ? 0 : posts[0].vote,
+            user_voted: isVoted,
+            user_vote: votes == null ? 0 : votes.voted,
             user_isNear: isNear,
-            reply_to: "",
-            info: {
-                id: posts[0].id,
-                content: posts[0].content,
+            post: {
+                id: posts.id,
+                content: posts.content,
                 links: linkInfo,
-                votes_total: posts[0].votes_total == null ? 0 : posts[0].votes_total,
-                comments_total: posts[0].comments_total == null ? 0 : posts[0].comments_total,
-                flags: posts[0].flags,
-                is_flagged: posts[0].is_flagged,
-                created_at: posts[0].createdAt,
-                creator: posts[0].creator,
+                votes_total: sum,
+                comments_total: count,
+                flags: posts.flags,
+                is_flagged: posts.is_flagged,
+                created_at: posts.createdAt,
+                creator: posts.creator,
             },
         };
 
@@ -152,10 +143,9 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         return res.status(200).json(post);
     } catch (error) {
-        return res.status(500).send(error)
-            // next(
-            //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
-            // );
-            // return;
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
