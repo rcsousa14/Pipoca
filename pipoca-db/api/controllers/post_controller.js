@@ -60,20 +60,20 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "createdAt",
                 "coordinates", [
                     Sequelize.literal(
-                        `(SELECT voted FROM post_votes WHERE user_id = ${userId} AND post_id = ${id})`
+                        `(SELECT voted FROM post_votes WHERE user_id = ${userId} AND post_id = post.id)`
                     ),
                     "vote",
                 ],
 
                 [
                     Sequelize.literal(
-                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`
+                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
                     ),
                     "votes_total",
                 ],
                 [
                     Sequelize.literal(
-                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`
+                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
                     ),
                     "comments_total",
                 ],
@@ -125,26 +125,26 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         let linkInfo = {};
         if (posts.links.length > 0) {
-            const { url } = posts.links[0];
+            const { url } = posts[0].links[0];
 
             linkInfo = await scrapeMetaTags(url);
         }
 
         let data = {
-            user_voted: posts.vote ? true : false,
-            user_vote: posts.vote == null ? 0 : posts.vote,
+            user_voted: posts[0].vote ? true : false,
+            user_vote: posts[0].vote == null ? 0 : posts[0].vote,
             user_isNear: isNear,
             reply_to: "",
             info: {
-                id: posts.id,
-                content: posts.content,
+                id: posts[0].id,
+                content: posts[0].content,
                 links: linkInfo,
-                votes_total: posts.votes_total == null ? 0 : posts.votes_total,
-                comments_total: posts.comments_total == null ? 0 : posts.comments_total,
-                flags: posts.flags,
-                is_flagged: posts.is_flagged,
-                created_at: posts.createdAt,
-                creator: posts.creator,
+                votes_total: posts[0].votes_total == null ? 0 : posts[0].votes_total,
+                comments_total: posts[0].comments_total == null ? 0 : posts[0].comments_total,
+                flags: posts[0].flags,
+                is_flagged: posts[0].is_flagged,
+                created_at: posts[0].createdAt,
+                creator: posts[0].creator,
             },
         };
 
