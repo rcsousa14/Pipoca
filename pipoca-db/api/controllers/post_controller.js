@@ -104,6 +104,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             user_voted: newData['votes'] == null ? false : true,
             user_vote: newData['votes'] == null ? 0 : newData['votes'],
             user_isNear: isNear,
+            reply_to: "",
             info: {
                 id: newData['id'],
                 content: newData['content'],
