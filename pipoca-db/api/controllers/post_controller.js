@@ -4,51 +4,12 @@ import ApiError from "../errors/api_error";
 const Sequelize = require("sequelize");
 const models = require("../models");
 
-exports.index = async({ query }, res) => {
-    try {
-        const { lat, lng, search } = query;
-        if (search && lat && lng) {
-            const tag = await models.tag.findOne({ where: { hash: search } });
-            const [rows, count] = await models.post_tag.findAndCountAll({
-                where: { tag_id: tag.id },
-                // include:[
-                //     {
-                //         model: models.user,
-                //         as: "creator",
-                //         attributes: {
-                //             exclude: [
-                //                 "createdAt",
-                // "updatedAt",
-                // "birthday",
-                // "role_id",
-                // "bio",
-                // "password",
-                //             ],
-                //         },
-                //     },
-                // ]
-            });
-            return res
-                .status(200)
-                .send({ message: `🍿 Bago ${id}  para ti 🥳`, post_tags });
-        }
-        /**
-         * TODO: this is the index to see all the posts update the isnear to enable commenting
-         * figure out how to work with geometry in sequelize
-         * return a status with point and excluded the coordinates of other users this is important
-         * need to put limits and sort it
-         */
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message,
-        });
-    }
-};
+
 exports.show = async({ params, query, decoded }, res, next) => {
     try {
         const { id } = params;
         const { lat, lng } = query;
-
+        const userId = decoded.id;
         var posts = await models.post.findAll({
             where: { id: id },
             limit: 1,
@@ -60,7 +21,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "createdAt",
                 "coordinates", [
                     Sequelize.literal(
-                        `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
+                        `(SELECT voted FROM post_votes WHERE user_id = ${userId} AND post_id = post.id)`
                     ),
                     "vote"
                 ],
