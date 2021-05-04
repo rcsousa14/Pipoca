@@ -139,13 +139,14 @@ exports.show = async({ params, query, decoded }, res, next) => {
             },
         };
 
-        const post = { success: true, message: ` Bago ${id} para ti`, data };
+        const post = { success: true, message: ` Bago ${id} para ti`, sum };
 
         return res.status(200).json(post);
     } catch (error) {
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+        return res.status(500).json(error);
+        // next(
+        //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        // );
+        // return;
     }
 };
