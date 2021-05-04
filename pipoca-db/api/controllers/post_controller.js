@@ -98,29 +98,30 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             linkInfo = await scrapeMetaTags(url);
         }
+        let { votes_total } = posts;
 
-        let data = {
-            user_voted: posts.vote == null ? false : true,
-            user_vote: posts.vote == null ? 0 : posts.vote,
-            user_isNear: isNear,
-            info: {
-                id: posts.id,
-                content: posts.content,
-                links: linkInfo,
-                votes_total: posts.votes_total == null ? 0 : posts.votes_total,
-                comments_total: posts.comments_total,
-                flags: posts.flags,
-                is_flagged: posts.is_flagged,
-                created_at: posts.createdAt,
-                creator: posts.creator,
-            }
-        }
-
-
-
+        // let data = {
+        //     user_voted: posts.vote == null ? false : true,
+        //     user_vote: posts.vote == null ? 0 : posts.vote,
+        //     user_isNear: isNear,
+        //     info: {
+        //         id: posts.id,
+        //         content: posts.content,
+        //         links: linkInfo,
+        //         votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+        //         comments_total: posts.comments_total,
+        //         flags: posts.flags,
+        //         is_flagged: posts.is_flagged,
+        //         created_at: posts.createdAt,
+        //         creator: posts.creator,
+        //     }
+        // }
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, data };
+
+
+
+        const post = { success: true, message: ` Bago ${id} para ti`, votes_total };
 
         return res.status(200).json(post);
     } catch (error) {
