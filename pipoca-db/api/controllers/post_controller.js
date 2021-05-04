@@ -121,7 +121,11 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, newData };
+        const post = {
+            success: true,
+            message: ` Bago ${id} para ti`,
+            data: newData['votes_total'],
+        };
 
         return res.status(200).json(post);
     } catch (error) {
