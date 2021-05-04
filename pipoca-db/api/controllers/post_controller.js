@@ -118,12 +118,12 @@ exports.show = async({ params, query, decoded }, res, next) => {
             }
         }
 
-        data.comments_total = comments_total;
-        data.votes_total = votes_total;
+        data.info.comments_total = comments_total;
+        data.info.votes_total = votes_total;
 
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, data, posts };
+        const post = { success: true, message: ` Bago ${id} para ti`, data, comments_total, votes_total };
 
         return res.status(200).json(post);
     } catch (error) {
