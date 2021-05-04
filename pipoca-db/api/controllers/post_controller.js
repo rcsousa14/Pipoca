@@ -124,38 +124,38 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        let linkInfo = {};
+        //let linkInfo = {};
 
-        let data = {};
+        //  let data = {};
         const rows = posts.map(function(row) {
             return row.toJSON()
         });
-        for (var newData of rows) {
-            if (newData.links.length > 0) {
-                const { url } = newData.links[0];
+        // for (var newData of rows) {
+        //     if (newData.links.length > 0) {
+        //         const { url } = newData.links[0];
 
-                linkInfo = await scrapeMetaTags(url);
-            }
-            data = {
-                user_voted: vote ? true : false,
-                user_vote: vote == null ? 0 : vote,
-                user_isNear: isNear,
-                info: {
-                    id: newData.id,
-                    content: newData.content,
-                    links: linkInfo,
-                    votes_total: newData.votes_total == null ? 0 : newData.votes_total,
-                    comments_total: newData.comments_total,
-                    flags: newData.flags,
-                    is_flagged: newData.is_flagged,
-                    created_at: newData.createdAt,
-                    creator: newData.creator,
-                },
-            };
-        }
+        //         linkInfo = await scrapeMetaTags(url);
+        //     }
+        //     data = {
+        //         user_voted: vote ? true : false,
+        //         user_vote: vote == null ? 0 : vote,
+        //         user_isNear: isNear,
+        //         info: {
+        //             id: newData.id,
+        //             content: newData.content,
+        //             links: linkInfo,
+        //             votes_total: newData.votes_total == null ? 0 : newData.votes_total,
+        //             comments_total: newData.comments_total,
+        //             flags: newData.flags,
+        //             is_flagged: newData.is_flagged,
+        //             created_at: newData.createdAt,
+        //             creator: newData.creator,
+        //         },
+        //     };
+        // }
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, data };
+        const post = { success: true, message: ` Bago ${id} para ti`, rows };
 
         return res.status(200).json(post);
     } catch (error) {
