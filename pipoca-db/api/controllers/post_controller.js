@@ -47,18 +47,29 @@ exports.index = async({ query }, res) => {
 exports.show = async({ params, query, decoded }, res, next) => {
     try {
         const { id } = params;
-        const { lat, lng } = query;
-        var sum = await models.post_vote.sum(voted, { where: { post_id: id } });
-        var count = await models.comment.count({ where: { post_id: id } });
-        var posts = await models.post.findOne({
+        // const { lat, lng } = query;
+
+        var posts = await models.post.findAll({
             where: { id: id },
+            limit: 1,
             attributes: [
                 "id",
                 "content",
                 "flags",
                 "is_flagged",
                 "createdAt",
-                "coordinates",
+                "coordinates", [
+                    Sequelize.literal(
+                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`
+                    ),
+                    "votes_total",
+                ],
+                [
+                    Sequelize.literal(
+                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`
+                    ),
+                    "comments_total",
+                ],
             ],
             include: [{
                     model: models.user,
@@ -94,59 +105,58 @@ exports.show = async({ params, query, decoded }, res, next) => {
             return;
         }
 
-        let distance;
-        if (lat && lng) {
-            distance = getDistance({ latitude: lat, longitude: lng }, {
-                latitude: posts.coordinates.coordinates[1],
-                longitude: posts.coordinates.coordinates[0],
-            });
-        }
-        let isNear;
-        if (distance <= 950) isNear = true;
-        if (distance > 950) isNear = false;
+        // let distance;
+        // if (lat && lng) {
+        //     distance = getDistance({ latitude: lat, longitude: lng }, {
+        //         latitude: posts.coordinates.coordinates[1],
+        //         longitude: posts.coordinates.coordinates[0],
+        //     });
+        // }
+        // let isNear;
+        // if (distance <= 950) isNear = true;
+        // if (distance > 950) isNear = false;
 
-        const votes = await models.post_vote.findOne({
-            raw: true,
-            where: { user_id: decoded.id, post_id: posts.id },
-            attributes: {
-                exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
-            },
-        });
+        // const votes = await models.post_vote.findOne({
+        //     raw: true,
+        //     where: { user_id: decoded.id, post_id: posts.id },
+        //     attributes: {
+        //         exclude: ["user_id", "post_id", "createdAt", "updatedAt", "id"],
+        //     },
+        // });
 
-        let isVoted = votes ? true : false;
+        //let isVoted = votes ? true : false;
 
-        let linkInfo = {};
-        if (posts.links.length > 0) {
-            const { url } = posts.links[0];
+        // let linkInfo = {};
+        // if (posts.links.length > 0) {
+        //     const { url } = posts.links[0];
 
-            linkInfo = await scrapeMetaTags(url);
-        }
+        //     linkInfo = await scrapeMetaTags(url);
+        // }
 
-        let data = {
-            user_voted: isVoted,
-            user_vote: votes == null ? 0 : votes.voted,
-            user_isNear: isNear,
-            post: {
-                id: posts.id,
-                content: posts.content,
-                links: linkInfo,
-                votes_total: sum,
-                comments_total: count,
-                flags: posts.flags,
-                is_flagged: posts.is_flagged,
-                created_at: posts.createdAt,
-                creator: posts.creator,
-            },
-        };
+        // let data = {
+        //     user_voted: isVoted,
+        //     user_vote: votes == null ? 0 : votes.voted,
+        //     user_isNear: isNear,
+        //     post: {
+        //         id: posts.id,
+        //         content: posts.content,
+        //         links: linkInfo,
+        //         votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+        //         comments_total: posts.comments_total == null ? 0 : posts.comments_total,
+        //         flags: posts.flags,
+        //         is_flagged: posts.is_flagged,
+        //         created_at: posts.createdAt,
+        //         creator: posts.creator,
+        //     },
+        // };
 
-        const post = { success: true, message: ` Bago ${id} para ti`, sum };
+        //  const post = { success: true, message: ` Bago ${id} para ti`, data };
 
-        return res.status(200).json(post);
+        return res.status(200).json(posts);
     } catch (error) {
-        return res.status(500).json(error);
-        // next(
-        //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        // );
-        // return;
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
