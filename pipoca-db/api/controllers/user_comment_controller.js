@@ -160,7 +160,6 @@ exports.index = async({ params, query, decoded }, res, next) => {
         const model = models.comment;
         const bagos = await paginate(
             model,
-
             page,
             limit,
             search,

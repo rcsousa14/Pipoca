@@ -6,7 +6,7 @@ const { paginate } = require("../utils/paginate");
 
 exports.store = async({ params, body, decoded }, res, next) => {
     try {
-        const { commentId } = params;
+        const { comment_id } = params;
         const { content, links, hashes, reply_to_id, longitude, latitude } = body;
 
         const TODAY_START = new Date().setHours(0, 0, 0, 0);
@@ -34,7 +34,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
         const sub_comment = await models.sub_comment.create({
             user_id: decoded.id,
             reply_to_id,
-            comment_id: commentId,
+            comment_id: comment_id,
             content,
             coordinates: point,
         });
@@ -76,14 +76,14 @@ exports.store = async({ params, body, decoded }, res, next) => {
 
 exports.index = async({ params, query, decoded }, res, next) => {
     try {
-        const { commentId } = params;
+        const { comment_id } = params;
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 4;
         let group = ["sub_comment.id"];
         let search = {
-            where: { comment_id: commentId },
+            where: { comment_id: comment_id },
         };
         let order = [];
 
