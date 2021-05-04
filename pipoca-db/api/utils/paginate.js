@@ -139,12 +139,12 @@ exports.getNextPage = (page, limit, total) => {
         return page + 1;
     }
 
-    return 0
+    return null
 }
 
 exports.getPreviousPage = (page) => {
     if (page <= 1) {
-        return 0
+        return null
     }
     return page - 1;
 }

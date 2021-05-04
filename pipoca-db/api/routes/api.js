@@ -80,7 +80,6 @@ router.delete('/v1/posts/:id', limiter, speedLimiter, speedLimiter, authorizeMid
 
 // user comments routes
 router.post('/v1/:post_id/comments', limiter, speedLimiter, authorizeMiddleware, postauthMiddleware, user_comments.store); //☑️
-
 router.get('/v1/:post_id/comments', speedLimiter, authorizeMiddleware, user_comments.index); //☑️❎ cache data with redis
 router.get('/v1/comments', speedLimiter, authorizeMiddleware, user_comments.show); //☑️ ❎ cache data with redis
 router.delete('/v1/comments/:id', limiter, speedLimiter, authorizeMiddleware, user_comments.soft); //☑️ need to be tested
