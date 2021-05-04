@@ -28,6 +28,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
         // }
         return res.status(200).json({
                 comment_id,
+                body,
                 result,
             })
             // var point = {
