@@ -12,7 +12,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const userId = decoded.id;
         var posts = await models.post.findOne({
             where: { id: id },
-            raw: true,
+
             attributes: [
                 "id",
                 "content",
@@ -92,22 +92,22 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        if (posts.links.url != null) {
-            const { url } = posts.links.url;
+        if (posts.links.length > 0) {
+            const { url } = posts.links[0];
 
             linkInfo = await scrapeMetaTags(url);
         }
 
         let data = {
-            user_voted: posts.vote == null ? false : true,
-            user_vote: posts.vote == null ? 0 : posts.vote,
+            //user_voted: posts.vote == null ? false : true,
+            // user_vote: posts.vote == null ? 0 : posts.vote,
             user_isNear: isNear,
             info: {
                 id: posts.id,
                 content: posts.content,
                 links: linkInfo,
-                votes_total: posts.votes_total == null ? 0 : posts.votes_total,
-                comments_total: posts.comments_total,
+                // votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+                // comments_total: posts.comments_total,
                 flags: posts.flags,
                 is_flagged: posts.is_flagged,
                 created_at: posts.createdAt,
