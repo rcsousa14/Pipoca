@@ -49,7 +49,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const { id } = params;
         const userId = decoded.id;
         const { lat, lng } = query;
-        var posts = await models.post.findOne({
+        var posts = await models.post.findAll({
             where: { id: id },
 
             attributes: [
