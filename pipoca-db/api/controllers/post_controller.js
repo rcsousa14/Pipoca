@@ -12,8 +12,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         var posts = await models.post.findOne({
             where: { id: id },
-            raw: true,
-            distinct: true,
+
 
             attributes: [
                 "id",
@@ -94,8 +93,8 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        if (posts.links.url) {
-            const url = posts.links.url;
+        if (posts.links.length > 0) {
+            const { url } = posts.links[0];
 
             linkInfo = await scrapeMetaTags(url);
         }
@@ -112,7 +111,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 // comments_total: posts.comments_total == null ? 0 : posts.comments_total,
                 // flags: posts.flags,
                 //is_flagged: posts.is_flagged,
-                //created_at: posts.createdAt,
+                // created_at: posts.createdAt,
                 //creator: posts.creator,
             }
         }
