@@ -12,7 +12,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
         const userId = decoded.id;
         var posts = await models.post.findOne({
             where: { id: id },
-
+            raw: true,
             attributes: [
                 "id",
                 "content",
@@ -74,32 +74,30 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        let distance;
-        if (lat && lng) {
-            distance = getDistance({ latitude: lat, longitude: lng }, {
-                latitude: posts.coordinates.coordinates[1],
-                longitude: posts.coordinates.coordinates[0],
-            });
-        }
-        let isNear;
-        if (distance <= 950) isNear = true;
-        if (distance > 950) isNear = false;
+        // let distance;
+        // if (lat && lng) {
+        //     distance = getDistance({ latitude: lat, longitude: lng }, {
+        //         latitude: posts.coordinates.coordinates[1],
+        //         longitude: posts.coordinates.coordinates[0],
+        //     });
+        // }
+        // let isNear;
+        // if (distance <= 950) isNear = true;
+        // if (distance > 950) isNear = false;
 
 
 
-        let linkInfo = {};
+        // let linkInfo = {};
 
 
 
 
-        if (posts.links.length > 0) {
-            const { url } = posts.links[0];
+        // if (posts.links.length > 0) {
+        //     const { url } = posts.links[0];
 
-            linkInfo = await scrapeMetaTags(url);
-        }
-        const newRows = posts.map(function(row) {
-            return row.toJSON()
-        });
+        //     linkInfo = await scrapeMetaTags(url);
+        // }
+
         // let data = {
         //     user_voted: vote ? true : false,
         //     user_vote: vote == null ? 0 : vote,
@@ -119,7 +117,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, newRows };
+        const post = { success: true, message: ` Bago ${id} para ti`, posts };
 
         return res.status(200).json(post);
     } catch (error) {
