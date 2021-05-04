@@ -98,8 +98,8 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
             linkInfo = await scrapeMetaTags(url);
         }
-        let newData = posts;
-        const { votes_total } = newData;
+        let newData = posts.get({ plain: true });
+
         // let data = {
         //     user_voted: posts.vote == null ? false : true,
         //     user_vote: posts.vote == null ? 0 : posts.vote,
@@ -121,7 +121,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        const post = { success: true, message: ` Bago ${id} para ti`, votes_total };
+        const post = { success: true, message: ` Bago ${id} para ti`, newData };
 
         return res.status(200).json(post);
     } catch (error) {
