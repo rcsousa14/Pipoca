@@ -100,14 +100,14 @@ exports.show = async({ params, query, decoded }, res, next) => {
         }
 
         let data = {
-            //user_voted: posts.vote == null ? false : true,
-            // user_vote: posts.vote == null ? 0 : posts.vote,
+            user_voted: posts.vote == null ? false : true,
+            user_vote: posts.vote == null ? 0 : posts.vote,
             user_isNear: isNear,
             info: {
                 id: posts.id,
                 content: posts.content,
                 links: linkInfo,
-                //votes_total: posts.votes_total == null ? 0 : posts.votes_total,
+                votes_total: posts.votes_total == null ? 0 : posts.votes_total,
                 comments_total: comments_total,
                 flags: posts.flags,
                 is_flagged: posts.is_flagged,
