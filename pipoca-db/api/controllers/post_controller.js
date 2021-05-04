@@ -94,7 +94,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
 
 
-        if (posts.links.url != null) {
+        if (posts.links.url) {
             const { url } = posts.links.url;
 
             linkInfo = await scrapeMetaTags(url);
