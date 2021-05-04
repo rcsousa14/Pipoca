@@ -140,7 +140,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
                         "deleted_at",
                         "birthday",
                         "reset_password_token",
-                        "reset_assword_expiration",
+                        "reset_password_expiration",
                         "refresh_token",
                         "role_id",
                         "bio",
