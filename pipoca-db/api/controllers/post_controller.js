@@ -60,6 +60,12 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "createdAt",
                 "coordinates", [
                     Sequelize.literal(
+                        `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
+                    ),
+                    "vote"
+                ],
+                [
+                    Sequelize.literal(
                         `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`
                     ),
                     "votes_total",
