@@ -11,24 +11,24 @@ exports.store = async({ params, body, decoded }, res, next) => {
 
         // const TODAY_START = new Date().setHours(0, 0, 0, 0);
         // const NOW = new Date();
-        // const result = await models.sub_comment.findOne({
-        //     where: {
-        //         content: content,
-        //         user_id: decoded.id,
-        //         comment_id: comment_id,
-        //         createdAt: {
-        //             [Op.lt]: NOW,
-        //             [Op.gt]: TODAY_START,
-        //         },
-        //     },
-        // });
+        const result = await models.sub_comment.findAll({
+            where: {
+                content: content,
+                // user_id: decoded.id,
+                // comment_id: comment_id,
+                // createdAt: {
+                //     [Op.lt]: NOW,
+                //     [Op.gt]: TODAY_START,
+                // },
+            },
+        });
         // if (result) {
         //     next(ApiError.badRequestException("Ninguém gosta de spam"));
         //     return;
         // }
         return res.status(200).json({
                 comment_id,
-                body,
+                result
 
             })
             // var point = {
