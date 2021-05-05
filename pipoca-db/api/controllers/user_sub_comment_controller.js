@@ -4,6 +4,7 @@ const models = require("../models");
 const Sequelize = require("sequelize");
 const { paginate } = require("../utils/paginate");
 
+const Op = Sequelize.Op;
 exports.store = async({ params, body, decoded }, res, next) => {
     try {
         const { comment_id } = params;
@@ -13,13 +14,13 @@ exports.store = async({ params, body, decoded }, res, next) => {
         const NOW = new Date();
         const result = await models.sub_comment.findOne({
             where: {
-                content: content,
+                // content: content,
                 // user_id: decoded.id,
                 // comment_id: comment_id,
-                // created_at: {
-                //     [Op.lt]: NOW,
-                //     [Op.gt]: TODAY_START,
-                // },
+                createdAt: {
+                    [Op.lt]: NOW,
+                    [Op.gt]: TODAY_START,
+                },
             },
         });
         // if (result) {
