@@ -86,9 +86,10 @@ exports.index = async({ params, query, decoded }, res, next) => {
         // const page = parseInt(query.page);
         // const limit = 4;
         // let group = ["sub_comment.id"];
-        // let search = {
-        //     where: { comment_id: comment_id },
-        // };
+        let search = {
+            comment_id: comment_id
+
+        };
         // let order = [];
 
         // order.push([Sequelize.literal("votes_total ASC")]);
@@ -162,7 +163,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
         //     },
         // ];
         const result = await models.sub_comment.findAll({
-            where: { comment_id: comment_id }
+            where: search
         });
         // const model = models.sub_comment;
         // const bagos = await paginate(
