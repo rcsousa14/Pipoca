@@ -26,7 +26,7 @@ class _FeedCallerState extends State<FeedCaller> {
      
       //TODO only for testing case its causing problems
       _timer =
-          Timer.periodic(Duration(seconds: 100), (timer) => widget.caller!());
+          Timer.periodic(Duration(seconds: 45), (timer) => widget.caller!());
     }
   }
 

@@ -61,7 +61,7 @@ class BagoListView extends StatelessWidget {
                   ),
                 )
               : model.data!.status == Status.COMPLETED &&
-                      model.data!.data!.posts!.data.length == 0
+                      model.data!.data!.bagos!.data.length == 0
                   ? Center(
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -113,21 +113,21 @@ class BagoListView extends StatelessWidget {
                                                     index, model.data!.data!));
                                       },
                                       child: BagoCard(
-                                        goToPage: ()=> model.post( bago:posts[index], isCreator: posts[index].post.creator.username == model.creator, filter: model.filter, page: model.currentIndex),
+                                        goToPage: ()=> model.post( bago:posts[index], isCreator: posts[index].info.creator.username == model.creator, filter: model.filter, page: model.currentIndex),
                                         filtered: model.filter,
-                                        links: posts[index].post.links,
+                                        links: posts[index].info.links,
                                         page: model.currentIndex,
-                                        bagoIndex: posts[index].post.id,
-                                        text: posts[index].post.content,
-                                        date: posts[index].post.createdAt,
-                                        points: posts[index].post.votesTotal,
+                                        bagoIndex: posts[index].info.id,
+                                        text: posts[index].info.content,
+                                        date: posts[index].info.createdAt,
+                                        points: posts[index].info.votesTotal,
                                         creator:
-                                            posts[index].post.creator.username,
-                                        image: posts[index].post.creator.avatar,
+                                            posts[index].info.creator.username,
+                                        image: posts[index].info.creator.avatar!,
                                         vote: posts[index].userVote,
                                         isVoted: posts[index].userVoted,
                                         commentsTotal:
-                                            posts[index].post.commentsTotal,
+                                            posts[index].info.commentsTotal,
                                      
                                       ),
                                     );

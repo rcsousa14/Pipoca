@@ -8,6 +8,8 @@ import 'package:pipoca/src/interfaces/stoppable_interface.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
+import 'package:pipoca/src/repositories/feed/comment_repository.dart';
 import 'package:pipoca/src/repositories/feed/feed_repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:stacked/stacked.dart';
@@ -15,6 +17,7 @@ import 'package:stacked/stacked.dart';
 @lazySingleton
 class FeedService extends IstoppableService with ReactiveServiceMixin {
   final _api = locator<FeedRepository>();
+  final _newapi = locator<CommentRepository>();
 
   // ignore: close_sinks
   late BehaviorSubject<FeedInfo> _infoController;
@@ -35,12 +38,18 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   Sink<ApiResponse<Feed>> get feedSink => _feedController.sink;
   Stream<ApiResponse<Feed>> get feedStream => _feedController.stream;
 
+  // ignore: close_sinks
+  late BehaviorSubject<ApiResponse<SinglePost>> _postController;
+  Sink<ApiResponse<SinglePost>> get postSink => _postController.sink;
+  Stream<ApiResponse<SinglePost>> get postStream => _postController.stream;
+
   // ignore: cancel_subscriptions
   StreamSubscription? _subscription;
 
   FeedService() {
     _feedController = BehaviorSubject<ApiResponse<Feed>>();
     _infoController = BehaviorSubject<FeedInfo>();
+    _postController = BehaviorSubject<ApiResponse<SinglePost>>();
     _subscription = _infoController.stream.listen((FeedInfo info) async {
       fetchFeed(info: info, isRefresh: true);
     });
@@ -59,18 +68,18 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
       );
 
       if (isRefresh == true) {
-        _posts = data.posts!.data;
+        _posts = data.bagos!.data;
         _posts.sort((b, a) {
-          return a.post.createdAt.compareTo(b.post.createdAt);
+          return a.info.createdAt.compareTo(b.info.createdAt);
         });
       } else {
-        data.posts!.data.forEach((data) {
-          if (_posts.any((post) => post.post.id == data.post.id) == false) {
+        data.bagos!.data.forEach((data) {
+          if (_posts.any((post) => post.info.id == data.info.id) == false) {
             _posts.add(data);
           }
         });
         _posts.sort((b, a) {
-          return a.post.createdAt.compareTo(b.post.createdAt);
+          return a.info.createdAt.compareTo(b.info.createdAt);
         });
       }
 
@@ -101,6 +110,17 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     }
   }
 
+  Future singlePost({required Coordinates coords, required int postId}) async {
+    try {
+      SinglePost data =
+          await _newapi.getPostData(coords: coords, postId: postId);
+      print(data);
+      postSink.add(ApiResponse.completed(data));
+    } catch (e) {
+      postSink.add(ApiResponse.error(e.toString()));
+    }
+  }
+
   Future<ApiResponse<Generic>> pointPost({required PostPoint point}) async {
     ApiResponse.loading('loading');
     try {
@@ -113,7 +133,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
   void delete(int id) {
     print(_posts.length);
-    _posts.removeWhere((element) => element.post.id == id);
+    _posts.removeWhere((element) => element.info.id == id);
     print(_posts.length);
   }
 

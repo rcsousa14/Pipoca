@@ -70,10 +70,10 @@ class BagoListViewModel extends StreamViewModel<ApiResponse<Feed>> {
 
   Future handleItemCreated(int index, Feed feed) async {
     var itemPosition = index + 5;
-    var itemRequestThreshold = feed.posts!.limit;
+    var itemRequestThreshold = feed.bagos!.limit;
     var requestMoreData = itemPosition % itemRequestThreshold == 0;
-    var pageToRequest = feed.posts!.nextPage;
-    if (requestMoreData && pageToRequest > _currentIndex) {
+    var pageToRequest = feed.bagos!.nextPage;
+    if (requestMoreData && pageToRequest! > _currentIndex) {
       _currentIndex = pageToRequest;
       notifyListeners();
       _showLoadingIndicator();

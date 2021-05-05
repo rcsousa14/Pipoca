@@ -4,7 +4,9 @@ import 'package:pipoca/src/constants/api_helpers/base_helper.dart';
 import 'package:pipoca/src/constants/api_helpers/header.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
+import 'package:pipoca/src/models/post_comments_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 
 @lazySingleton
@@ -14,10 +16,10 @@ class CommentRepository {
   final _authenticationService = locator<AuthenticationService>();
 
   Future<SinglePost> getPostData(
-      {required double lat, required double lng, required int postId}) async {
+      {required Coordinates coords, required int postId}) async {
     Map<String, String> queryParams = {
-      'lat': lat.toString(),
-      'lng': lng.toString(),
+      'lat': coords.latitude.toString(),
+      'lng': coords.longitude.toString(),
     };
     String queryString = Uri(queryParameters: queryParams).query;
     final response = await _helper.get(
@@ -36,13 +38,19 @@ class CommentRepository {
     Generic created = Generic.fromJson(response);
     return created;
   }
- //TODO: need to do this part at home
-  Future<Generic> getCommentData({ required int postId}) async {
+
+  Future<Comentario> getCommentData({required Coordinates coords, required int postId, required int page, required String filter}) async {
+     Map<String, String> queryParams = {
+      'lat': coords.latitude.toString(),
+      'lng': coords.longitude.toString(),
+      'page': page.toString(),
+      'filter': filter
+    };
     final response = await _helper.get(
-        query: '$postId/comments',
+        query: '$postId/comments?$queryParams',
         header: _header.setTokenHeaders(_authenticationService.token),
         );
-    Generic created = Generic.fromJson(response);
+    Comentario created = Comentario.fromJson(response);
     return created;
   }
 }

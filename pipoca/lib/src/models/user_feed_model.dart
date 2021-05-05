@@ -23,14 +23,14 @@ class CheckData {
 class Feed {
   bool? success;
   String? message;
-  Posts? posts;
+  Bagos? bagos;
 
-  Feed({this.message, this.posts, this.success});
+  Feed({this.message, this.bagos, this.success});
 
   Feed.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    posts = new Posts.fromJson(json['posts']);
+    bagos = new Bagos.fromJson(json['bagos']);
   }
 
   Map<String, dynamic> toJson() {
@@ -38,7 +38,7 @@ class Feed {
     data['success'] = this.success;
     data['message'] = this.message;
 
-    data['posts'] = this.posts!.toJson();
+    data['bagos'] = this.bagos!.toJson();
 
     return data;
   }
@@ -66,34 +66,34 @@ class SinglePost {
   }
 }
 
-
-class Posts {
-  late int previousPage;
+class Bagos {
+  int? previousPage;
   late int currentPage;
-  late int nextPage;
+  int? nextPage;
   late int total;
   late int limit;
   late List<Data> data;
 
-  Posts(
-      {required this.previousPage,
+  Bagos(
+      {this.previousPage,
       required this.currentPage,
-      required this.nextPage,
+      this.nextPage,
       required this.total,
       required this.limit,
       required this.data});
 
-  Posts.fromJson(Map<String, dynamic> json) {
+  Bagos.fromJson(Map<String, dynamic> json) {
     previousPage = json['previousPage'];
     currentPage = json['currentPage'];
     nextPage = json['nextPage'];
     total = json['total'];
     limit = json['limit'];
-
-    data = <Data>[];
-    json['data'].forEach((v) {
-      data.add(new Data.fromJson(v));
-    });
+    if (json['data'] != null) {
+      data = <Data>[];
+      json['data'].forEach((v) {
+        data.add(new Data.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -114,19 +114,22 @@ class Data {
   late bool userVoted;
   late int userVote;
   late bool userIsNear;
-  late Post post;
+  late ReplyTo replyTo;
+  late Info info;
 
   Data(
       {required this.userVoted,
       required this.userVote,
       required this.userIsNear,
-      required this.post});
+      required this.replyTo,
+      required this.info});
 
   Data.fromJson(Map<String, dynamic> json) {
     userVoted = json['user_voted'];
     userVote = json['user_vote'];
     userIsNear = json['user_isNear'];
-    post = new Post.fromJson(json['post']);
+    replyTo = ReplyTo.fromJson(json['reply_to']);
+    info = new Info.fromJson(json['info']);
   }
 
   Map<String, dynamic> toJson() {
@@ -134,14 +137,33 @@ class Data {
     data['user_voted'] = this.userVoted;
     data['user_vote'] = this.userVote;
     data['user_isNear'] = this.userIsNear;
+    data['reply_to'] = this.replyTo.toJson();
 
-    data['post'] = this.post.toJson();
+    data['info'] = this.info.toJson();
 
     return data;
   }
 }
+class ReplyTo {
+  String? username;
+  String? fcmToken;
 
-class Post {
+  ReplyTo({this.username, this.fcmToken});
+
+  ReplyTo.fromJson(Map<String, dynamic> json) {
+    username = json['username'];
+    fcmToken = json['fcm_token'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['username'] = this.username;
+    data['fcm_token'] = this.fcmToken;
+    return data;
+  }
+}
+
+class Info {
   late int id;
   late String content;
   late Links links;
@@ -149,11 +171,10 @@ class Post {
   late int commentsTotal;
   late int flags;
   late bool isFlagged;
-  late bool isDeleted;
   late String createdAt;
   late Creator creator;
 
-  Post(
+  Info(
       {required this.id,
       required this.content,
       required this.links,
@@ -161,11 +182,10 @@ class Post {
       required this.commentsTotal,
       required this.flags,
       required this.isFlagged,
-      required this.isDeleted,
       required this.createdAt,
       required this.creator});
 
-  Post.fromJson(Map<String, dynamic> json) {
+  Info.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];
     links = new Links.fromJson(json['links']);
@@ -173,9 +193,8 @@ class Post {
     commentsTotal = json['comments_total'];
     flags = json['flags'];
     isFlagged = json['is_flagged'];
-    isDeleted = json['is_deleted'];
     createdAt = json['created_at'];
-    creator = new Creator.fromJson(json['creator']);
+    creator = Creator.fromJson(json['creator']);
   }
 
   Map<String, dynamic> toJson() {
@@ -187,7 +206,6 @@ class Post {
     data['comments_total'] = this.commentsTotal;
     data['flags'] = this.flags;
     data['is_flagged'] = this.isFlagged;
-    data['is_deleted'] = this.isDeleted;
     data['created_at'] = this.createdAt;
     data['creator'] = this.creator.toJson();
 
@@ -240,16 +258,15 @@ class Creator {
   late int id;
   late String email;
   late String username;
-  late String avatar;
+  String? avatar;
   String? fcmToken;
-
   late bool active;
 
   Creator(
       {required this.id,
       required this.email,
       required this.username,
-      required this.avatar,
+      this.avatar,
       this.fcmToken,
       required this.active});
 

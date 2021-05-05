@@ -3,6 +3,7 @@ import 'package:detectable_text_field/widgets/detectable_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
 import 'package:pipoca/src/constants/widgets/smart_widgets/bago_card_widget.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
@@ -30,6 +31,7 @@ class PostView extends HookWidget {
     var text = useTextEditingController();
     return ViewModelBuilder<PostViewModel>.reactive(
       builder: (context, model, child) {
+      
         Widget loadingIndicator = focus.hasFocus == true
             ? GestureDetector(
                 onTap: () {
@@ -57,20 +59,38 @@ class PostView extends HookWidget {
               ListView(
                 physics: BouncingScrollPhysics(),
                 children: [
-                  BagoCard(
-                    filtered: filter,
-                    links: bago.post.links,
-                    page: page,
-                    bagoIndex: bago.post.id,
-                    text: bago.post.content,
-                    date: bago.post.createdAt,
-                    points: bago.post.votesTotal,
-                    creator: bago.post.creator.username,
-                    image: bago.post.creator.avatar,
-                    vote: bago.userVote,
-                    isVoted: bago.userVoted,
-                    commentsTotal: bago.post.commentsTotal,
-                  ),
+                  !model.dataReady
+                      ? BagoCard(
+                          filtered: filter,
+                          links: bago.info.links,
+                          page: page,
+                          bagoIndex: bago.info.id,
+                          text: bago.info.content,
+                          date: bago.info.createdAt,
+                          points: bago.info.votesTotal,
+                          creator: bago.info.creator.username,
+                          image: bago.info.creator.avatar!,
+                          vote: bago.userVote,
+                          isVoted: bago.userVoted,
+                          commentsTotal: bago.info.commentsTotal,
+                        )
+                      : FeedCaller(
+                          caller: () => print('loading data'),
+                          child: BagoCard(
+                              text: model.data!.data!.data!.info.content,
+                              filtered: filter,
+                              date: model.data!.data!.data!.info.createdAt,
+                              points: model.data!.data!.data!.info.votesTotal,
+                              creator:
+                                  model.data!.data!.data!.info.creator.username,
+                              image:
+                                  model.data!.data!.data!.info.creator.avatar!,
+                              commentsTotal:
+                                  model.data!.data!.data!.info.commentsTotal,
+                              vote: model.data!.data!.data!.userVote,
+                              page: page,
+                              isVoted: model.data!.data!.data!.userVoted),
+                        ),
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
@@ -106,7 +126,7 @@ class PostView extends HookWidget {
           ),
         );
       },
-      viewModelBuilder: () => PostViewModel(bago.post.id),
+      viewModelBuilder: () => PostViewModel(bago.info.id),
     );
   }
 }
