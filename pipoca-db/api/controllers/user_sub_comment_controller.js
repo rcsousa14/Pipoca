@@ -81,107 +81,105 @@ exports.store = async({ params, body, decoded }, res, next) => {
 exports.index = async({ params, query, decoded }, res, next) => {
     try {
         const { comment_id } = params;
-        // const { lat, lng } = query;
-        // const id = decoded.id;
-        // const page = parseInt(query.page);
-        // const limit = 4;
-        // let group = ["sub_comment.id"];
+        const { lat, lng } = query;
+        const id = decoded.id;
+        const page = parseInt(query.page);
+        const limit = 4;
+        let group = ["sub_comment.id"];
         let search = {
             comment_id: comment_id
 
         };
-        // let order = [];
+        let order = [];
 
-        // order.push([Sequelize.literal("votes_total ASC")]);
+        order.push([Sequelize.literal("votes_total ASC")]);
 
-        // let attributes = [
-        //     "id",
-        //     "content",
-        //     "flags",
-        //     "is_flagged",
-        //     "createdAt",
-        //     "coordinates", [
-        //         Sequelize.literal(
-        //             `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
-        //         ),
-        //         "vote",
-        //     ],
-        //     [
-        //         Sequelize.literal(
-        //             `(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`
-        //         ),
-        //         "votes_total",
-        //     ],
-        // ];
-        // let include = [{
-        //         model: models.user,
-        //         as: "creator",
-        //         attributes: {
-        //             exclude: [
-        //                 "createdAt",
-        //                 "updatedAt",
-        //                 "deleted_at",
-        //                 "birthday",
-        //                 "reset_password_token",
-        //                 "reset_password_expiration",
-        //                 "refresh_token",
-        //                 "role_id",
-        //                 "bio",
-        //                 "type",
-        //                 "password",
-        //             ],
-        //         },
-        //     },
-        //     {
-        //         model: models.user,
-        //         as: "replyTo",
-        //         attributes: {
-        //             exclude: [
-        //                 "createdAt",
-        //                 "updatedAt",
-        //                 "deleted_at",
-        //                 "birthday",
-        //                 "reset_password_token",
-        //                 "reset_password_expiration",
-        //                 "refresh_token",
-        //                 "role_id",
-        //                 "bio",
-        //                 "type",
-        //                 "password",
-        //                 "email",
-        //                 "avatar",
-        //                 "active",
-        //             ],
-        //         },
-        //     },
-        //     {
-        //         model: models.link,
-        //         as: "links",
-        //         required: false,
-        //         attributes: ["url"],
-        //         through: { attributes: [] },
-        //     },
-        // ];
-        const result = await models.sub_comment.findAll({
-            where: search
-        });
-        // const model = models.sub_comment;
-        // const bagos = await paginate(
-        //     model,
-        //     page,
-        //     limit,
-        //     search,
-        //     order,
-        //     attributes,
-        //     include,
-        //     group,
-        //     lat,
-        //     lng
-        // );
+        let attributes = [
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "createdAt",
+            "coordinates", [
+                Sequelize.literal(
+                    `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
+                ),
+                "vote",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`
+                ),
+                "votes_total",
+            ],
+        ];
+        let include = [{
+                model: models.user,
+                as: "creator",
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "deleted_at",
+                        "birthday",
+                        "reset_password_token",
+                        "reset_password_expiration",
+                        "refresh_token",
+                        "role_id",
+                        "bio",
+                        "type",
+                        "password",
+                    ],
+                },
+            },
+            {
+                model: models.user,
+                as: "replyTo",
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "deleted_at",
+                        "birthday",
+                        "reset_password_token",
+                        "reset_password_expiration",
+                        "refresh_token",
+                        "role_id",
+                        "bio",
+                        "type",
+                        "password",
+                        "email",
+                        "avatar",
+                        "active",
+                    ],
+                },
+            },
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
+        ];
+
+        const model = models.sub_comment;
+        const bagos = await paginate(
+            model,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng
+        );
         const data = {
             success: true,
             message: "Todos os sub comentários ",
-            result,
+            bagos,
         };
 
         return res.status(200).send(data);
