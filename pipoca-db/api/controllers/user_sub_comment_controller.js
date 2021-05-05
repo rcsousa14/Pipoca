@@ -131,28 +131,28 @@ exports.index = async({ params, query, decoded }, res, next) => {
                     ],
                 },
             },
-            // {
-            //     model: models.user,
-            //     as: "replyTo",
-            //     attributes: {
-            //         exclude: [
-            //             "createdAt",
-            //             "updatedAt",
-            //             "deleted_at",
-            //             "birthday",
-            //             "reset_password_token",
-            //             "reset_password_expiration",
-            //             "refresh_token",
-            //             "role_id",
-            //             "bio",
-            //             "type",
-            //             "password",
-            //             "email",
-            //             "avatar",
-            //             "active",
-            //         ],
-            //     },
-            // },
+            {
+                model: models.user,
+                as: "replyTo",
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "deleted_at",
+                        "birthday",
+                        "reset_password_token",
+                        "reset_password_expiration",
+                        "refresh_token",
+                        "role_id",
+                        "bio",
+                        "type",
+                        "password",
+                        "email",
+                        "avatar",
+                        "active",
+                    ],
+                },
+            },
             {
                 model: models.link,
                 as: "links",
@@ -161,23 +161,26 @@ exports.index = async({ params, query, decoded }, res, next) => {
                 through: { attributes: [] },
             },
         ];
-        const model = models.sub_comment;
-        const bagos = await paginate(
-            model,
-            page,
-            limit,
-            search,
-            order,
-            attributes,
-            include,
-            group,
-            lat,
-            lng
-        );
+        const result = await models.sub_comment.findAll({
+            where: where
+        });
+        // const model = models.sub_comment;
+        // const bagos = await paginate(
+        //     model,
+        //     page,
+        //     limit,
+        //     search,
+        //     order,
+        //     attributes,
+        //     include,
+        //     group,
+        //     lat,
+        //     lng
+        // );
         const data = {
             success: true,
             message: "Todos os sub comentários ",
-            bagos,
+            result,
         };
 
         return res.status(200).send(data);
