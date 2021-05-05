@@ -14,71 +14,67 @@ exports.store = async({ params, body, decoded }, res, next) => {
         const NOW = new Date();
         const result = await models.sub_comment.findOne({
             where: {
-                // content: content,
-                // user_id: decoded.id,
-                // comment_id: comment_id,
+                content: content,
+                user_id: decoded.id,
+                comment_id: comment_id,
                 createdAt: {
                     [Op.lt]: NOW,
                     [Op.gt]: TODAY_START,
                 },
             },
         });
-        // if (result) {
-        //     next(ApiError.badRequestException("Ninguém gosta de spam"));
-        //     return;
-        // // }
-        return res.status(200).json({
-                comment_id,
-                result
+        if (result) {
+            next(ApiError.badRequestException("Ninguém gosta de spam"));
+            return;
+        }
 
-            })
-            // var point = {
-            //     type: "Point",
-            //     coordinates: [longitude, latitude],
-            //     crs: { type: "name", properties: { name: "EPSG:4326" } },
-            // };
+        var point = {
+            type: "Point",
+            coordinates: [longitude, latitude],
+            crs: { type: "name", properties: { name: "EPSG:4326" } },
+        };
 
-        // const sub_comment = await models.sub_comment.create({
-        //     user_id: decoded.id,
-        //     reply_to_id: reply_to_id,
-        //     comment_id: comment_id,
-        //     content: content,
-        //     coordinates: point,
-        // });
+        const sub_comment = await models.sub_comment.create({
+            user_id: decoded.id,
+            reply_to_id: reply_to_id,
+            comment_id: comment_id,
+            content: content,
+            coordinates: point,
+        });
 
-        // if (!hashes.length == 0 && hashes.length > 0) {
-        //     for (var hash of hashes) {
-        //         const [tag] = await models.tag.findOrCreate({
-        //             where: { hash: hash },
-        //         });
+        if (!hashes.length == 0 && hashes.length > 0) {
+            for (var hash of hashes) {
+                const [tag] = await models.tag.findOrCreate({
+                    where: { hash: hash },
+                });
 
-        //         await models.post_tag.create({
-        //             sub_comment_id: sub_comment.id,
-        //             tag_id: tag.id,
-        //         });
-        //     }
-        // }
-        // if (!links.length == 0 && links.length > 0) {
-        //     const [link] = await models.link.findOrCreate({
-        //         where: { url: links[0] },
-        //     });
+                await models.post_tag.create({
+                    sub_comment_id: sub_comment.id,
+                    tag_id: tag.id,
+                });
+            }
+        }
+        if (!links.length == 0 && links.length > 0) {
+            const [link] = await models.link.findOrCreate({
+                where: { url: links[0] },
+            });
 
-        //     await models.post_link.create({
-        //         sub_comment_id: sub_comment.id,
-        //         link_id: link.id,
-        //     });
-        // }
+            await models.post_link.create({
+                sub_comment_id: sub_comment.id,
+                link_id: link.id,
+            });
+        }
 
-        // return res.status(201).send({
-        //     success: true,
-        //     message: " Sub comentário criado com sucesso!",
-        // });
+        return res.status(201).send({
+            success: true,
+            message: " Sub comentário criado com sucesso!",
+        });
     } catch (error) {
-        return res.status(500).send({ mesage: error })
-            // next(
-            //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
-            // );
-            // return;
+
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
 
