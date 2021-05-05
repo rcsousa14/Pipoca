@@ -16,7 +16,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
                 content: content,
                 user_id: decoded.id,
                 comment_id: comment_id,
-                createdAt: {
+                created_at: {
                     [Op.lt]: NOW,
                     [Op.gt]: TODAY_START,
                 },
