@@ -149,7 +149,6 @@ exports.index = async({ query, decoded }, res, next) => {
             "content",
             "flags",
             "is_flagged",
-
             "createdAt",
             "coordinates", [
                 Sequelize.literal(

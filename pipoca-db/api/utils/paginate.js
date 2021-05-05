@@ -74,23 +74,23 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
 
 
 
-        data.push({
-            "user_voted": row.vote ? true : false,
-            "user_vote": row.vote == null ? 0 : row.vote,
-            "user_isNear": isNear,
-            "reply_to": row.replyTo != null ? row.replyTo : '',
-            "info": {
-                "id": row.id,
-                "content": row.content,
-                "links": linkInfo,
-                "votes_total": row.votes_total == null ? 0 : row.votes_total,
-                "comments_total": row.comments_total,
-                "flags": row.flags,
-                "is_flagged": row.is_flagged,
-                "created_at": row.createdAt,
-                "creator": row.creator
-            }
-        });
+        // data.push({
+        //     "user_voted": row.vote ? true : false,
+        //     "user_vote": row.vote == null ? 0 : row.vote,
+        //     "user_isNear": isNear,
+        //     "reply_to": row.replyTo != null ? row.replyTo : '',
+        //     "info": {
+        //         "id": row.id,
+        //         "content": row.content,
+        //         "links": linkInfo,
+        //         "votes_total": row.votes_total == null ? 0 : row.votes_total,
+        //         "comments_total": row.comments_total,
+        //         "flags": row.flags,
+        //         "is_flagged": row.is_flagged,
+        //         "created_at": row.createdAt,
+        //         "creator": row.creator
+        //     }
+        // });
 
 
 
@@ -106,7 +106,7 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
         nextPage: this.getNextPage(page, limit, count.length),
         total: count.length,
         limit: limit,
-        data: data
+        data: rows
     };
 
 }

@@ -85,104 +85,102 @@ exports.index = async({ params, query, decoded }, res, next) => {
         const id = decoded.id;
         const page = parseInt(query.page);
         const limit = 4;
-        // let group = ["sub_comment.id"];
-        // let search = {
-        //     where: { comment_id: comment_id },
-        // };
-        // let order = [];
+        let group = ["sub_comment.id"];
+        let search = {
+            where: { comment_id: comment_id },
+        };
+        let order = [];
 
-        // order.push([Sequelize.literal("votes_total ASC")]);
+        order.push([Sequelize.literal("votes_total ASC")]);
 
-        // let attributes = [
-        //     "id",
-        //     "content",
-        //     "flags",
-        //     "is_flagged",
-        //     "createdAt",
+        let attributes = [
+            "id",
+            "content",
+            "flags",
+            "is_flagged",
+            "createdAt",
+            "coordinates", [
+                Sequelize.literal(
+                    `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
+                ),
+                "vote",
+            ],
+            [
+                Sequelize.literal(
+                    `(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`
+                ),
+                "votes_total",
+            ],
+        ];
+        let include = [{
+                model: models.user,
+                as: "creator",
+                attributes: {
+                    exclude: [
+                        "createdAt",
+                        "updatedAt",
+                        "deleted_at",
+                        "birthday",
+                        "reset_password_token",
+                        "reset_password_expiration",
+                        "refresh_token",
+                        "role_id",
+                        "bio",
+                        "type",
+                        "password",
+                    ],
+                },
+            },
+            // {
+            //     model: models.user,
+            //     as: "replyTo",
+            //     attributes: {
+            //         exclude: [
+            //             "createdAt",
+            //             "updatedAt",
+            //             "deleted_at",
+            //             "birthday",
+            //             "reset_password_token",
+            //             "reset_password_expiration",
+            //             "refresh_token",
+            //             "role_id",
+            //             "bio",
+            //             "type",
+            //             "password",
+            //             "email",
+            //             "avatar",
+            //             "active",
+            //         ],
+            //     },
+            // },
+            {
+                model: models.link,
+                as: "links",
+                required: false,
+                attributes: ["url"],
+                through: { attributes: [] },
+            },
+        ];
+        const model = models.sub_comment;
+        const bagos = await paginate(
+            model,
+            page,
+            limit,
+            search,
+            order,
+            attributes,
+            include,
+            group,
+            lat,
+            lng
+        );
+        const data = {
+            success: true,
+            message: "Todos os sub comentários ",
+            bagos,
+        };
 
-        //     "coordinates", [
-        //         Sequelize.literal(
-        //             `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
-        //         ),
-        //         "vote",
-        //     ],
-        //     [
-        //         Sequelize.literal(
-        //             `(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`
-        //         ),
-        //         "votes_total",
-        //     ],
-        // ];
-        // let include = [{
-        //         model: models.user,
-        //         as: "creator",
-        //         attributes: {
-        //             exclude: [
-        //                 "createdAt",
-        //                 "updatedAt",
-        //                 "deleted_at",
-        //                 "birthday",
-        //                 "reset_password_token",
-        //                 "reset_password_expiration",
-        //                 "refresh_token",
-        //                 "role_id",
-        //                 "bio",
-        //                 "type",
-        //                 "password",
-        //             ],
-        //         },
-        //     },
-        //     {
-        //         model: models.user,
-        //         as: "replyTo",
-        //         attributes: {
-        //             exclude: [
-        //                 "createdAt",
-        //                 "updatedAt",
-        //                 "deleted_at",
-        //                 "birthday",
-        //                 "reset_password_token",
-        //                 "reset_password_expiration",
-        //                 "refresh_token",
-        //                 "role_id",
-        //                 "bio",
-        //                 "type",
-        //                 "password",
-        //                 "email",
-        //                 "avatar",
-        //                 "active",
-        //             ],
-        //         },
-        //     },
-        //     {
-        //         model: models.link,
-        //         as: "links",
-        //         required: false,
-        //         attributes: ["url"],
-        //         through: { attributes: [] },
-        //     },
-        // ];
-        // const model = models.sub_comment;
-        // const bagos = await paginate(
-        //     model,
-
-        //     page,
-        //     limit,
-        //     search,
-        //     order,
-        //     attributes,
-        //     include,
-        //     group,
-        //     lat,
-        //     lng
-        // );
-        // const data = {
-        //     success: true,
-        //     message: "Todos os sub comentários ",
-        //     bagos,
-        // };
-
-        return res.status(200).send({ params, query });
+        return res.status(200).send(data);
     } catch (error) {
         next(
             ApiError.internalException("Não conseguiu se comunicar com o servidor")
