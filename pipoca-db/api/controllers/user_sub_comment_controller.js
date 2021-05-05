@@ -11,12 +11,12 @@ exports.store = async({ params, body, decoded }, res, next) => {
 
         const TODAY_START = new Date().setHours(0, 0, 0, 0);
         const NOW = new Date();
-        const result = await models.sub_comment.findAll({
+        const result = await models.sub_comment.findOne({
             where: {
-                content: content,
-                user_id: decoded.id,
-                comment_id: comment_id,
-                created_at: {
+                // content: content,
+                // user_id: decoded.id,
+                // comment_id: comment_id,
+                createdAt: {
                     [Op.lt]: NOW,
                     [Op.gt]: TODAY_START,
                 },
