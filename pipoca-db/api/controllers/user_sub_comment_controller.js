@@ -137,6 +137,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
                 as: "replyTo",
                 attributes: {
                     exclude: [
+                        "id",
                         "createdAt",
                         "updatedAt",
                         "deleted_at",
