@@ -95,7 +95,7 @@ exports.index = async({ query, decoded }, res, next) => {
                     // },
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
-                            "ST_DWithin",
+                            "ST_Distance_Sphere",
                             Sequelize.col("post.coordinates"),
                             Sequelize.fn(
                                 "ST_SetSRID",
