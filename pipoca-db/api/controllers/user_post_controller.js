@@ -89,10 +89,10 @@ exports.index = async({ query, decoded }, res, next) => {
                     [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
                 );
                 search = {
-                    // createdAt: {
-                    //     [Op.lt]: NOW,
-                    //     [Op.gt]: TODAY_START,
-                    // },
+                    createdAt: {
+                        [Op.lt]: NOW,
+                        [Op.gt]: TODAY_START,
+                    },
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
                             "ST_DWithin",
@@ -102,7 +102,7 @@ exports.index = async({ query, decoded }, res, next) => {
                                 Sequelize.fn("ST_MakePoint", lng, lat),
                                 4326
                             ),
-                            0.01
+                            0.1
                         ),
                         true
                     ),
