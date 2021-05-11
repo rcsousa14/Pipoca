@@ -56,8 +56,8 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
 
 
         let isNear;
-        if (distance <= 1110) isNear = true;
-        if (distance > 1110) isNear = false;
+        if (distance <= 950) isNear = true;
+        if (distance > 950) isNear = false;
 
 
 
