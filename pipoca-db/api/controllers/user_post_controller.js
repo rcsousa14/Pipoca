@@ -97,7 +97,7 @@ exports.index = async({ query, decoded }, res, next) => {
                     },
                     [Op.and]: Sequelize.where(
                         Sequelize.literal(
-                            `ST_DWithin(post.coordinates, ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326), 950)`
+                            `ST_DWithin(post.coordinates, ST_MakePoint(${lng}, ${lat}), 950)`
                         ),
                         true
 
