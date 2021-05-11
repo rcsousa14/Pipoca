@@ -96,22 +96,19 @@ exports.index = async({ query, decoded }, res, next) => {
                         [Op.gt]: TODAY_START,
                     },
                     [Op.and]: Sequelize.where(
-                        Sequelize.literal(
-                            `ST_Distance_Sphere(post.coordinates, ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326), 950)`
+
+
+                        Sequelize.fn(
+                            "ST_Distance_Sphere",
+                            Sequelize.col("post.coordinates"),
+                            Sequelize.fn(
+
+                                Sequelize.fn("ST_MakePoint", lng, lat),
+                                4326
+                            ),
+                            950
                         ),
                         true
-
-                        // Sequelize.fn(
-                        //     "ST_DWithin",
-                        //     Sequelize.col("post.coordinates"),
-                        //     Sequelize.fn(
-
-                        //         Sequelize.fn("ST_MakePoint", lng, lat),
-                        //         4326
-                        //     ),
-                        //     950
-                        // ),
-                        // true
                     ),
 
                     /**
