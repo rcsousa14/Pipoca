@@ -99,7 +99,7 @@ exports.index = async({ query, decoded }, res, next) => {
 
 
                         Sequelize.fn(
-                            "ST_Distance_Sphere",
+                            "ST_DWithin",
                             Sequelize.col("post.coordinates"),
                             Sequelize.fn(
 
