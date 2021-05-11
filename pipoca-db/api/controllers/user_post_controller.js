@@ -96,17 +96,21 @@ exports.index = async({ query, decoded }, res, next) => {
                         [Op.gt]: TODAY_START,
                     },
                     [Op.and]: Sequelize.where(
-                        Sequelize.fn(
-                            "ST_DWithin",
-                            Sequelize.col("post.coordinates"),
-                            Sequelize.fn(
-                                "ST_SetSRID",
-                                Sequelize.fn("ST_MakePoint", lng, lat),
-                                4326
-                            ),
-                            950
-                        ),
-                        true
+                        Sequelize.literal(
+                            `ST_DWithin(post.coordinates, ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326), 950)`
+                        )
+
+                        // Sequelize.fn(
+                        //     "ST_DWithin",
+                        //     Sequelize.col("post.coordinates"),
+                        //     Sequelize.fn(
+
+                        //         Sequelize.fn("ST_MakePoint", lng, lat),
+                        //         4326
+                        //     ),
+                        //     950
+                        // ),
+                        // true
                     ),
 
                     /**
