@@ -91,14 +91,23 @@ exports.index = async({ query, decoded }, res, next) => {
                 );
                 search = {
 
-                    createdAt: {
-                        [Op.lt]: NOW,
-                        [Op.gt]: TODAY_START,
-                    },
-                    [Op.and]: Sequelize.where(
-                        Sequelize.literal(
-                            `ST_DWithin(post.coordinates, ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326), 950)`
-                        )
+                        createdAt: {
+                            [Op.lt]: NOW,
+                            [Op.gt]: TODAY_START,
+                        },
+                        [Op.and]: Sequelize.where(
+                            Sequelize.fn(
+                                "ST_DWithin",
+                                Sequelize.col("post.coordinates"),
+                                Sequelize.fn(
+                                    "ST_SetSRID",
+                                    Sequelize.fn("ST_MakePoint", lng, lat),
+                                    4326
+                                ),
+                                950
+                            ),
+                            true
+                        ),
 
                         // Sequelize.fn(
                         //     "ST_DWithin",
@@ -125,112 +134,112 @@ exports.index = async({ query, decoded }, res, next) => {
                                                                 950),
                                                             true)
                                                              */
-                };
-            }
-            if (query.filter == "date") {
-                order.push(["createdAt", "DESC"]);
-                search = {
-
-                    [Op.and]: Sequelize.where(
-                        Sequelize.fn(
-                            "ST_DWithin",
-                            Sequelize.col("post.coordinates"),
-                            Sequelize.fn(
-                                "ST_SetSRID",
-                                Sequelize.fn("ST_MakePoint", lng, lat),
-                                4326
-                            ),
-                            950
-                        ),
-                        true
-                    ),
-                };
-            }
+            };
         }
+        if (query.filter == "date") {
+            order.push(["createdAt", "DESC"]);
+            search = {
 
-        let attributes = [
-            "id",
-            "content",
-            "flags",
-            "is_flagged",
-            "createdAt",
-            "coordinates", [
-                Sequelize.literal(
-                    `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
+                [Op.and]: Sequelize.where(
+                    Sequelize.fn(
+                        "ST_DWithin",
+                        Sequelize.col("post.coordinates"),
+                        Sequelize.fn(
+                            "ST_SetSRID",
+                            Sequelize.fn("ST_MakePoint", lng, lat),
+                            4326
+                        ),
+                        950
+                    ),
+                    true
                 ),
-                "vote"
-            ],
-            [
-                Sequelize.literal(
-                    `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
-                ),
-                "votes_total",
-            ],
-            [
-                Sequelize.literal(
-                    `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
-                ),
-                "comments_total",
-            ],
-        ];
-
-        let include = [{
-                model: models.user,
-                as: "creator",
-                attributes: {
-                    exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "deleted_at",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "type",
-                        "password",
-                    ],
-                },
-            },
-            {
-                model: models.link,
-                as: "links",
-                required: false,
-                attributes: ["url"],
-                through: { attributes: [] },
-            },
-        ];
-        const model = models.post;
-        const bagos = await paginate(
-            model,
-
-            page,
-            limit,
-            search,
-            order,
-            attributes,
-            include,
-            group,
-            lat,
-            lng,
-
-        );
-
-        const data = {
-            success: true,
-            message: "Todos os Bagos proximo de ti",
-            bagos,
-        };
-
-        return res.status(200).json(data);
-    } catch (error) {
-
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+            };
+        }
     }
+
+    let attributes = [
+        "id",
+        "content",
+        "flags",
+        "is_flagged",
+        "createdAt",
+        "coordinates", [
+            Sequelize.literal(
+                `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
+            ),
+            "vote"
+        ],
+        [
+            Sequelize.literal(
+                `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = post.id)`
+            ),
+            "votes_total",
+        ],
+        [
+            Sequelize.literal(
+                `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = post.id)`
+            ),
+            "comments_total",
+        ],
+    ];
+
+    let include = [{
+            model: models.user,
+            as: "creator",
+            attributes: {
+                exclude: [
+                    "createdAt",
+                    "updatedAt",
+                    "deleted_at",
+                    "birthday",
+                    "reset_password_token",
+                    "reset_password_expiration",
+                    "refresh_token",
+                    "role_id",
+                    "bio",
+                    "type",
+                    "password",
+                ],
+            },
+        },
+        {
+            model: models.link,
+            as: "links",
+            required: false,
+            attributes: ["url"],
+            through: { attributes: [] },
+        },
+    ];
+    const model = models.post;
+    const bagos = await paginate(
+        model,
+
+        page,
+        limit,
+        search,
+        order,
+        attributes,
+        include,
+        group,
+        lat,
+        lng,
+
+    );
+
+    const data = {
+        success: true,
+        message: "Todos os Bagos proximo de ti",
+        bagos,
+    };
+
+    return res.status(200).json(data);
+} catch (error) {
+
+    next(
+        ApiError.internalException("Não conseguiu se comunicar com o servidor")
+    );
+    return;
+}
 };
 // deletes users posts
 exports.soft = async({ params, decoded }, res, next) => {
