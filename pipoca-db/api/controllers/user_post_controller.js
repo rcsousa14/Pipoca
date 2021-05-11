@@ -68,7 +68,6 @@ exports.store = async({ body, decoded }, res, next) => {
 //feed shows all posts that are near by you can sort it for posts with higher points
 exports.index = async({ query, decoded }, res, next) => {
     try {
-
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -81,7 +80,7 @@ exports.index = async({ query, decoded }, res, next) => {
         const TODAY_START = new Date(
             NOW.getFullYear(),
             NOW.getMonth(),
-            NOW.getDate() - 3
+            NOW.getDate() - 5
         );
 
         if (lat && lng) {
@@ -90,19 +89,16 @@ exports.index = async({ query, decoded }, res, next) => {
                     [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
                 );
                 search = {
-
-                    createdAt: {
-                        [Op.lt]: NOW,
-                        [Op.gt]: TODAY_START,
-                    },
+                    // createdAt: {
+                    //     [Op.lt]: NOW,
+                    //     [Op.gt]: TODAY_START,
+                    // },
                     [Op.and]: Sequelize.where(
-
-
                         Sequelize.fn(
                             "ST_DWithin",
                             Sequelize.col("post.coordinates"),
                             Sequelize.fn(
-
+                                "ST_SetSRID",
                                 Sequelize.fn("ST_MakePoint", lng, lat),
                                 4326
                             ),
@@ -112,23 +108,22 @@ exports.index = async({ query, decoded }, res, next) => {
                     ),
 
                     /**
-                                                             * for location-post
-                                                             * Sequelize.where(
-                                                             Sequelize.fn('ST_Contains',
-                                                                Sequelize.col('location.poly'),
-                                                                Sequelize.fn('ST_SetSRID',
-                                                                    Sequelize.fn('ST_MakePoint',
-                                                                        lng, lat),
-                                                                    4326),
-                                                                950),
-                                                            true)
-                                                             */
+                                 * for location-post
+                                   * Sequelize.where(
+                                   Sequelize.fn('ST_Contains',
+                                   Sequelize.col('location.poly'),
+                                                                          Sequelize.fn('ST_SetSRID',
+                                                                              Sequelize.fn('ST_MakePoint',
+                                                                                  lng, lat),
+                                                                              4326),
+                                                                          950),
+                                                                      true)
+                                                                       */
                 };
             }
             if (query.filter == "date") {
                 order.push(["createdAt", "DESC"]);
                 search = {
-
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
                             "ST_DWithin",
@@ -156,7 +151,7 @@ exports.index = async({ query, decoded }, res, next) => {
                 Sequelize.literal(
                     `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
                 ),
-                "vote"
+                "vote",
             ],
             [
                 Sequelize.literal(
@@ -211,8 +206,7 @@ exports.index = async({ query, decoded }, res, next) => {
             include,
             group,
             lat,
-            lng,
-
+            lng
         );
 
         const data = {
@@ -223,7 +217,6 @@ exports.index = async({ query, decoded }, res, next) => {
 
         return res.status(200).json(data);
     } catch (error) {
-
         next(
             ApiError.internalException("Não conseguiu se comunicar com o servidor")
         );
@@ -283,7 +276,7 @@ exports.show = async({ query, decoded }, res, next) => {
                 Sequelize.literal(
                     `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
                 ),
-                "vote"
+                "vote",
             ],
             [
                 Sequelize.literal(
@@ -339,8 +332,7 @@ exports.show = async({ query, decoded }, res, next) => {
             include,
             group,
             lat,
-            lng,
-
+            lng
         );
 
         const data = {
