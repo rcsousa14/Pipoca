@@ -41,7 +41,7 @@ module.exports = {
                 defaultValue: false
             },
             coordinates: {
-                type: Sequelize.GEOMETRY('POINT'),
+                type: Sequelize.GEOMETRY('POINT', 4326),
                 allowNull: false
             },
 
