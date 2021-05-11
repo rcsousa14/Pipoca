@@ -7,33 +7,16 @@ import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
-import 'package:pipoca/src/constants/widgets/smart_widgets/bago_card_viewmodel.dart';
+import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 class BagoCard extends StatelessWidget {
-  final bool isVoted, filtered;
-  final Links? links;
-  final int? bagoIndex;
-  final int points, commentsTotal, page, vote;
-  final String creator, image, text, date;
+  final Data bago;
   final Function? goToPage;
-
   const BagoCard({
-    Key? key,
-    this.bagoIndex,
- 
-    required this.text,
+    required Key key,
+    required this.bago,
     this.goToPage,
-    this.links,
-    required this.filtered,
-    required this.date,
-    required this.points,
-    required this.creator,
-    required this.image,
-    required this.commentsTotal,
-    required this.vote,
-    required this.page,
-    required this.isVoted,
   }) : super(key: key);
 
   @override
@@ -42,11 +25,11 @@ class BagoCard extends StatelessWidget {
 
     return ViewModelBuilder<BagoCardViewModel>.reactive(
       onModelReady: (model) {
-        model.getVote(isVoted, vote, points);
+        model.getVote(bago.userVoted!, bago.userVote!, bago.info!.votesTotal);
       },
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
-        final time = DateTime.parse(date);
+        final time = DateTime.parse(bago.info!.createdAt);
         String timeNow;
         String now = timeago
             .format(
@@ -63,8 +46,8 @@ class BagoCard extends StatelessWidget {
         return RepaintBoundary(
           key: key,
           child: GestureDetector(
-              onTap: () => goToPage != null ? goToPage!() : null,
-                      child: Container(
+            onTap: () => goToPage != null ? goToPage!() : null,
+            child: Container(
               decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border(
@@ -74,37 +57,33 @@ class BagoCard extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           //image
 
-                          _Avatar(image: image),
+                          _Avatar(image: bago.info!.creator.avatar!),
 
                           //need to separate these
                           _Content(
                             globalKey: key,
-                            page: page,
-                            filtered: filtered,
-                            text: text,
-                            links: links!,
-                            index: bagoIndex!,
-                            creator: creator,
+                            text: bago.info!.content,
+                            links: bago.info!.links,
+                            index: bago.info!.id,
+                            creator: bago.info!.creator.username,
                             timeNow: timeNow,
-                            points: points,
-                            commentsTotal: commentsTotal,
-                            isVoted: isVoted,
-                            vote: vote,
+                            points: bago.info!.votesTotal,
+                            commentsTotal: bago.info!.commentsTotal,
+                            isVoted: bago.userVoted!,
+                            vote: bago.userVote!,
                           ),
                           //more button
                           _MoreBtn(
-                              index: bagoIndex!,
-                              filtered: filtered,
-                              page: page,
-                              creator: creator)
+                            index: bago.info!.id,
+                            creator: bago.info!.creator.username,
+                          )
                         ],
                       ),
                     ),
@@ -145,17 +124,14 @@ class _Avatar extends ViewModelWidget<BagoCardViewModel> {
 }
 
 class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
-  final int index, page;
+  final int index;
   final String creator;
-  final bool filtered;
 
-  const _MoreBtn(
-      {Key? key,
-      required this.index,
-      required this.creator,
-      required this.page,
-      required this.filtered})
-      : super(key: key, reactive: true);
+  const _MoreBtn({
+    Key? key,
+    required this.index,
+    required this.creator,
+  }) : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
@@ -164,9 +140,8 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
       child: Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: GestureDetector(
-          onTap: () => creator == model.creator
-              ? model.delete(id: index, page: page, filter: filtered)
-              : null,
+          onTap: () =>
+              creator == model.creator ? model.delete(id: index) : null,
           child: Icon(
             PipocaBasics.menu,
             size: 14,
@@ -181,18 +156,16 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
 class _Content extends ViewModelWidget<BagoCardViewModel> {
   final String creator, text;
   final String timeNow;
-  final bool isVoted, filtered;
+  final bool isVoted;
   final Links links;
   final GlobalKey globalKey;
 
-  final int vote, points, commentsTotal, index, page;
+  final int vote, points, commentsTotal, index;
   const _Content(
       {Key? key,
       required this.globalKey,
       required this.links,
       required this.text,
-      required this.filtered,
-      required this.page,
       required this.creator,
       required this.timeNow,
       required this.isVoted,
@@ -270,8 +243,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                     vote: vote,
                     points: points,
                     isVoted: isVoted,
-                    filter: filtered,
-                    page: page),
+                    filter: model.filter,
+                    page: model.page),
 
             // content link
 
@@ -291,12 +264,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             if (model.down == true && model.up == false ||
                                 model.up == null) {
                               model.vote(
-                                  id: index,
-                                  vote: 1,
-                                  points: points,
-                                  isVoted: isVoted,
-                                  filter: filtered,
-                                  page: page);
+                                id: index,
+                                vote: 1,
+                                points: points,
+                                isVoted: isVoted,
+                              );
                             }
                           },
                           child: Container(
@@ -332,12 +304,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             if (model.up == true && model.down == false ||
                                 model.down == null) {
                               model.vote(
-                                  id: index,
-                                  vote: -1,
-                                  points: points,
-                                  isVoted: isVoted,
-                                  filter: filtered,
-                                  page: page);
+                                id: index,
+                                vote: -1,
+                                points: points,
+                                isVoted: isVoted,
+                              );
                             }
                           },
                           child: Container(
@@ -359,7 +330,9 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                     children: [
                       Text('$commentsTotal',
                           style: TextStyle(
-                              color: Colors.grey[400],
+                              color: commentsTotal > 0
+                                  ? Colors.grey.shade600
+                                  : Colors.grey[400],
                               fontSize: 12,
                               fontWeight: FontWeight.w600)),
                       SizedBox(
@@ -379,10 +352,13 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Icon(
-                          PipocaBasics.export,
-                          size: 19,
-                          color: Colors.grey[400],
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 3.0),
+                          child: Icon(
+                            PipocaBasics.export,
+                            size: 19,
+                            color: Colors.grey[400],
+                          ),
                         ),
                         SizedBox(
                           width: 5,
@@ -390,6 +366,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                         Text('PARTILHAR',
                             style: TextStyle(
                               color: Colors.grey,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             )),
                       ],

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api_helpers/base_helper.dart';
@@ -7,6 +6,7 @@ import 'package:pipoca/src/constants/api_helpers/header.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
+import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 
 @lazySingleton
@@ -14,6 +14,22 @@ class FeedRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
+  
+
+   Future<SinglePost> getPostData(
+      {required Coordinates coords, required int postId}) async {
+    Map<String, String> queryParams = {
+      'lat': coords.latitude.toString(),
+      'lng': coords.longitude.toString(),
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final response = await _helper.get(
+        query: 'posts/$postId?$queryString',
+        header: _header.setTokenHeaders(_authenticationService.token));
+
+    SinglePost post = SinglePost.fromJson(response);
+    return post;
+  }
 
   Future<Feed> getFeedData(
       {required double lat,
@@ -57,18 +73,12 @@ class FeedRepository {
   }
 
   Future<Generic> deletePostData({required int id}) async {
-    final response = await _helper.patch(
+    final response = await _helper.delete(
         query: 'posts/$id',
         header: _header.setTokenHeaders(_authenticationService.token));
     Generic generic = Generic.fromJson(response);
     return generic;
   }
 
-  Future<Data> getPostData({required int id}) async {
-    final response = await _helper.get(
-        query: 'posts/$id',
-        header: _header.setTokenHeaders(_authenticationService.token));
-    Data data = Data.fromJson(response);
-    return data;
-  }
+  
 }

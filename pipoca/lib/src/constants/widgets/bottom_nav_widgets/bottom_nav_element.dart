@@ -104,16 +104,16 @@ extension NavChoiceExtension on NavChoice {
 
     switch (this) {
       case NavChoice.home:
-        value = 1;
+        value = 0;
         break;
       case NavChoice.discovery:
-        value = 2;
+        value = 1;
         break;
       case NavChoice.notfy:
-        value = 3;
+        value = 2;
         break;
       case NavChoice.user:
-        value = 4;
+        value = 3;
         break;
 
     }

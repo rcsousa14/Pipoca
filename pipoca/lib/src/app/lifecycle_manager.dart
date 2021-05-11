@@ -21,7 +21,7 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
     locator<LocationService>(),
     locator<ConnectivityService>(),
     locator<BatteryService>(),
-    locator<FeedService>(),
+   locator<FeedService>(),
   ];
 
   @override

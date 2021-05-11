@@ -7,23 +7,32 @@ import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/create_post_view/create_post_view_model.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
-class CreatePostView extends StatelessWidget {
-  final bool filter;
-  final int index;
-  const CreatePostView({Key? key, required this.filter, required this.index})
-      : super(key: key);
+class CreatePostView extends HookWidget {
+  const CreatePostView({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var focus = useFocusNode();
+    var text = useTextEditingController();
     return ViewModelBuilder<CreatePostViewModel>.reactive(
       builder: (context, model, child) {
-        return Scaffold(
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(58),
-            child: _AppBarNewPost(filter, index),
+        return VisibilityDetector(
+          key: Key('text-widget-key'),
+          onVisibilityChanged: (visibilityInfo) {
+            bool visible = visibilityInfo.visibleFraction * 100 != 0.0;
+            visible == true ? focus.requestFocus() : focus.unfocus();
+          },
+          child: Scaffold(
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(58),
+              child: _AppBarNewPost(focus: focus, text: text),
+            ),
+            body: _StringTextField(focus: focus, text: text),
           ),
-          body: _StringTextField(),
         );
       },
       viewModelBuilder: () => CreatePostViewModel(),
@@ -32,11 +41,13 @@ class CreatePostView extends StatelessWidget {
 }
 
 class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
-  const _StringTextField({Key? key}) : super(key: key, reactive: true);
+  final FocusNode focus;
+  final TextEditingController text;
+  const _StringTextField({required this.focus, required this.text, Key? key})
+      : super(key: key, reactive: true);
 
   @override
   Widget buildViewModelWidget(BuildContext context, CreatePostViewModel model) {
-    var text = useTextEditingController();
     User user = model.user;
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -86,7 +97,7 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
                                         fontSize: 18, color: Colors.blue[400]),
                                     detectionRegExp:
                                         detectionRegExp(atSign: false)!,
-                                    autofocus: true,
+                                    focusNode: focus,
                                     cursorColor: Colors.blue[400],
                                     controller: text,
                                     maxLength: 200,
@@ -188,19 +199,23 @@ class _StringTextField extends HookViewModelWidget<CreatePostViewModel> {
   }
 }
 
-class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
-  final bool filter;
-  final int page;
-  const _AppBarNewPost(this.filter, this.page, {Key? key})
-      : super(key: key, reactive: false);
+class _AppBarNewPost extends ViewModelWidget<CreatePostViewModel> {
+  final FocusNode focus;
+  final TextEditingController text;
+  const _AppBarNewPost({required this.focus, required this.text, Key? key})
+      : super(key: key, reactive: true);
 
   @override
-  Widget buildViewModelWidget(BuildContext context, CreatePostViewModel model) {
+  Widget build(BuildContext context, CreatePostViewModel model) {
     return AppBar(
         elevation: 0,
         automaticallyImplyLeading: false,
         leading: GestureDetector(
-          onTap: () => model.goBack(),
+          onTap: () {
+            focus.unfocus();
+            text.clear();
+            model.setIndex(0);
+          },
           child: Container(
             child: Icon(Icons.clear, size: 27),
           ),
@@ -212,10 +227,7 @@ class _AppBarNewPost extends HookViewModelWidget<CreatePostViewModel> {
           GestureDetector(
             onTap: () {
               if (model.text.length > 0 || !model.isBusy) {
-                
-                model.addPost(page, filter);
-                model.goBack();
-                
+                model.addPost();
               }
             },
             child: Container(

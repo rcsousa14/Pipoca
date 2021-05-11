@@ -5,7 +5,7 @@ import 'package:pipoca/src/constants/widgets/helpers/full_screen.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/constants/widgets/helpers/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
-import 'package:video_player/video_player.dart';
+import 'package:cached_video_player/cached_video_player.dart';
 
 class ContentImage extends StatefulWidget {
   final Links? links;

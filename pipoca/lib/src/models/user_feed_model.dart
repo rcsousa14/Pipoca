@@ -8,6 +8,12 @@ class FeedInfo {
   FeedInfo({this.coordinates, this.filter, required this.page});
 }
 
+class PostInfo {
+  late Coordinates coordinates;
+  late int id;
+  PostInfo({required this.coordinates, required this.id});
+}
+
 class CheckData {
   String? creator;
   String? createdAt;
@@ -111,24 +117,24 @@ class Bagos {
 }
 
 class Data {
-  late bool userVoted;
-  late int userVote;
-  late bool userIsNear;
-  late ReplyTo replyTo;
-  late Info info;
+  bool? userVoted;
+  int? userVote;
+  bool? userIsNear;
+  String? replyTo;
+  Info? info;
 
   Data(
-      {required this.userVoted,
-      required this.userVote,
-      required this.userIsNear,
-      required this.replyTo,
-      required this.info});
+      {this.userVoted,
+      this.userVote,
+      this.userIsNear,
+      this.replyTo,
+      this.info});
 
   Data.fromJson(Map<String, dynamic> json) {
     userVoted = json['user_voted'];
     userVote = json['user_vote'];
     userIsNear = json['user_isNear'];
-    replyTo = ReplyTo.fromJson(json['reply_to']);
+    replyTo = json['reply_to'];
     info = new Info.fromJson(json['info']);
   }
 
@@ -137,28 +143,10 @@ class Data {
     data['user_voted'] = this.userVoted;
     data['user_vote'] = this.userVote;
     data['user_isNear'] = this.userIsNear;
-    data['reply_to'] = this.replyTo.toJson();
+    data['reply_to'] = this.replyTo;
 
-    data['info'] = this.info.toJson();
+    data['info'] = this.info!.toJson();
 
-    return data;
-  }
-}
-class ReplyTo {
-  String? username;
-  String? fcmToken;
-
-  ReplyTo({this.username, this.fcmToken});
-
-  ReplyTo.fromJson(Map<String, dynamic> json) {
-    username = json['username'];
-    fcmToken = json['fcm_token'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['username'] = this.username;
-    data['fcm_token'] = this.fcmToken;
     return data;
   }
 }

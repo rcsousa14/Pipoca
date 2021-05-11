@@ -3,8 +3,6 @@ import 'package:injectable/injectable.dart';
 import 'package:location/location.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
-import 'package:pipoca/src/constants/widgets/helpers/connectivity_status.dart';
-import 'package:pipoca/src/services/connectivity_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -12,15 +10,12 @@ import 'package:permission_handler/permission_handler.dart' as settings;
 
 @lazySingleton
 class MainViewModel extends IndexTrackingViewModel {
-  final _conn = locator<ConnectivityService>();
+
   final _currentLocation = locator<LocationService>();
   final _dialogService = locator<DialogService>();
 
-  ConnectivityStatus get result => _conn.status;
-  // Coordinates get coords => _location.currentLocation;
-  // String get token => _authenticationService.token;
+  
 
-  // BatteryState get state => _battery.batteryState;
 
   Future locationCheck() async {
     var permission = await _currentLocation.location.hasPermission();

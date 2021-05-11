@@ -26,7 +26,7 @@ class BagoViewModel extends StreamViewModel<bool> {
 
   @override
 
-  Stream<bool> get stream => _feedService.newStream;
+  Stream<bool> get stream => _feedService.newPostStream;
 
   
 }

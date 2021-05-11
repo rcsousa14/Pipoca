@@ -2,26 +2,22 @@ import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/widgets/detectable_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
-import 'package:pipoca/src/constants/widgets/smart_widgets/bago_card_widget.dart';
+import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
+import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_widget.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/post_view/post_view_model.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_hooks/stacked_hooks.dart';
 
 class PostView extends HookWidget {
   final Data bago;
-  final bool isCreator, filter;
-  final int page;
-  const PostView(
-      {Key? key,
-      required this.bago,
-      required this.isCreator,
-      required this.page,
-      required this.filter})
-      : super(key: key);
+  final bool isCreator;
+
+  const PostView({
+    required Key key,
+    required this.bago,
+    required this.isCreator,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +25,11 @@ class PostView extends HookWidget {
     var width = MediaQuery.of(context).size.width;
     var focus = useFocusNode();
     var text = useTextEditingController();
+
     return ViewModelBuilder<PostViewModel>.reactive(
+      onModelReady: (model) => print(focus.hasFocus),
       builder: (context, model, child) {
-      
+        print(focus.hasFocus);
         Widget loadingIndicator = focus.hasFocus == true
             ? GestureDetector(
                 onTap: () {
@@ -50,7 +48,7 @@ class PostView extends HookWidget {
           appBar: PreferredSize(
               preferredSize: const Size.fromHeight(48),
               child: _Header(
-                tap: () => model.goBack(),
+                tap: () {},
                 isCreator: isCreator,
                 report: () => print('report button'),
               )),
@@ -59,38 +57,10 @@ class PostView extends HookWidget {
               ListView(
                 physics: BouncingScrollPhysics(),
                 children: [
-                  !model.dataReady
-                      ? BagoCard(
-                          filtered: filter,
-                          links: bago.info.links,
-                          page: page,
-                          bagoIndex: bago.info.id,
-                          text: bago.info.content,
-                          date: bago.info.createdAt,
-                          points: bago.info.votesTotal,
-                          creator: bago.info.creator.username,
-                          image: bago.info.creator.avatar!,
-                          vote: bago.userVote,
-                          isVoted: bago.userVoted,
-                          commentsTotal: bago.info.commentsTotal,
-                        )
-                      : FeedCaller(
-                          caller: () => print('loading data'),
-                          child: BagoCard(
-                              text: model.data!.data!.data!.info.content,
-                              filtered: filter,
-                              date: model.data!.data!.data!.info.createdAt,
-                              points: model.data!.data!.data!.info.votesTotal,
-                              creator:
-                                  model.data!.data!.data!.info.creator.username,
-                              image:
-                                  model.data!.data!.data!.info.creator.avatar!,
-                              commentsTotal:
-                                  model.data!.data!.data!.info.commentsTotal,
-                              vote: model.data!.data!.data!.userVote,
-                              page: page,
-                              isVoted: model.data!.data!.data!.userVoted),
-                        ),
+                  BagoCard(
+                    key: Key('${bago.info!.id}'),
+                    bago: bago,
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
@@ -126,7 +96,7 @@ class PostView extends HookWidget {
           ),
         );
       },
-      viewModelBuilder: () => PostViewModel(bago.info.id),
+      viewModelBuilder: () => PostViewModel(bago.info!.id),
     );
   }
 }
@@ -196,4 +166,20 @@ class _StringTextField extends ViewModelWidget<PostViewModel> {
           )),
     );
   }
+}
+
+class PostViewArguments {
+  Key key;
+  final NavChoice choice;
+  final Data bago;
+  final bool isCreator, filter;
+  final int page;
+
+  PostViewArguments(
+      {required this.key,
+      required this.choice,
+      required this.bago,
+      required this.isCreator,
+      required this.filter,
+      required this.page});
 }

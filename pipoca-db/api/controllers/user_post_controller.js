@@ -81,7 +81,7 @@ exports.index = async({ query, decoded }, res, next) => {
         const TODAY_START = new Date(
             NOW.getFullYear(),
             NOW.getMonth(),
-            NOW.getDate() - 5
+            NOW.getDate() - 3
         );
 
         if (lat && lng) {

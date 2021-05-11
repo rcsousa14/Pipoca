@@ -4,24 +4,26 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
-import 'package:pipoca/src/views/main_view/home_navigator/home_view/widgets/bago_list_view.dart';
+import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_list_view.dart';
 import 'package:stacked/stacked.dart';
 
 class HomeView extends HookWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey;
-  const HomeView({Key? key, required this.scaffoldKey}) : super(key: key);
+  const HomeView({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var controller = useScrollController();
+    var scrollController = useScrollController();
+    
     return ViewModelBuilder<HomeViewModel>.reactive(
       disposeViewModel: false,
+      fireOnModelReadyOnce: true,
       onModelReady: (model) {
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
         ));
-        model.pushFeed();
       },
       builder: (context, model, child) {
         return Scaffold(
@@ -29,18 +31,21 @@ class HomeView extends HookWidget {
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(48),
               child: GestureDetector(
-                  onTap: () => controller.animateTo(
+                  onTap: () => scrollController.animateTo(
                         0.0,
                         curve: Curves.easeOut,
                         duration: const Duration(milliseconds: 300),
                       ),
                   child: _Header(tap: () => Scaffold.of(context).openDrawer())),
             ),
-            body: BagoListView(controller: controller),
-            floatingActionButton: HomeFloatingAction(
-                action: () => model.goTocreate(model.filter, model.index)
-              
-                ));
+            body: BagoListView(
+              setIndex: model.setIndex,
+                setPage: model.setPage,
+                setData: model.setData,
+                controller: scrollController,
+                choice: model.choice,
+                storage: model.pageStorage),
+            floatingActionButton: HomeFloatingAction(action: () => model.setIndex(1)));
       },
       viewModelBuilder: () => HomeViewModel(),
     );

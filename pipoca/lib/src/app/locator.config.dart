@@ -13,7 +13,7 @@ import '../constants/api_helpers/header.dart' as _i4;
 import '../repositories/feed/comment_repository.dart' as _i11;
 import '../repositories/feed/feed_repository.dart' as _i14;
 import '../repositories/user/auth_repository.dart' as _i5;
-import '../repositories/user/user_repository.dart' as _i20;
+import '../repositories/user/user_repository.dart' as _i21;
 import '../services/authentication_service.dart' as _i6;
 import '../services/battery_service.dart' as _i7;
 import '../services/caller.service.dart' as _i9;
@@ -21,14 +21,16 @@ import '../services/capture_png_service.dart' as _i10;
 import '../services/connectivity_service.dart' as _i12;
 import '../services/dynamicLink_service.dart' as _i13;
 import '../services/feed_service.dart' as _i15;
-import '../services/location_service.dart' as _i16;
-import '../services/push_notification_service.dart' as _i18;
-import '../services/shared_local_storage_service.dart' as _i19;
-import '../services/third_party_service_model.dart' as _i23;
-import '../services/user_service.dart' as _i21;
-import '../services/validation_service.dart' as _i22;
+import '../services/location_service.dart' as _i17;
+import '../services/push_notification_service.dart' as _i19;
+import '../services/shared_local_storage_service.dart' as _i20;
+import '../services/third_party_service_model.dart' as _i24;
+import '../services/user_service.dart' as _i22;
+import '../services/validation_service.dart' as _i23;
+import '../views/main_view/home_navigator/home_navigator_view_model.dart'
+    as _i16;
 import '../views/main_view/main_view_model.dart'
-    as _i17; // ignore_for_file: unnecessary_lambdas
+    as _i18; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -54,24 +56,26 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i13.DynamicLinkService>(() => _i13.DynamicLinkService());
   gh.lazySingleton<_i14.FeedRepository>(() => _i14.FeedRepository());
   gh.lazySingleton<_i15.FeedService>(() => _i15.FeedService());
-  gh.lazySingleton<_i16.LocationService>(() => _i16.LocationService());
-  gh.lazySingleton<_i17.MainViewModel>(() => _i17.MainViewModel());
+  gh.lazySingleton<_i16.HomeNavigatorViewModel>(
+      () => _i16.HomeNavigatorViewModel());
+  gh.lazySingleton<_i17.LocationService>(() => _i17.LocationService());
+  gh.lazySingleton<_i18.MainViewModel>(() => _i18.MainViewModel());
   gh.lazySingleton<_i8.NavigationService>(
       () => thirdPartyServicesModule.navigationService);
-  gh.lazySingleton<_i18.PushNotificationService>(
-      () => _i18.PushNotificationService());
-  gh.lazySingleton<_i19.SharedLocalStorageService>(
-      () => _i19.SharedLocalStorageService());
+  gh.lazySingleton<_i19.PushNotificationService>(
+      () => _i19.PushNotificationService());
+  gh.lazySingleton<_i20.SharedLocalStorageService>(
+      () => _i20.SharedLocalStorageService());
   gh.lazySingleton<_i8.SnackbarService>(
       () => thirdPartyServicesModule.snackbarService);
   gh.lazySingleton<_i5.SocialRepository>(() => _i5.SocialRepository());
-  gh.lazySingleton<_i20.UserRepository>(() => _i20.UserRepository());
-  gh.lazySingleton<_i21.UserService>(() => _i21.UserService());
-  gh.lazySingleton<_i22.ValidationService>(() => _i22.ValidationService());
+  gh.lazySingleton<_i21.UserRepository>(() => _i21.UserRepository());
+  gh.lazySingleton<_i22.UserService>(() => _i22.UserService());
+  gh.lazySingleton<_i23.ValidationService>(() => _i23.ValidationService());
   return get;
 }
 
-class _$ThirdPartyServicesModule extends _i23.ThirdPartyServicesModule {
+class _$ThirdPartyServicesModule extends _i24.ThirdPartyServicesModule {
   @override
   _i8.BottomSheetService get bottomSheetService => _i8.BottomSheetService();
   @override
