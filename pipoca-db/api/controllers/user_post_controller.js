@@ -95,7 +95,7 @@ exports.index = async({ query, decoded }, res, next) => {
                     },
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
-                            "ST_Distance_Sphere'",
+                            "ST_Distance_Sphere",
                             Sequelize.col("post.coordinates"),
                             Sequelize.fn(
                                 "ST_SetSRID",
@@ -217,10 +217,11 @@ exports.index = async({ query, decoded }, res, next) => {
 
         return res.status(200).json(data);
     } catch (error) {
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+        return res.status(500).json(error);
+        // next(
+        //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        // );
+        // return;
     }
 };
 // deletes users posts
