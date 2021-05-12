@@ -99,13 +99,14 @@ exports.index = async({ query, decoded }, res, next) => {
                             Sequelize.fn(
                                 "ST_Transform",
                                 Sequelize.col("post.coordinates"),
-                                Sequelize.fn(
-                                    "ST_SetSRID",
-                                    Sequelize.fn("ST_MakePoint", lng, lat),
-                                    4326
-                                ),
                                 3857
                             ),
+                            Sequelize.fn(
+                                "ST_SetSRID",
+                                Sequelize.fn("ST_MakePoint", lng, lat),
+                                3857
+                            ),
+
                             950
                         ),
                         true
