@@ -95,12 +95,16 @@ exports.index = async({ query, decoded }, res, next) => {
                     },
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
-                            "ST_Distance_Sphere",
-                            Sequelize.col("post.coordinates"),
+                            "ST_DWithin",
                             Sequelize.fn(
-                                "ST_SetSRID",
-                                Sequelize.fn("ST_MakePoint", lng, lat),
-                                4326
+                                "ST_Transform",
+                                Sequelize.col("post.coordinates"),
+                                Sequelize.fn(
+                                    "ST_SetSRID",
+                                    Sequelize.fn("ST_MakePoint", lng, lat),
+                                    4326
+                                ),
+                                3857
                             ),
                             950
                         ),
@@ -108,17 +112,17 @@ exports.index = async({ query, decoded }, res, next) => {
                     ),
 
                     /**
-                                 * for location-post
-                                   * Sequelize.where(
-                                   Sequelize.fn('ST_Contains',
-                                   Sequelize.col('location.poly'),
-                                                                          Sequelize.fn('ST_SetSRID',
-                                                                              Sequelize.fn('ST_MakePoint',
-                                                                                  lng, lat),
-                                                                              4326),
-                                                                          950),
-                                                                      true)
-                                                                       */
+                                           * for location-post
+                                             * Sequelize.where(
+                                             Sequelize.fn('ST_Contains',
+                                             Sequelize.col('location.poly'),
+                                                                                    Sequelize.fn('ST_SetSRID',
+                                                                                        Sequelize.fn('ST_MakePoint',
+                                                                                            lng, lat),
+                                                                                        4326),
+                                                                                    950),
+                                                                                true)
+                                                                                 */
                 };
             }
             if (query.filter == "date") {
