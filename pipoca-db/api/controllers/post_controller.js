@@ -21,6 +21,23 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "is_flagged",
                 "createdAt",
                 "coordinates", [
+                    Sequelize.cast(Sequelize.fn(
+                        "ST_Distance",
+
+                        Sequelize.col("coordinates"),
+
+
+
+                        Sequelize.fn(
+                            "ST_SetSRID",
+                            Sequelize.fn("ST_MakePoint", lng, lat),
+                            4326
+                        ),
+
+                    ), "distance", 'integer'),
+
+                ],
+                [
                     Sequelize.literal(
                         `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = ${id})`
                     ),
@@ -105,6 +122,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             user_vote: newData['votes'] == null ? 0 : newData['votes'],
             user_isNear: isNear,
             reply_to: "",
+            distance: (newData['distance'] * 111) / 1,
             info: {
                 id: newData['id'],
                 content: newData['content'],

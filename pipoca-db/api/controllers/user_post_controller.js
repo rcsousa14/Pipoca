@@ -102,7 +102,7 @@ exports.index = async({ query, decoded }, res, next) => {
                                 Sequelize.fn("ST_MakePoint", lng, lat),
                                 4326
                             ),
-                            0.01
+                            0.0225225225225225
                         ),
                         true
                     ),
@@ -133,7 +133,7 @@ exports.index = async({ query, decoded }, res, next) => {
                                 Sequelize.fn("ST_MakePoint", lng, lat),
                                 4326
                             ),
-                            0.01
+                            0.0225225225225225
                         ),
                         true
                     ),
@@ -148,10 +148,10 @@ exports.index = async({ query, decoded }, res, next) => {
             "is_flagged",
             "createdAt",
             "coordinates", [
-                Sequelize.fn(
+                Sequelize.cast(Sequelize.fn(
                     "ST_Distance",
 
-                    Sequelize.col("post.coordinates"),
+                    Sequelize.col("coordinates"),
 
 
 
@@ -161,7 +161,7 @@ exports.index = async({ query, decoded }, res, next) => {
                         4326
                     ),
 
-                ), "distance"
+                ), "distance", 'integer'),
             ],
             [
                 Sequelize.literal(

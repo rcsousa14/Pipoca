@@ -56,8 +56,8 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
 
 
         let isNear;
-        if (distance <= 1110) isNear = true;
-        if (distance > 1110) isNear = false;
+        if (distance <= 2500) isNear = true;
+        if (distance > 2500) isNear = false;
 
 
 
@@ -79,6 +79,7 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
             "user_vote": row.vote == null ? 0 : row.vote,
             "user_isNear": isNear,
             "reply_to": row.replyTo != null ? row.replyTo.username : "",
+            "distance": (row.distance * 111) / 1,
             "info": {
                 "id": row.id,
                 "content": row.content,
@@ -106,7 +107,7 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
         nextPage: this.getNextPage(page, limit, count.length),
         total: count.length,
         limit: limit,
-        data: rows
+        data: data
     };
 
 }
