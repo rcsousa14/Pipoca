@@ -107,7 +107,7 @@ exports.index = async({ query, decoded }, res, next) => {
                             ),
 
 
-                            0.00095 * 100
+                            0.00095 * 1000
                         ),
                         true
                     ),
