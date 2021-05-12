@@ -29,7 +29,7 @@ exports.store = async({ body, decoded }, res, next) => {
         var point = {
             type: "Point",
             coordinates: [longitude, latitude],
-            crs: { type: "name", properties: { name: "EPSG:4326" } },
+            crs: { type: "name", properties: { name: "EPSG:3857" } },
         };
 
         const post = await models.post.create({
@@ -96,11 +96,11 @@ exports.index = async({ query, decoded }, res, next) => {
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
                             "ST_DWithin",
-                            Sequelize.fn(
-                                "ST_Transform",
-                                Sequelize.col("post.coordinates"),
-                                3857
-                            ),
+
+
+                            Sequelize.col("post.coordinates"),
+
+
                             Sequelize.fn(
                                 "ST_SetSRID",
                                 Sequelize.fn("ST_MakePoint", lng, lat),
