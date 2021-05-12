@@ -136,7 +136,7 @@ exports.index = async({ query, decoded }, res, next) => {
                             Sequelize.fn(
                                 "ST_SetSRID",
                                 Sequelize.fn("ST_MakePoint", lng, lat),
-                                4326
+                                3857
                             ),
                             950
                         ),
@@ -153,6 +153,13 @@ exports.index = async({ query, decoded }, res, next) => {
             "is_flagged",
             "createdAt",
             "coordinates", [
+                Sequelize.fn("ST_Distance", Sequelize.col("post.coordinates"), Sequelize.fn(
+                    "ST_SetSRID",
+                    Sequelize.fn("ST_MakePoint", lng, lat),
+                    3857
+                ), "distance")
+            ],
+            [
                 Sequelize.literal(
                     `(SELECT voted FROM post_votes WHERE user_id = ${id} AND post_id = post.id)`
                 ),
