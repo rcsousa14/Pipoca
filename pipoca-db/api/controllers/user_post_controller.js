@@ -107,7 +107,7 @@ exports.index = async({ query, decoded }, res, next) => {
                                 3857
                             ),
 
-                            10000
+                            10
                         ),
                         true
                     ),
@@ -172,7 +172,21 @@ exports.index = async({ query, decoded }, res, next) => {
             ],
         ];
 
-        let include = [{
+        let include = [
+            [Sequelize.fn(
+                "ST_Distance",
+                Sequelize.col("post.coordinates"),
+                Sequelize.fn(
+                    "ST_SetSRID",
+                    Sequelize.fn("ST_MakePoint", lng, lat),
+                    3857
+                ),
+                950
+            ), ],
+
+
+
+            {
                 model: models.user,
                 as: "creator",
                 attributes: {
@@ -190,8 +204,7 @@ exports.index = async({ query, decoded }, res, next) => {
                         "password",
                     ],
                 },
-            },
-            {
+            }, {
                 model: models.link,
                 as: "links",
                 required: false,
