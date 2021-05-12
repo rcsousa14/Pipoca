@@ -118,7 +118,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             user_vote: newData['votes'] == null ? 0 : newData['votes'],
             user_isNear: isNear,
             reply_to: "",
-            distance: parseInt(newData['distance']) * 111,
+            distance: newData['distance'],
             info: {
                 id: newData['id'],
                 content: newData['content'],
