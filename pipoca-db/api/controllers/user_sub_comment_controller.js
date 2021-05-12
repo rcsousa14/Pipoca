@@ -101,6 +101,18 @@ exports.index = async({ params, query, decoded }, res, next) => {
             "is_flagged",
             "createdAt",
             "coordinates", [
+                Sequelize.fn(
+                    "ST_Distance",
+                    Sequelize.col("coordinates"),
+                    Sequelize.fn(
+                        "ST_SetSRID",
+                        Sequelize.fn("ST_MakePoint", lng, lat),
+                        4326
+                    ),
+
+                ), "distance",
+            ],
+            [
                 Sequelize.literal(
                     `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
                 ),
@@ -185,11 +197,11 @@ exports.index = async({ params, query, decoded }, res, next) => {
 
         return res.status(200).send(data);
     } catch (error) {
-        return res.status(500).send(error);
-        // next(
-        //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        // );
-        // return;
+
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
     }
 };
 
