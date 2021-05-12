@@ -246,6 +246,18 @@ exports.show = async({ query, decoded }, res, next) => {
             "is_flagged",
             "createdAt",
             "coordinates", [
+                Sequelize.fn(
+                    "ST_Distance",
+                    Sequelize.col("coordinates"),
+                    Sequelize.fn(
+                        "ST_SetSRID",
+                        Sequelize.fn("ST_MakePoint", lng, lat),
+                        4326
+                    ),
+
+                ), "distance",
+            ],
+            [
                 Sequelize.literal(
                     `(SELECT voted FROM comment_votes WHERE user_id = ${id} AND comment_id = comment.id)`
                 ),

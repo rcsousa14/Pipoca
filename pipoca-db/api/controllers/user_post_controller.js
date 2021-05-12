@@ -57,7 +57,7 @@ exports.store = async({ body, decoded }, res, next) => {
         return res.status(201).json({
             success: true,
             message: "Bago criado com sucesso!",
-            result
+
         });
     } catch (error) {
         next(
