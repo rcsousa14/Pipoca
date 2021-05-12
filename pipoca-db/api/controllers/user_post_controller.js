@@ -89,29 +89,20 @@ exports.index = async({ query, decoded }, res, next) => {
                     [Sequelize.literal("votes_total ASC")], [Sequelize.literal("comments_total ASC")]
                 );
                 search = {
-                    // createdAt: {
-                    //     [Op.lt]: NOW,
-                    //     [Op.gt]: TODAY_START,
-                    // },
+                    createdAt: {
+                        [Op.lt]: NOW,
+                        [Op.gt]: TODAY_START,
+                    },
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
                             "ST_DWithin",
-
-
-                            Sequelize.fn(
-                                "ST_Transform",
-                                Sequelize.col("post.coordinates"),
-                                3857
-                            ),
-
-
-
+                            Sequelize.col("post.coordinates"),
                             Sequelize.fn(
                                 "ST_SetSRID",
                                 Sequelize.fn("ST_MakePoint", lng, lat),
-                                3857
+                                4326
                             ),
-                            950
+                            0.01
                         ),
                         true
                     ),
@@ -142,7 +133,7 @@ exports.index = async({ query, decoded }, res, next) => {
                                 Sequelize.fn("ST_MakePoint", lng, lat),
                                 4326
                             ),
-                            950
+                            0.01
                         ),
                         true
                     ),
@@ -160,27 +151,6 @@ exports.index = async({ query, decoded }, res, next) => {
                 Sequelize.fn(
                     "ST_Distance",
 
-
-                    Sequelize.fn(
-                        "ST_Transform",
-                        Sequelize.col("post.coordinates"),
-                        3857
-                    ),
-
-
-
-                    Sequelize.fn(
-                        "ST_SetSRID",
-                        Sequelize.fn("ST_MakePoint", lng, lat),
-                        3857
-                    ),
-
-                ), "distance in meters"
-            ],
-            [
-                Sequelize.fn(
-                    "ST_Distance",
-
                     Sequelize.col("post.coordinates"),
 
 
@@ -191,7 +161,7 @@ exports.index = async({ query, decoded }, res, next) => {
                         4326
                     ),
 
-                ), "distance in degrees"
+                ), "distance"
             ],
             [
                 Sequelize.literal(
