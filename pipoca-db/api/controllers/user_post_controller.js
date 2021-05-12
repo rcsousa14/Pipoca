@@ -101,13 +101,11 @@ exports.index = async({ query, decoded }, res, next) => {
                             Sequelize.col("post.coordinates"),
 
 
-                            Sequelize.fn(
-                                "ST_SetSRID",
-                                Sequelize.fn("ST_MakePoint", lng, lat),
-                                3857
-                            ),
 
-                            10
+                            Sequelize.fn("ST_MakePoint", lng, lat),
+
+
+                            100
                         ),
                         true
                     ),
@@ -176,11 +174,9 @@ exports.index = async({ query, decoded }, res, next) => {
             [Sequelize.fn(
                 "ST_Distance",
                 Sequelize.col("post.coordinates"),
-                Sequelize.fn(
-                    "ST_SetSRID",
-                    Sequelize.fn("ST_MakePoint", lng, lat),
-                    3857
-                ),
+
+                Sequelize.fn("ST_MakePoint", lng, lat),
+
                 950
             ), ],
 
