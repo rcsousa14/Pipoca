@@ -111,7 +111,7 @@ exports.index = async({ query, decoded }, res, next) => {
                                 Sequelize.fn("ST_MakePoint", lng, lat),
                                 3857
                             ),
-                            Sequelize.literal("<= 950")
+                            950
                         ),
                         true
                     ),
