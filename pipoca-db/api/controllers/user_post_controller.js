@@ -170,44 +170,31 @@ exports.index = async({ query, decoded }, res, next) => {
             ],
         ];
 
-        let include = [
-            [Sequelize.fn(
-                "ST_Distance",
-                Sequelize.col("post.coordinates"),
-
-                Sequelize.fn("ST_MakePoint", lng, lat),
-
-                950
-            ), ],
-
-
-
-            {
-                model: models.user,
-                as: "creator",
-                attributes: {
-                    exclude: [
-                        "createdAt",
-                        "updatedAt",
-                        "deleted_at",
-                        "birthday",
-                        "reset_password_token",
-                        "reset_password_expiration",
-                        "refresh_token",
-                        "role_id",
-                        "bio",
-                        "type",
-                        "password",
-                    ],
-                },
-            }, {
-                model: models.link,
-                as: "links",
-                required: false,
-                attributes: ["url"],
-                through: { attributes: [] },
+        let include = [{
+            model: models.user,
+            as: "creator",
+            attributes: {
+                exclude: [
+                    "createdAt",
+                    "updatedAt",
+                    "deleted_at",
+                    "birthday",
+                    "reset_password_token",
+                    "reset_password_expiration",
+                    "refresh_token",
+                    "role_id",
+                    "bio",
+                    "type",
+                    "password",
+                ],
             },
-        ];
+        }, {
+            model: models.link,
+            as: "links",
+            required: false,
+            attributes: ["url"],
+            through: { attributes: [] },
+        }, ];
         const model = models.post;
         const bagos = await paginate(
             model,
