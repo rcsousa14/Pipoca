@@ -21,20 +21,16 @@ exports.show = async({ params, query, decoded }, res, next) => {
                 "is_flagged",
                 "createdAt",
                 "coordinates", [
-                    Sequelize.cast(Sequelize.fn(
+                    Sequelize.fn(
                         "ST_Distance",
-
                         Sequelize.col("coordinates"),
-
-
-
                         Sequelize.fn(
                             "ST_SetSRID",
                             Sequelize.fn("ST_MakePoint", lng, lat),
                             4326
                         ),
 
-                    ), "distance", 'integer'),
+                    ), "distance",
 
                 ],
                 [
@@ -122,7 +118,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
             user_vote: newData['votes'] == null ? 0 : newData['votes'],
             user_isNear: isNear,
             reply_to: "",
-            distance: (newData['distance'] * 111) / 1,
+            distance: parseInt(newData['distance']) * 111,
             info: {
                 id: newData['id'],
                 content: newData['content'],

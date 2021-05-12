@@ -80,7 +80,7 @@ exports.index = async({ query, decoded }, res, next) => {
         const TODAY_START = new Date(
             NOW.getFullYear(),
             NOW.getMonth(),
-            NOW.getDate() - 5
+            NOW.getDate() - 1
         );
 
         if (lat && lng) {
@@ -148,20 +148,16 @@ exports.index = async({ query, decoded }, res, next) => {
             "is_flagged",
             "createdAt",
             "coordinates", [
-                Sequelize.cast(Sequelize.fn(
+                Sequelize.fn(
                     "ST_Distance",
-
                     Sequelize.col("coordinates"),
-
-
-
                     Sequelize.fn(
                         "ST_SetSRID",
                         Sequelize.fn("ST_MakePoint", lng, lat),
                         4326
                     ),
 
-                ), "distance", 'integer'),
+                ), "distance",
             ],
             [
                 Sequelize.literal(
