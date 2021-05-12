@@ -106,7 +106,7 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
         nextPage: this.getNextPage(page, limit, count.length),
         total: count.length,
         limit: limit,
-        data: data
+        data: rows
     };
 
 }
