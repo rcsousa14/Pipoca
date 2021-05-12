@@ -95,19 +95,19 @@ exports.index = async({ query, decoded }, res, next) => {
                     },
                     [Op.and]: Sequelize.where(
                         Sequelize.fn(
-                            "ST_DWithin",
-                            Sequelize.fn(
-                                "ST_Transform",
-                                Sequelize.col("post.coordinates"),
-                                3857
-                            ),
+                            "ST_Distance_Sphere",
+
+                            Sequelize.col("post.coordinates"),
+
+
                             Sequelize.fn(
                                 "ST_SetSRID",
                                 Sequelize.fn("ST_MakePoint", lng, lat),
-                                3857
+                                4326
                             ),
 
-                            950
+
+                            0.00095 * 100
                         ),
                         true
                     ),
