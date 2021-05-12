@@ -29,7 +29,7 @@ exports.store = async({ body, decoded }, res, next) => {
         var point = {
             type: "Point",
             coordinates: [longitude, latitude],
-            crs: { type: "name", properties: { name: "EPSG:3857" } },
+            crs: { type: "name", properties: { name: "EPSG:4326" } },
         };
 
         const post = await models.post.create({
@@ -98,7 +98,11 @@ exports.index = async({ query, decoded }, res, next) => {
                             "ST_DWithin",
 
 
-                            Sequelize.col("post.coordinates"),
+                            Sequelize.fn(
+                                "ST_Transform",
+                                Sequelize.col("post.coordinates"),
+                                3857
+                            ),
 
 
 
@@ -107,7 +111,7 @@ exports.index = async({ query, decoded }, res, next) => {
                                 Sequelize.fn("ST_MakePoint", lng, lat),
                                 3857
                             ),
-                            950
+                            Sequelize.literal("<= 950")
                         ),
                         true
                     ),
@@ -136,7 +140,7 @@ exports.index = async({ query, decoded }, res, next) => {
                             Sequelize.fn(
                                 "ST_SetSRID",
                                 Sequelize.fn("ST_MakePoint", lng, lat),
-                                3857
+                                4326
                             ),
                             950
                         ),
@@ -157,7 +161,11 @@ exports.index = async({ query, decoded }, res, next) => {
                     "ST_Distance",
 
 
-                    Sequelize.col("post.coordinates"),
+                    Sequelize.fn(
+                        "ST_Transform",
+                        Sequelize.col("post.coordinates"),
+                        3857
+                    ),
 
 
 
@@ -167,7 +175,23 @@ exports.index = async({ query, decoded }, res, next) => {
                         3857
                     ),
 
-                ), "distance"
+                ), "distance in meters"
+            ],
+            [
+                Sequelize.fn(
+                    "ST_Distance",
+
+                    Sequelize.col("post.coordinates"),
+
+
+
+                    Sequelize.fn(
+                        "ST_SetSRID",
+                        Sequelize.fn("ST_MakePoint", lng, lat),
+                        4326
+                    ),
+
+                ), "distance in degrees"
             ],
             [
                 Sequelize.literal(
