@@ -15,6 +15,7 @@ class ConnectivityService extends IstoppableService {
   Stream<ConnectivityStatus> get getStreamData =>
       connectionStatusController.stream;
 
+     // ignore: cancel_subscriptions
      StreamSubscription? _subscription; 
 
   ConnectivityService() {

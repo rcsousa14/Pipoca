@@ -7,7 +7,6 @@ import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/models/list_data_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/views/main_view/widgets/drawer/main_drawer_view_model.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:stacked/stacked.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

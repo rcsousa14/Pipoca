@@ -1,6 +1,9 @@
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
+import 'package:pipoca/src/constants/api_helpers/response.dart';
+import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
 import 'package:pipoca/src/constants/widgets/smart_widgets/link_caller.dart';
 import 'package:pipoca/src/constants/widgets/helpers/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
@@ -9,23 +12,29 @@ import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class BagoCard extends StatelessWidget {
   final Data bago;
   final Function? goToPage;
+  final bool isSingle;
+  final Key chave;
   const BagoCard({
-    required Key key,
+    required this.chave,
     required this.bago,
+    required this.isSingle,
     this.goToPage,
-  }) : super(key: key);
+  }) : super(key: chave);
 
   @override
   Widget build(BuildContext context) {
     GlobalKey key = GlobalKey();
 
     return ViewModelBuilder<BagoCardViewModel>.reactive(
+      fireOnModelReadyOnce: true,
       onModelReady: (model) {
         model.getVote(bago.userVoted!, bago.userVote!, bago.info!.votesTotal);
+        
       },
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
@@ -51,38 +60,93 @@ class BagoCard extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border(
-                      bottom:
-                          BorderSide(color: Colors.grey.shade200, width: 1))),
+                      bottom: BorderSide(
+                          color: Colors.grey.shade200, width: 1))),
               child: Container(
                 child: Column(
                   children: <Widget>[
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          //image
+                          // POST USER AVART
+                          _Avatar(
+                              key: Key('${bago.info!.id}-avatar'),
+                              isError: model.dataReady &&
+                                      model.data!.status == Status.ERROR
+                                  ? true
+                                  : false,
+                              image: model.dataReady &&
+                                      model.data!.status == Status.COMPLETED
+                                  ? model.data!.data!.data!.info!.creator
+                                      .avatar
+                                  : bago.info!.creator.avatar),
 
-                          _Avatar(image: bago.info!.creator.avatar!),
-
-                          //need to separate these
-                          _Content(
-                            globalKey: key,
-                            text: bago.info!.content,
-                            links: bago.info!.links,
-                            index: bago.info!.id,
-                            creator: bago.info!.creator.username,
-                            timeNow: timeNow,
-                            points: bago.info!.votesTotal,
-                            commentsTotal: bago.info!.commentsTotal,
-                            isVoted: bago.userVoted!,
-                            vote: bago.userVote!,
-                          ),
-                          //more button
+                          // CONTENT WITH ERROR HANDLING
+                          if (model.dataReady) ...[
+                            _Content(
+                              isError: model.data!.status == Status.ERROR,
+                              globalKey: key,
+                              text: bago.info!.content,
+                              links: bago.info!.links,
+                              index: bago.info!.id,
+                              creator: model.data!.status != Status.ERROR &&
+                                      model.data!.status == Status.COMPLETED
+                                  ? model.data!.data!.data!.info!.creator
+                                      .username
+                                  : bago.info!.creator.username,
+                              timeNow: timeNow,
+                              points: model.data!.status != Status.ERROR &&
+                                      model.data!.status == Status.COMPLETED
+                                  ? model.data!.data!.data!.info!.votesTotal
+                                  : bago.info!.votesTotal,
+                              commentsTotal: model.data!.status !=
+                                          Status.ERROR &&
+                                      model.data!.status == Status.COMPLETED
+                                  ? model
+                                      .data!.data!.data!.info!.commentsTotal
+                                  : bago.info!.commentsTotal,
+                              isVoted: model.data!.status != Status.ERROR &&
+                                      model.data!.status == Status.COMPLETED
+                                  ? model.data!.data!.data!.userVoted!
+                                  : bago.userVoted!,
+                              vote: model.data!.status != Status.ERROR &&
+                                      model.data!.status == Status.COMPLETED
+                                  ? model.data!.data!.data!.userVote!
+                                  : bago.userVote!,
+                            ),
+                          ],
+                          if (!model.dataReady) ...[
+                            _Content(
+                              isError: false,
+                              globalKey: key,
+                              text: bago.info!.content,
+                              links: bago.info!.links,
+                              index: bago.info!.id,
+                              creator: bago.info!.creator.username,
+                              timeNow: timeNow,
+                              points: bago.info!.votesTotal,
+                              commentsTotal: bago.info!.commentsTotal,
+                              isVoted: bago.userVoted!,
+                              vote: bago.userVote!,
+                            ),
+                          ],
+                          // // MORE BTN IT CHECKS IF CURRENT USER IS POST AUTHOR
                           _MoreBtn(
+                            isError: model.dataReady &&
+                                    model.data!.status == Status.ERROR
+                                ? true
+                                : false,
+                            isSingle: isSingle,
                             index: bago.info!.id,
-                            creator: bago.info!.creator.username,
+                            creator: model.dataReady &&
+                                    model.data!.status != Status.ERROR
+                                ? model.data!.data!.data!.info!.creator
+                                    .username
+                                : bago.info!.creator.username,
                           )
                         ],
                       ),
@@ -100,37 +164,76 @@ class BagoCard extends StatelessWidget {
 }
 
 class _Avatar extends ViewModelWidget<BagoCardViewModel> {
-  final String image;
-  const _Avatar({Key? key, required this.image})
+  final String? image;
+  final bool? isError;
+  final Key key;
+  const _Avatar({required this.key, this.image, this.isError})
       : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
+    List colors = [
+      Colors.blueGrey[800],
+      Colors.brown[800],
+      Colors.grey[900],
+      Colors.teal[900],
+      Colors.cyan[900],
+      Colors.blue[900]
+    ];
+    Random random = new Random();
+    int index = random.nextInt(colors.length);
+
     return Flexible(
+        key: key,
         flex: 3,
-        child: Container(
-          height: 45,
-          width: 45,
-          decoration: BoxDecoration(
-            color: Colors.grey[350],
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              image: NetworkImage(image),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ));
+        child: image == null
+            ? Container(
+                height: 45,
+                width: 45,
+                decoration: BoxDecoration(
+                  color: colors[index],
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage('images/corn.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ))
+            : isError == true
+                ? Container(
+                    height: 45,
+                    width: 45,
+                    decoration: BoxDecoration(
+                      color: colors[index],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.image_not_supported_rounded,
+                        color: Colors.white))
+                : Container(
+                    height: 45,
+                    width: 45,
+                    decoration: BoxDecoration(
+                      color: colors[index],
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: NetworkImage(image!),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ));
   }
 }
 
 class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
+  final bool isError;
   final int index;
   final String creator;
-
+  final bool isSingle;
   const _MoreBtn({
     Key? key,
+    required this.isError,
     required this.index,
     required this.creator,
+    required this.isSingle,
   }) : super(key: key, reactive: true);
 
   @override
@@ -140,8 +243,9 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
       child: Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: GestureDetector(
-          onTap: () =>
-              creator == model.creator ? model.delete(id: index) : null,
+          onTap: () => creator == model.creator && isError == false
+              ? model.delete(id: index, isSingle: isSingle)
+              : null,
           child: Icon(
             PipocaBasics.menu,
             size: 14,
@@ -154,6 +258,7 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
 }
 
 class _Content extends ViewModelWidget<BagoCardViewModel> {
+  final bool isError;
   final String creator, text;
   final String timeNow;
   final bool isVoted;
@@ -163,6 +268,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
   final int vote, points, commentsTotal, index;
   const _Content(
       {Key? key,
+      required this.isError,
       required this.globalKey,
       required this.links,
       required this.text,
@@ -237,6 +343,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
             links.checkUrl()
                 ? Container()
                 : LinkCaller(
+                    isError: isError,
                     comments: commentsTotal,
                     links: links,
                     index: index,

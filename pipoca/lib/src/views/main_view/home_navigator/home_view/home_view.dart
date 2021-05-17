@@ -15,12 +15,11 @@ class HomeView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var scrollController = useScrollController();
-    
+
     return ViewModelBuilder<HomeViewModel>.reactive(
-      disposeViewModel: false,
+   
       fireOnModelReadyOnce: true,
       onModelReady: (model) {
-        SystemChannels.textInput.invokeMethod('TextInput.hide');
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
         ));
@@ -39,13 +38,10 @@ class HomeView extends HookWidget {
                   child: _Header(tap: () => Scaffold.of(context).openDrawer())),
             ),
             body: BagoListView(
-              setIndex: model.setIndex,
-                setPage: model.setPage,
-                setData: model.setData,
-                controller: scrollController,
-                choice: model.choice,
-                storage: model.pageStorage),
-            floatingActionButton: HomeFloatingAction(action: () => model.setIndex(1)));
+              controller: scrollController,
+            ),
+            floatingActionButton:
+                HomeFloatingAction(action: () => model.setIndex(1)));
       },
       viewModelBuilder: () => HomeViewModel(),
     );

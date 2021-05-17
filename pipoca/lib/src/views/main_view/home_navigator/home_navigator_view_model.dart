@@ -19,10 +19,12 @@ class HomeNavigatorViewModel extends IndexTrackingViewModel {
   int _currentPage = 1;
   Data _data = Data();
 
+
   //GETTERS
   Data get posts => _data;
   int get currentPage => _currentPage;
   bool get filter => _authenticationService.filter;
+
   NavChoice get choice => NavChoice.home;
   get pageStorage => NavChoice.home.pageStorageKey();
 
@@ -33,8 +35,10 @@ class HomeNavigatorViewModel extends IndexTrackingViewModel {
   }
 
   //FUNCTION TO SET CURRENT DATA FOR POST PAGE
-  void setCurrentData(Data data) {
+  void setCurrentData(Data data, bool isCreator) {
     _data = data;
+
+
     notifyListeners();
   }
 

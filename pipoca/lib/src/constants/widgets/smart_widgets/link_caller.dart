@@ -11,7 +11,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class LinkCaller extends StatelessWidget {
   final Links links;
   final int index, points, page, vote, comments;
-  final bool isVoted, filter;
+  final bool isVoted, filter, isError;
 
   const LinkCaller(
       {Key? key,
@@ -21,6 +21,7 @@ class LinkCaller extends StatelessWidget {
       required this.page,
       required this.isVoted,
       required this.filter,
+      required this.isError,
       required this.vote,
       required this.comments})
       : super(key: key);
@@ -32,7 +33,7 @@ class LinkCaller extends StatelessWidget {
       builder: (context, model, child) {
         String key = 'bago-' + index.toString();
         return links.url!.contains('giphy') && links.video != null
-            ? ContentVideo(url: links.video!)
+            ? ContentVideo(url: links.video!, isError: isError)
             : links.url!.contains('imgflip') ||
                     links.url!.contains('postimg') ||
                     links.url!.contains('w3w') ||
@@ -46,6 +47,7 @@ class LinkCaller extends StatelessWidget {
                           children: [
                             if (links.image != null) ...[
                               ContentImage(
+                                isError: isError,
                                   comments: comments,
                                   vote: vote,
                                   index: index,
@@ -97,7 +99,7 @@ class LinkCaller extends StatelessWidget {
                           ],
                         ),
                       )
-                    : ContentVideo(url: links.video!)
+                    : ContentVideo(url: links.video!,  isError: isError)
                 : Builder(builder: (context) {
                     return Container(
                       margin: EdgeInsets.only(bottom: 20),
@@ -110,6 +112,7 @@ class LinkCaller extends StatelessWidget {
                         children: <Widget>[
                           if (links.image!.isNotEmpty) ...[
                             ContentImage(
+                               isError: isError,
                               isLink: true,
                               links: links,
                               image: CachedNetworkImageProvider(

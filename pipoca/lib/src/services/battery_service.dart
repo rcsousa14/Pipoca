@@ -23,6 +23,7 @@ class BatteryService extends IstoppableService {
 
 
   
+ // ignore: cancel_subscriptions
  StreamSubscription? _subscription;
 
 

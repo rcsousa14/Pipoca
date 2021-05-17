@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_navigator.dart';
-import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view.dart';
 import 'package:pipoca/src/views/main_view/main_view_model.dart';
 import 'package:pipoca/src/views/main_view/widgets/drawer/main_drawer_view.dart';
 import 'package:stacked/stacked.dart';

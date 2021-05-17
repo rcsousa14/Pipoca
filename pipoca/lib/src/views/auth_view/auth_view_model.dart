@@ -19,6 +19,7 @@ class AuthViewModel extends ReactiveViewModel {
     var result = await _authenticationService.resetToken();
 
     switch (result.status) {
+       case Status.STOP:
       case Status.LOADING:
         print('loading');
         setBusy(true);
@@ -40,6 +41,7 @@ class AuthViewModel extends ReactiveViewModel {
   Future getUser() async {
     var result = await _userService.fetchUser();
     switch (result.status) {
+       case Status.STOP:
       case Status.LOADING:
         break;
       case Status.COMPLETED:

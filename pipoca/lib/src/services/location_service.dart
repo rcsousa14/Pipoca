@@ -15,6 +15,7 @@ class LocationService extends IstoppableService {
   Location get permission => location;
 
   Stream<Coordinates> get getStreamData => locationController.stream;
+   // ignore: cancel_subscriptions
    StreamSubscription? _subscription;
   LocationService() {
     location.requestPermission().then((locationPermission) {

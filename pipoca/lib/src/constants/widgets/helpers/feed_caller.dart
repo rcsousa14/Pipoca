@@ -6,7 +6,12 @@ class FeedCaller extends StatefulWidget {
   final Function? itemCreated;
   final Widget child;
 
-  FeedCaller({Key? key, this.caller, required this.child, this.itemCreated})
+  FeedCaller(
+      {Key? key,
+      this.caller,
+      required this.child,
+      this.itemCreated,
+      })
       : super(key: key);
 
   @override
@@ -15,6 +20,7 @@ class FeedCaller extends StatefulWidget {
 
 class _FeedCallerState extends State<FeedCaller> {
   Timer? _timer;
+  
   @override
   void initState() {
     super.initState();
@@ -23,19 +29,51 @@ class _FeedCallerState extends State<FeedCaller> {
     }
 
     if (widget.caller != null) {
-     
-      //TODO only for testing case its causing problems
-      _timer =
-          Timer.periodic(Duration(seconds: 45), (timer) => widget.caller!());
+      _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+        widget.caller!();
+      });
     }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+ 
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
+class PostCaller extends StatefulWidget {
+   final Function? itemCaller;
+  final Widget child;
+  PostCaller({Key? key, required this.child, this.itemCaller}) : super(key: key);
+
+  @override
+  _PostCallerState createState() => _PostCallerState();
+}
+
+class _PostCallerState extends State<PostCaller> {
+  Timer? _single;
+
+  @override
+  void initState() {
+   if (widget.itemCaller != null) {
+          _single = Timer.periodic(
+              Duration(seconds: 15), (timer) => widget.itemCaller!());
+        }
+    super.initState();
+  }
+   @override
+  void dispose() {
+
+    _single?.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return widget.child;

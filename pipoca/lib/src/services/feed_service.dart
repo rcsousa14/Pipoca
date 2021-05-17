@@ -7,14 +7,17 @@ import 'package:pipoca/src/interfaces/stoppable_interface.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
-import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/repositories/feed/feed_repository.dart';
+import 'package:pipoca/src/services/authentication_service.dart';
+import 'package:pipoca/src/services/location_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:stacked/stacked.dart';
 
 @lazySingleton
 class FeedService extends IstoppableService with ReactiveServiceMixin {
   final _api = locator<FeedRepository>();
+  final _location = locator<LocationService>();
+  final _authService = locator<AuthenticationService>();
 
   // this is for the change of the filter for the feed
   // ignore: close_sinks
@@ -36,21 +39,20 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   Sink<ApiResponse<Feed>> get feedSink => _feed.sink;
   Stream<ApiResponse<Feed>> get feedStream => _feed.stream;
 
-  RxValue<Data> _single = RxValue<Data>(Data());
-  Data get single => _single.value;
+  // ignore: close_sinks
+  BehaviorSubject<ApiResponse<SinglePost>> _single =
+      BehaviorSubject<ApiResponse<SinglePost>>();
+  Sink<ApiResponse<SinglePost>> get singleSink => _single.sink;
+  Stream<ApiResponse<SinglePost>> get singleStream => _single.stream;
 
   RxList<Data> _data = RxList<Data>();
   List<Data> get posts => _data;
 
-  // ignore: cancel_subscriptions
-  late StreamSubscription _feedSub;
-
   FeedService() {
-    listenToReactiveValues([_data, _single]);
+    listenToReactiveValues([_data]);
 
     _infoController = BehaviorSubject<FeedInfo>();
-    _feedSub = _infoController.stream.listen((FeedInfo info) {
-  
+    _infoController.stream.listen((FeedInfo info) {
       fetchFeed(info: info, isSwitch: true, isRefresh: true);
     });
   }
@@ -63,15 +65,14 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
     try {
       Feed data = await _api.getFeedData(
-        lat: info.coordinates!.latitude,
-        lng: info.coordinates!.longitude,
+        coords: info.coordinates!,
         page: info.page,
         filter: info.filter!,
       );
 
       feedSink.add(ApiResponse.completed(data));
       print(data);
-      if (isRefresh == true ) {
+      if (isRefresh == true) {
         _data.clear();
         _data.addAll(data.bagos!.data);
         if (info.filter == 'date') {
@@ -127,13 +128,15 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   }
 
   Future<ApiResponse<SinglePost>> singlePost({required PostInfo info}) async {
-    ApiResponse.loading('posting...');
     try {
       SinglePost data =
           await _api.getPostData(coords: info.coordinates, postId: info.id);
+     
 
+      singleSink.add(ApiResponse.completed(data));
       return ApiResponse.completed(data);
     } catch (e) {
+      _single.add(ApiResponse.completed(SinglePost()));
       return ApiResponse.error(e.toString());
     }
   }
@@ -158,8 +161,11 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     }
   }
 
-  void delete(int id) {
+  void delete(int id, bool isSingle) {
     _data.removeWhere((element) => element.info!.id == id);
+    if (isSingle == true) {
+      _single.add(ApiResponse.completed(SinglePost()));
+    }
   }
 
   Future<ApiResponse<Generic>> deletPost({required int id}) async {
@@ -175,12 +181,21 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
   @override
   void start() {
     super.start();
-    _feedSub.resume();
+
+    feedSink.add(ApiResponse.loading('loading'));
+    Future.delayed(Duration(milliseconds: 350));
+    fetchFeed(
+        info: FeedInfo(
+            page: 1,
+            filter: _authService.filter == false ? 'date' : 'pipocar',
+            coordinates: _location.currentLocation),
+        isRefresh: true);
   }
 
   @override
   void stop() {
     super.stop();
-    _feedSub.pause();
+    singleSink.add(ApiResponse.stop('stopped'));
+    feedSink.add(ApiResponse.stop('stopped'));
   }
 }

@@ -7,7 +7,6 @@ import 'package:stacked/stacked.dart';
 class BagoViewModel extends StreamViewModel<bool> {
   final _feedService = locator<FeedService>();
 
-
   bool _matches = true;
   bool get matches => _matches;
   double _progress = 0;
@@ -17,6 +16,7 @@ class BagoViewModel extends StreamViewModel<bool> {
     Timer.periodic(Duration(milliseconds: 300), (timer) {
       if (_progress == 1) {
         timer.cancel();
+        startTimer();
       } else {
         _progress += 0.05;
       }
@@ -25,8 +25,5 @@ class BagoViewModel extends StreamViewModel<bool> {
   }
 
   @override
-
   Stream<bool> get stream => _feedService.newPostStream;
-
-  
 }

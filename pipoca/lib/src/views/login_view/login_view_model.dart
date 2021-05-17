@@ -63,6 +63,7 @@ class LoginViewModel extends BaseViewModel {
   Future getToken(UserAuth body) async {
     var result = await _authenticationService.social(body);
     switch (result.status) {
+      case Status.STOP:
       case Status.LOADING:
         break;
       case Status.COMPLETED:
@@ -81,6 +82,7 @@ class LoginViewModel extends BaseViewModel {
   Future getUser() async {
     var result = await _userService.fetchUser();
     switch (result.status) {
+       case Status.STOP:
       case Status.LOADING:
         break;
       case Status.COMPLETED:

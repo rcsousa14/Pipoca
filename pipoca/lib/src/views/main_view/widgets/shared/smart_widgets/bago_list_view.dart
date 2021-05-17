@@ -1,10 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
-import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_widget.dart';
 import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
@@ -14,27 +12,16 @@ import 'package:stacked/stacked.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BagoListView extends StatelessWidget {
-  final Function(int index) setPage;
-  final Function(Data data) setData;
-  final Function(int index) setIndex;
   final ScrollController controller;
-  final NavChoice choice;
-  final PageStorageKey storage;
+
   const BagoListView({
-    required this.setIndex,
-    required this.setData,
-    required this.setPage,
     required this.controller,
-    required this.choice,
-    required this.storage,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<BagoListViewModel>.reactive(
-        disposeViewModel: false,
-        fireOnModelReadyOnce: true,
         builder: (context, model, child) {
           if (!model.dataReady ||
               model.dataReady && model.data!.status == Status.LOADING) {
@@ -49,38 +36,49 @@ class BagoListView extends StatelessWidget {
                         onVisibilityChanged: (visibilityInfo) {
                           bool visible =
                               visibilityInfo.visibleFraction * 100 != 0.0;
-                 
+
                           model.changeVisibility(visible);
                         },
                         child: FeedCaller(
-                          caller: () => model.isVisible == true
-                              ? model.refreshFeed(false, false)
+                          caller: () => model.isVisible == true &&
+                                  model.data!.status != Status.STOP
+                              ? model.refreshFeedFalse
                               : null,
                           child: RefreshIndicator(
                             onRefresh: () {
                               Completer<Null> completer = new Completer<Null>();
 
                               new Timer(new Duration(seconds: 3), () {
-                                model.refreshFeed(false, true);
+                                model.refreshFeedTrue;
                                 completer.complete();
                               });
                               return completer.future;
                             },
                             child: ListView.separated(
-                                key: storage,
+                                key: model.pageStorage,
                                 controller: controller,
-                                physics: BouncingScrollPhysics(),
+                                physics: AlwaysScrollableScrollPhysics(
+                                    parent: BouncingScrollPhysics()),
                                 itemCount: model.posts.length + 2,
                                 separatorBuilder: (context, index) {
                                   if (index == 0) {
                                     if (model.data!.status == Status.ERROR) {
-                                      return isError(model.data!.message);
+                                      return isError(model.data!.message!);
                                     }
-                                    return Container();
                                   }
-                                  if (model.loading == true) {
-                                    return isLoading();
+                                  if (index == model.posts.length) {
+                                    if (model.loading == true) {
+                                      return isLoading();
+                                    } else {
+                                      if (model.dataReady && model.data!.status == Status.COMPLETED) {
+                                        return isEnd(
+                                            model.data!.data!.bagos!.nextPage ==
+                                                null);
+                                      }
+                                      return Container();
+                                    }
                                   }
+
                                   return Container();
                                 },
                                 itemBuilder: (context, index) {
@@ -99,19 +97,12 @@ class BagoListView extends StatelessWidget {
                                       }
                                     },
                                     child: BagoCard(
-                                      key: Key('${posts[index - 1].info!.id}'),
-                                      goToPage: () => model.post(
-                                          key: Key(
-                                              '${posts[index - 1].info!.id}'),
-                                          choice: choice,
-                                          bago: posts[index - 1],
-                                          isCreator: posts[index - 1]
-                                                  .info!
-                                                  .creator
-                                                  .username ==
-                                              model.creator,
-                                          filter: model.filter,
-                                          page: model.currentIndex),
+                                      chave: Key(
+                                          '${posts[index - 1].info!.id}-bago-key'),
+                                      isSingle: false,
+                                      goToPage: () => model.goToPost(
+                                        bago: posts[index - 1],
+                                      ),
                                       bago: posts[index - 1],
                                     ),
                                   );
@@ -174,6 +165,26 @@ Widget isError(String msg) {
       ),
     ),
   );
+}
+
+Widget isEnd(bool isEnd) {
+  return isEnd == true
+      ? Center(
+          child: Container(
+            height: 85,
+            width: double.infinity,
+            color: Colors.white,
+            margin: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: Text(
+                "ESTÁS ATUALIZADO",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ),
+          ),
+        )
+      : Container();
 }
 
 Widget isLoading() {

@@ -26,12 +26,10 @@ class CreatePostViewModel extends BaseViewModel {
   List<String> _links = [];
   List<String> _gif = [];
 
-  
-
   //FUNCTION TO UPDATE THE HASHES AND LINKS LIST TO POST
   void updateString(String value) {
     _text = value;
- 
+
     _hashes = extractDetections(_text, hashTagRegExp);
     _links = extractDetections(_text, urlRegex);
 
@@ -72,17 +70,18 @@ class CreatePostViewModel extends BaseViewModel {
     );
     //RETURN TO INITIAL PAGE THEN MAKES A POST
     setIndex(0);
-    var result = await _feedService.postFeed(post: post);
 
+    var result = await _feedService.postFeed(post: post);
+  
     if (result.status == Status.ERROR) {
       await refreshFeed;
-      Future.delayed(Duration(seconds: 4));
+     await Future.delayed(Duration(seconds: 2));
       return _dialogService.showDialog(
           title: 'Erro', description: '${result.message}');
     }
     if (result.status == Status.COMPLETED) {
       await refreshFeed;
-      Future.delayed(Duration(seconds: 4));
+     await Future.delayed(Duration(seconds: 2));
       return _snackbarService.showSnackbar(
           message: 'Bago Criado com Successo!');
     }

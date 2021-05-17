@@ -214,6 +214,7 @@ class _AppBarNewPost extends ViewModelWidget<CreatePostViewModel> {
           onTap: () {
             focus.unfocus();
             text.clear();
+            model.deleteString();
             model.setIndex(0);
           },
           child: Container(
@@ -228,6 +229,9 @@ class _AppBarNewPost extends ViewModelWidget<CreatePostViewModel> {
             onTap: () {
               if (model.text.length > 0 || !model.isBusy) {
                 model.addPost();
+                focus.unfocus();
+                text.clear();
+                model.deleteString();
               }
             },
             child: Container(

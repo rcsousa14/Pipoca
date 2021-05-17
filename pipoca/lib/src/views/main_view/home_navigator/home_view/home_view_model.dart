@@ -1,8 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:pipoca/src/app/locator.dart';
-import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
-import 'package:pipoca/src/models/user_feed_model.dart';
-import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/models/user_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
@@ -12,24 +8,22 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class HomeViewModel extends ReactiveViewModel {
+  
   // THE LOCATORS
-  final _homeNaviagator = locator<HomeNavigatorViewModel>();
+  final _homeNavigator = locator<HomeNavigatorViewModel>();
   final _authenticationService = locator<AuthenticationService>();
   final _userService = locator<UserService>();
   final _feedService = locator<FeedService>();
   final _bottomSheetService = locator<BottomSheetService>();
 
   //GETTERS
-  NavChoice get choice => _homeNaviagator.choice;
-  get pageStorage => _homeNaviagator.pageStorage;
-  bool get filter => _homeNaviagator.filter;
-  Function(int index) get setPage => _homeNaviagator.setCurrentPage;
-  Function(int index) get setIndex => _homeNaviagator.setIndex;
-  Function(Data data) get setData => _homeNaviagator.setCurrentData;
-  Future get pushFeed => _homeNaviagator.pushFeed();
-
+  bool get filter => _homeNavigator.filter;
+  Function(int index) get setIndex => _homeNavigator.setIndex;
+  Future get pushFeed => _homeNavigator.pushFeed();
   User get user => _userService.user;
 
+
+//FUNCTION TO SWITCH FILTERS
   Future showBasicBottomSheet(
       {required String latest,
       required String trending,

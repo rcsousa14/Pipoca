@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:injectable/injectable.dart';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api_helpers/base_helper.dart';

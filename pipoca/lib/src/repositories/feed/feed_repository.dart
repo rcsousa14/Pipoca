@@ -14,9 +14,8 @@ class FeedRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
-  
 
-   Future<SinglePost> getPostData(
+  Future<SinglePost> getPostData(
       {required Coordinates coords, required int postId}) async {
     Map<String, String> queryParams = {
       'lat': coords.latitude.toString(),
@@ -28,17 +27,17 @@ class FeedRepository {
         header: _header.setTokenHeaders(_authenticationService.token));
 
     SinglePost post = SinglePost.fromJson(response);
+    print(post);
     return post;
   }
 
   Future<Feed> getFeedData(
-      {required double lat,
-      required double lng,
+      {required Coordinates coords,
       required int page,
       required String filter}) async {
     Map<String, String> queryParams = {
-      'lat': lat.toString(),
-      'lng': lng.toString(),
+      'lat': coords.latitude.toString(),
+      'lng': coords.longitude.toString(),
       'page': page.toString(),
       'filter': filter
     };
@@ -46,8 +45,6 @@ class FeedRepository {
     final response = await _helper.get(
         query: 'user/feed?$queryString',
         header: _header.setTokenHeaders(_authenticationService.token));
-
- 
 
     Feed feed = Feed.fromJson(response);
     return feed;
@@ -79,6 +76,4 @@ class FeedRepository {
     Generic generic = Generic.fromJson(response);
     return generic;
   }
-
-  
 }

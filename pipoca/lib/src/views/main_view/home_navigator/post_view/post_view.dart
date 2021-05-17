@@ -2,7 +2,6 @@ import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/widgets/detectable_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:pipoca/src/constants/widgets/bottom_nav_widgets/bottom_nav_element.dart';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_widget.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
@@ -10,13 +9,15 @@ import 'package:pipoca/src/views/main_view/home_navigator/post_view/post_view_mo
 import 'package:stacked/stacked.dart';
 
 class PostView extends HookWidget {
-  final Data bago;
-  final bool isCreator;
+  final bool filter;
+  final int page; 
+  final Data data;
 
   const PostView({
-    required Key key,
-    required this.bago,
-    required this.isCreator,
+    required this.data,
+    required this.filter,
+    required this.page,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -27,11 +28,9 @@ class PostView extends HookWidget {
     var text = useTextEditingController();
 
     return ViewModelBuilder<PostViewModel>.reactive(
-      onModelReady: (model) => print(focus.hasFocus),
       builder: (context, model, child) {
-        print(focus.hasFocus);
         Widget loadingIndicator = focus.hasFocus == true
-            ? GestureDetector(
+            ? new GestureDetector(
                 onTap: () {
                   focus.unfocus();
                   text.clear();
@@ -48,8 +47,8 @@ class PostView extends HookWidget {
           appBar: PreferredSize(
               preferredSize: const Size.fromHeight(48),
               child: _Header(
-                tap: () {},
-                isCreator: isCreator,
+                tap: () => model.goBack(),
+                isCreator: data.info!.creator.username == model.creator,
                 report: () => print('report button'),
               )),
           body: Stack(
@@ -57,26 +56,36 @@ class PostView extends HookWidget {
               ListView(
                 physics: BouncingScrollPhysics(),
                 children: [
-                  BagoCard(
-                    key: Key('${bago.info!.id}'),
-                    bago: bago,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          'COMENTÁRIOS RECENTES',
-                          style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Icon(Icons.arrow_drop_down_rounded,
-                            color: Colors.grey.shade600)
-                      ],
+                  if (data.info != null) ...[
+                    BagoCard(
+                      chave: Key('${data.info!.id}-bago-key'),
+                      isSingle: true,
+                     
+                      bago: data,
+                    ),
+                  ],
+                  InkWell(
+                    onTap: () => model.changeFilter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            model.filter == false
+                                ? 'COMENTÁRIOS RECENTES'
+                                : 'COMENTÁRIOS POPULARES',
+                            style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Icon(Icons.arrow_drop_down_rounded,
+                              color: Colors.grey.shade600)
+                        ],
+                      ),
                     ),
                   ),
+                  //TODO: add list of comments here
                   Container(
                     color: Colors.grey.shade50,
                     height: 1000,
@@ -96,7 +105,7 @@ class PostView extends HookWidget {
           ),
         );
       },
-      viewModelBuilder: () => PostViewModel(bago.info!.id),
+      viewModelBuilder: () => PostViewModel(id: data.info!.id, page: page, filter: filter),
     );
   }
 }
@@ -140,8 +149,8 @@ class _StringTextField extends ViewModelWidget<PostViewModel> {
           child: DetectableTextField(
             textInputAction: TextInputAction.send,
             onSubmitted: (value) {
-              print(value);
-
+              model.addComment();
+              focus.unfocus();
               controller.clear();
             },
             focusNode: focus,
@@ -156,7 +165,7 @@ class _StringTextField extends ViewModelWidget<PostViewModel> {
             controller: controller,
             maxLength: 200,
             maxLines: null,
-            // onChanged: (string) => print(string),
+            onChanged: model.updateString,
             decoration: InputDecoration(
               hintText: 'adicionar comentário...',
               hintStyle: TextStyle(fontSize: 16),
@@ -166,20 +175,4 @@ class _StringTextField extends ViewModelWidget<PostViewModel> {
           )),
     );
   }
-}
-
-class PostViewArguments {
-  Key key;
-  final NavChoice choice;
-  final Data bago;
-  final bool isCreator, filter;
-  final int page;
-
-  PostViewArguments(
-      {required this.key,
-      required this.choice,
-      required this.bago,
-      required this.isCreator,
-      required this.filter,
-      required this.page});
 }

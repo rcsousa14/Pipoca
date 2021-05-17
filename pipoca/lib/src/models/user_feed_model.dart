@@ -14,6 +14,27 @@ class PostInfo {
   PostInfo({required this.coordinates, required this.id});
 }
 
+class CommentInfo {
+  Coordinates coordinates;
+  String filter;
+  int id;
+  int page;
+
+  CommentInfo(
+      {required this.coordinates, required this.filter, required this.page, required this.id});
+}
+
+class SubCommentInfo {
+  Coordinates? coordinates;
+  String? filter;
+  int? replyId;
+  int id;
+  int page;
+
+  SubCommentInfo(
+      {this.coordinates, this.filter, required this.page, required this.id, this.replyId});
+}
+
 class CheckData {
   String? creator;
   String? createdAt;
@@ -49,6 +70,7 @@ class Feed {
     return data;
   }
 }
+
 
 class SinglePost {
   bool? success;

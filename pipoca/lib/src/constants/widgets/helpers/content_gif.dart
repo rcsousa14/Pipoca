@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/constants/widgets/helpers/full_screen.dart';
@@ -12,20 +13,21 @@ class ContentImage extends StatefulWidget {
   final ImageProvider<Object> image;
   final int? index, points, page, vote, comments;
   final bool? isVoted, filter;
-  final bool isLink;
+  final bool isLink, isError;
 
   ContentImage({
     Key? key,
     required this.image,
     this.isLink = false,
+    required this.isError,
     this.index,
     this.points,
-     this.page,
+    this.page,
     this.isVoted,
     this.filter,
-     this.vote,
+    this.vote,
     this.comments,
-   this.links,
+    this.links,
   }) : super(key: key);
 
   @override
@@ -33,48 +35,54 @@ class ContentImage extends StatefulWidget {
 }
 
 class _ContentImageState extends State<ContentImage> {
-
-   @override
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    precacheImage(widget.image, context);
+    if (widget.isError == false) {
+      precacheImage(widget.image, context);
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: () {
-        if (widget.isLink == false) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => FullScreen(
-                      comments: widget.comments!,
-                      vote: widget.vote!,
-                      image: widget.image,
-                      index: widget.index!,
-                      page: widget.page!,
-                      points: widget.points!,
-                      isVoted: widget.isVoted!,
-                      filter: widget.filter!,
-                    )),
-          );
-        } else {
-          Navigator.push(
+        if (widget.isError == false) {
+          if (widget.isLink == false) {
+            Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => WebViewScreen(
-                        url: widget.links!.url,
-                        siteName: widget.links!.site!.isNotEmpty ? widget.links!.site : widget.links!.url,
-                      )));
+                  builder: (context) => FullScreen(
+                        comments: widget.comments!,
+                        vote: widget.vote!,
+                        image: widget.image,
+                        index: widget.index!,
+                        page: widget.page!,
+                        points: widget.points!,
+                        isVoted: widget.isVoted!,
+                        filter: widget.filter!,
+                      )),
+            );
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => WebViewScreen(
+                          url: widget.links!.url,
+                          siteName: widget.links!.site!.isNotEmpty
+                              ? widget.links!.site
+                              : widget.links!.url,
+                        )));
+          }
         }
       },
       child: Container(
         constraints: BoxConstraints(
             minHeight: 190,
             minWidth: double.infinity,
-            maxHeight: widget.isLink ? 210 : 350),
+            maxHeight: widget.isLink ? 210 : 280),
         width: double.infinity,
         // margin: widget.isLink == false ? EdgeInsets.only(bottom: 20) : null,
         child: ClipRRect(
@@ -82,78 +90,96 @@ class _ContentImageState extends State<ContentImage> {
                 ? BorderRadius.only(
                     topLeft: Radius.circular(10), topRight: Radius.circular(10))
                 : BorderRadius.all(Radius.circular(10)),
-            child: imagePlace(
+            child: imagePlace(widget.isError,
                 image: widget.image,
                 fullScreen: false,
                 height: height,
-                width: width, double: null)),
+                width: width,
+                double: null)),
       ),
     );
   }
 }
 
-Widget imagePlace(
-    { required ImageProvider<Object> image,
-   required bool fullScreen,
-   required double height,
-  required  double,
+Widget imagePlace(bool isError,
+    {required ImageProvider<Object> image,
+    required bool fullScreen,
+    required double height,
+    required double,
     width}) {
+  List colors = [
+    Colors.blueGrey[800],
+    Colors.brown[800],
+    Colors.grey[900],
+    Colors.teal[900],
+    Colors.cyan[900],
+    Colors.blue[900]
+  ];
+  Random random = new Random();
+  int index = random.nextInt(colors.length);
 
-  return Image(
-    frameBuilder: (context, child, frame, isFrame) {
-      return Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[350],
-            
-          ),
-          child: child);
-    },
-    image: image,
-    fit: fullScreen ? BoxFit.cover : BoxFit.cover,
-    height: fullScreen ? height : null,
-    width: fullScreen ? width : null,
-    loadingBuilder:
-        (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-      if (loadingProgress == null) return child;
-      return Container(
-        decoration: BoxDecoration(
-            color: Colors.grey[350],
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        child: Center(
-          child: SizedBox(
-            width: 25,
-            height: 25,
-            child: Platform.isIOS
-                ? CupertinoActivityIndicator()
-                : CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                  ),
-          ),
-        ),
-      );
-    },
-    errorBuilder: (context, object, stackError) {
-      return Container(
-        decoration: BoxDecoration(
-            color: Colors.grey[350],
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Icon(Icons.link_off), Text('Ocorreu um erro!')],
-        ),
-      );
-    },
-  );
+  return isError == true
+      ? Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: colors[index],
+          child: Icon(Icons.image_not_supported_rounded),
+        )
+      : Image(
+          frameBuilder: (context, child, frame, isFrame) {
+            return Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[350],
+                ),
+                child: child);
+          },
+          image: image,
+          fit: fullScreen ? BoxFit.cover : BoxFit.cover,
+          height: fullScreen ? height : null,
+          width: fullScreen ? width : null,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              decoration: BoxDecoration(
+                  color: Colors.grey[350],
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Center(
+                child: SizedBox(
+                  width: 25,
+                  height: 25,
+                  child: Platform.isIOS
+                      ? CupertinoActivityIndicator()
+                      : CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                ),
+              ),
+            );
+          },
+          errorBuilder: (context, object, stackError) {
+            return Container(
+              decoration: BoxDecoration(
+                  color: Colors.grey[350],
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [Icon(Icons.link_off), Text('Ocorreu um erro!')],
+              ),
+            );
+          },
+        );
 }
 
 class ContentVideo extends StatefulWidget {
   final String url;
-
-  ContentVideo({Key? key,  required this.url}) : super(key: key);
+  final bool isError;
+  ContentVideo({Key? key, required this.url, required this.isError})
+      : super(key: key);
 
   @override
   _ContentVideoState createState() => _ContentVideoState();
@@ -162,10 +188,21 @@ class ContentVideo extends StatefulWidget {
 class _ContentVideoState extends State<ContentVideo> {
   VideoPlayerController? controller;
   bool isPressed = false;
+  late int index;
+  List colors = [
+    Colors.blueGrey[800],
+    Colors.brown[800],
+    Colors.grey[900],
+    Colors.teal[900],
+    Colors.cyan[900],
+    Colors.blue[900]
+  ];
+  Random random = new Random();
 
   @override
   void initState() {
-    
+     index = random.nextInt(colors.length);
+    if (widget.isError == false) {
       controller = VideoPlayerController.network(widget.url);
       controller!.initialize().then((_) {
         if (mounted) {
@@ -173,12 +210,13 @@ class _ContentVideoState extends State<ContentVideo> {
         }
         controller!.pause();
       });
-    
+    }
+
     super.initState();
   }
- //TODO: cache
- //https://pub.dev/packages/flutter_cache_manager
- //https://www.gitmemory.com/issue/flutter/flutter/28094/612075565
+  //TODO: cache
+  //https://pub.dev/packages/flutter_cache_manager
+  //https://www.gitmemory.com/issue/flutter/flutter/28094/612075565
   // @override
   // void dispose() {
   //   controller.dispose();
@@ -197,8 +235,8 @@ class _ContentVideoState extends State<ContentVideo> {
           minHeight: 190,
           minWidth: double.infinity,
           maxHeight: controller!.value.isInitialized ? 300 : 200),
-      child: controller!.value.isInitialized ?
-           AspectRatio(
+      child: controller!.value.isInitialized
+          ? AspectRatio(
               child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   child: GestureDetector(
@@ -262,21 +300,28 @@ class _ContentVideoState extends State<ContentVideo> {
                   )),
               aspectRatio: controller!.value.aspectRatio,
             )
-          : Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[350],
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-              child: Center(
-                child: SizedBox(
-                  width: 25,
-                  height: 25,
-                  child: Platform.isIOS
-                      ? CupertinoActivityIndicator()
-                      : CircularProgressIndicator(),
+          : widget.isError == false
+              ? Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[350],
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: Center(
+                    child: SizedBox(
+                      width: 25,
+                      height: 25,
+                      child: Platform.isIOS
+                          ? CupertinoActivityIndicator()
+                          : CircularProgressIndicator(),
+                    ),
+                  ),
+                )
+              : Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: colors[index],
+                  child: Icon(Icons.image_not_supported_rounded),
                 ),
-              ),
-            ),
     );
   }
 }

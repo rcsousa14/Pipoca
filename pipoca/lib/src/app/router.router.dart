@@ -9,18 +9,22 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 
+import '../models/user_feed_model.dart';
 import '../views/auth_view/auth_view.dart';
 import '../views/login_view/login_view.dart';
+import '../views/main_view/home_navigator/post_view/post_view.dart';
 import '../views/main_view/main_view.dart';
 
 class Routes {
   static const String authView = '/';
   static const String loginView = '/login-view';
   static const String mainView = '/main-view';
+  static const String postView = '/post-view';
   static const all = <String>{
     authView,
     loginView,
     mainView,
+    postView,
   };
 }
 
@@ -31,6 +35,7 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes.authView, page: AuthView),
     RouteDef(Routes.loginView, page: LoginView),
     RouteDef(Routes.mainView, page: MainView),
+    RouteDef(Routes.postView, page: PostView),
   ];
   @override
   Map<Type, StackedRouteFactory> get pagesMap => _pagesMap;
@@ -56,6 +61,18 @@ class StackedRouter extends RouterBase {
         settings: data,
       );
     },
+    PostView: (data) {
+      var args = data.getArgs<PostViewArguments>(nullOk: false);
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => PostView(
+          data: args.data,
+          filter: args.filter,
+          page: args.page,
+          key: args.key,
+        ),
+        settings: data,
+      );
+    },
   };
 }
 
@@ -67,4 +84,14 @@ class StackedRouter extends RouterBase {
 class LoginViewArguments {
   final String message;
   LoginViewArguments({this.message = ''});
+}
+
+/// PostView arguments holder class
+class PostViewArguments {
+  final Data data;
+  final bool filter;
+  final int page;
+  final Key? key;
+  PostViewArguments(
+      {required this.data, required this.filter, required this.page, this.key});
 }
