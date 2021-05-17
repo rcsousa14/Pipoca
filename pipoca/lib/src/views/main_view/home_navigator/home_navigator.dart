@@ -14,7 +14,7 @@ class HomeNavigator extends StatelessWidget {
     return ViewModelBuilder<HomeNavigatorViewModel>.reactive(
         onModelReady: (model) async => await model.pushFeed(),
         fireOnModelReadyOnce: true,
-        
+        disposeViewModel: false,
         builder: (context, model, child) {
           return IndexedStack(
             key: ValueKey<int>(model.currentIndex),

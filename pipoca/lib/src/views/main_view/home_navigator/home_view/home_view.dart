@@ -17,7 +17,7 @@ class HomeView extends HookWidget {
     var scrollController = useScrollController();
 
     return ViewModelBuilder<HomeViewModel>.reactive(
-   
+      disposeViewModel: false,
       fireOnModelReadyOnce: true,
       onModelReady: (model) {
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

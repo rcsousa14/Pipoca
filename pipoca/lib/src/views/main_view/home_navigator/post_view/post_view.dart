@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/widgets/detectable_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:pipoca/src/constants/api_helpers/response.dart';
+import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
+import 'package:pipoca/src/views/main_view/home_navigator/post_view/widgets/comment_list_view.dart';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_widget.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_view/home_view_widgets.dart';
@@ -10,7 +15,7 @@ import 'package:stacked/stacked.dart';
 
 class PostView extends HookWidget {
   final bool filter;
-  final int page; 
+  final int page;
   final Data data;
 
   const PostView({
@@ -26,8 +31,13 @@ class PostView extends HookWidget {
     var width = MediaQuery.of(context).size.width;
     var focus = useFocusNode();
     var text = useTextEditingController();
+    var scrollController = useScrollController();
 
     return ViewModelBuilder<PostViewModel>.reactive(
+      onModelReady: (model) {
+        model.fetchSingle(id: data.info!.id);
+        model.pushComments();
+      },
       builder: (context, model, child) {
         Widget loadingIndicator = focus.hasFocus == true
             ? new GestureDetector(
@@ -46,66 +56,121 @@ class PostView extends HookWidget {
           backgroundColor: Colors.blueGrey[50],
           appBar: PreferredSize(
               preferredSize: const Size.fromHeight(48),
-              child: _Header(
-                tap: () => model.goBack(),
-                isCreator: data.info!.creator.username == model.creator,
-                report: () => print('report button'),
+              child: GestureDetector(
+                onTap: () => scrollController.animateTo(
+                  0.0,
+                  curve: Curves.easeOut,
+                  duration: const Duration(milliseconds: 300),
+                ),
+                child: _Header(
+                  tap: () => model.goBack(),
+                  isCreator: data.info!.creator.username == model.creator,
+                  report: () => print('report button'),
+                ),
               )),
-          body: Stack(
-            children: [
-              ListView(
-                physics: BouncingScrollPhysics(),
+          body: RefreshIndicator(
+            onRefresh: () {
+              Completer<Null> completer = new Completer<Null>();
+
+              new Timer(new Duration(seconds: 3), () {
+                 model.fetchSingle(id: data.info!.id).then((value) {
+                  if (value.status == Status.COMPLETED) {
+                    model.pushComments();
+                  }
+                });
+                completer.complete();
+              });
+              return completer.future;
+            },
+            child: FeedCaller(
+              caller: () {
+                model.fetchSingle(id: data.info!.id).then((value) {
+                  if (value.status == Status.COMPLETED) {
+                    model.pushComments();
+                  }
+                });
+              },
+              child: Stack(
                 children: [
-                  if (data.info != null) ...[
-                    BagoCard(
-                      chave: Key('${data.info!.id}-bago-key'),
-                      isSingle: true,
-                     
-                      bago: data,
-                    ),
-                  ],
-                  InkWell(
-                    onTap: () => model.changeFilter,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            model.filter == false
-                                ? 'COMENTÁRIOS RECENTES'
-                                : 'COMENTÁRIOS POPULARES',
-                            style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold),
+                  ListView(
+                    controller: scrollController,
+                    physics: AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics()),
+                    children: [
+                      if (model.dataReady &&
+                          model.data!.status == Status.COMPLETED) ...[
+                        BagoCard(
+                          isError: false,
+                          chave: Key('${data.info!.id}-bago-key'),
+                          isSingle: true,
+                          bago: model.data!.data!.data!,
+                        ),
+                      ],
+                      if (model.dataReady &&
+                          model.data!.status == Status.ERROR) ...[
+                        BagoCard(
+                          isError: true,
+                          chave: Key('${data.info!.id}-bago-key'),
+                          isSingle: true,
+                          bago: data,
+                        ),
+                      ],
+                      if (data.info != null && !model.dataReady) ...[
+                        BagoCard(
+                          isError: false,
+                          chave: Key('${data.info!.id}-bago-key'),
+                          isSingle: true,
+                          bago: data,
+                        ),
+                      ],
+                      if (data.info == null && !model.dataReady) ...[
+                        // THIS SPACE FOR FOR SOME SORT OF LOADING FOR THE POST THIS WILL BE DONE ONCE THE DYNAMIC LINK IS SET
+                      ],
+
+                      InkWell(
+                        onTap: () => model.changeFilter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              Text(
+                                model.filter == false
+                                    ? 'COMENTÁRIOS RECENTES'
+                                    : 'COMENTÁRIOS POPULARES',
+                                style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Icon(Icons.arrow_drop_down_rounded,
+                                  color: Colors.grey.shade600)
+                            ],
                           ),
-                          Icon(Icons.arrow_drop_down_rounded,
-                              color: Colors.grey.shade600)
-                        ],
+                        ),
                       ),
-                    ),
+                      //TODO: add list of comments here
+                      Container(
+                          color: Colors.white,
+                          margin: const EdgeInsets.only(bottom: 60),
+                          child: CommentListView())
+                    ],
                   ),
-                  //TODO: add list of comments here
-                  Container(
-                    color: Colors.grey.shade50,
-                    height: 1000,
-                    width: double.infinity,
+                  Align(
+                    child: loadingIndicator,
+                    alignment: FractionalOffset.center,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: _StringTextField(focus: focus, controller: text),
                   )
                 ],
               ),
-              Align(
-                child: loadingIndicator,
-                alignment: FractionalOffset.center,
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: _StringTextField(focus: focus, controller: text),
-              )
-            ],
+            ),
           ),
         );
       },
-      viewModelBuilder: () => PostViewModel(id: data.info!.id, page: page, filter: filter),
+      viewModelBuilder: () =>
+          PostViewModel(id: data.info!.id, page: page, filter: filter),
     );
   }
 }

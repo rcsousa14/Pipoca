@@ -97,6 +97,7 @@ class BagoListView extends StatelessWidget {
                                       }
                                     },
                                     child: BagoCard(
+                                      isError: false,
                                       chave: Key(
                                           '${posts[index - 1].info!.id}-bago-key'),
                                       isSingle: false,

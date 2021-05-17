@@ -79,6 +79,7 @@ class CommentService extends IstoppableService with ReactiveServiceMixin {
           });
         }
       }
+      print(data);
       commentSink.add(ApiResponse.completed(data));
       return ApiResponse.completed(data);
     } catch (e) {

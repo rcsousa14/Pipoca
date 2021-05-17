@@ -12,7 +12,7 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/functions.dart';
 
-class PostViewModel extends ReactiveViewModel {
+class PostViewModel extends StreamViewModel<ApiResponse<SinglePost>> {
   final int id;
   final int page;
   final bool filter;
@@ -29,6 +29,7 @@ class PostViewModel extends ReactiveViewModel {
   //GETTERS
   // bool get filter => _commentService.filter;
   String get creator => _userService.user.username;
+  
 
 //VARIABLE
   String _text = '';
@@ -79,12 +80,10 @@ class PostViewModel extends ReactiveViewModel {
     );
     var result = await _commentService.postComment(post: post, postId: id);
     if (result.status == Status.ERROR) {
-
       return _dialogService.showDialog(
           title: 'Erro', description: '${result.message}');
     }
     if (result.status == Status.COMPLETED) {
-     
       return _snackbarService.showSnackbar(message: '${result.message}');
     }
   }
@@ -106,6 +105,27 @@ class PostViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
+  // FETCH COMMENT LIST
+  Future pushComments() async {
+    _commentService.commentInfo.add(CommentInfo(
+        coordinates: _location.currentLocation,
+        filter: "date",
+        page: page,
+        id: id));
+  }
+
+   //FUTURE TO CALL SINGULAR POST
+  Future<ApiResponse<SinglePost>> fetchSingle({required int id}) async {
+   var result = await _feedService.singlePost(
+        info: PostInfo(coordinates: _location.currentLocation, id: id));
+    
+
+    return result;
+  }
+
   @override
-  List<ReactiveServiceMixin> get reactiveServices => [_commentService];
+  
+  Stream<ApiResponse<SinglePost>> get stream => _feedService.singleStream;
+
+  
 }

@@ -32,8 +32,9 @@ class CommentRepository {
       'page': page.toString(),
       'filter': filter
     };
+    String queryString = Uri(queryParameters: queryParams).query;
     final response = await _helper.get(
-        query: '$postId/comments?$queryParams',
+        query: '$postId/comments?$queryString',
         header: _header.setTokenHeaders(_authenticationService.token),
         );
     Comentario created = Comentario.fromJson(response);

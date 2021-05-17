@@ -136,7 +136,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
       singleSink.add(ApiResponse.completed(data));
       return ApiResponse.completed(data);
     } catch (e) {
-      _single.add(ApiResponse.completed(SinglePost()));
+       singleSink.add(ApiResponse.error(e.toString()));
       return ApiResponse.error(e.toString());
     }
   }

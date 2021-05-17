@@ -50,10 +50,11 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-
+      
       var response = await client
           .get(url, headers: header)
           .timeout(Duration(seconds: sec));
+      
 
       responseJson = _returnResponse(response);
     } on SocketException {

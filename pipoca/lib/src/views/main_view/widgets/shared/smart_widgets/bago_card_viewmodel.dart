@@ -1,25 +1,23 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
-import 'package:pipoca/src/services/location_service.dart';
 import 'package:pipoca/src/services/user_service.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_navigator_view_model.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class BagoCardViewModel extends StreamViewModel<ApiResponse<SinglePost>> {
+class BagoCardViewModel extends BaseViewModel {
   //LOCATORS
   final _userService = locator<UserService>();
   final _feedService = locator<FeedService>();
   final _homeNavigator = locator<HomeNavigatorViewModel>();
   final _snackbarService = locator<SnackbarService>();
   final _bottomSheetService = locator<BottomSheetService>();
-  final _locationService = locator<LocationService>();
+
   final CapturePngService _captureService = locator<CapturePngService>();
 
   //VARIABLES
@@ -144,17 +142,7 @@ class BagoCardViewModel extends StreamViewModel<ApiResponse<SinglePost>> {
     return await _captureService.capturePng(key);
   }
 
-  //FUTURE TO CALL SINGULAR POST
-  Future<ApiResponse<SinglePost>> fetchSingle({required int id}) async {
-    var result = await _feedService.singlePost(
-        info: PostInfo(coordinates: _locationService.currentLocation, id: id));
-    if (result.status == Status.COMPLETED) {
-      // getVote(result.data!.data!.userVoted!, result.data!.data!.userVote!,
-      //     result.data!.data!.info!.votesTotal);
-    }
-
-    return result;
-  }
+ 
 
   @override
   Stream<ApiResponse<SinglePost>> get stream => _feedService.singleStream;

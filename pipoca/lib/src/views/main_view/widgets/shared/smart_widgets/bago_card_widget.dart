@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
-import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
 import 'package:pipoca/src/constants/widgets/smart_widgets/link_caller.dart';
 import 'package:pipoca/src/constants/widgets/helpers/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
@@ -12,14 +11,16 @@ import 'package:pipoca/src/assets/pipoca_basics_icons.dart';
 import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
-import 'package:visibility_detector/visibility_detector.dart';
+
 
 class BagoCard extends StatelessWidget {
+  final bool isError; 
   final Data bago;
   final Function? goToPage;
   final bool isSingle;
   final Key chave;
   const BagoCard({
+   required this.isError,
     required this.chave,
     required this.bago,
     required this.isSingle,
@@ -34,7 +35,6 @@ class BagoCard extends StatelessWidget {
       fireOnModelReadyOnce: true,
       onModelReady: (model) {
         model.getVote(bago.userVoted!, bago.userVote!, bago.info!.votesTotal);
-        
       },
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
@@ -60,14 +60,13 @@ class BagoCard extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border(
-                      bottom: BorderSide(
-                          color: Colors.grey.shade200, width: 1))),
+                      bottom:
+                          BorderSide(color: Colors.grey.shade200, width: 1))),
               child: Container(
                 child: Column(
                   children: <Widget>[
                     Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -75,53 +74,15 @@ class BagoCard extends StatelessWidget {
                           // POST USER AVART
                           _Avatar(
                               key: Key('${bago.info!.id}-avatar'),
-                              isError: model.dataReady &&
-                                      model.data!.status == Status.ERROR
-                                  ? true
-                                  : false,
-                              image: model.dataReady &&
-                                      model.data!.status == Status.COMPLETED
-                                  ? model.data!.data!.data!.info!.creator
-                                      .avatar
-                                  : bago.info!.creator.avatar),
+                              isError: isError,
+                              image: bago.info!.creator.avatar),
 
                           // CONTENT WITH ERROR HANDLING
-                          if (model.dataReady) ...[
+                          
+                    
+                       
                             _Content(
-                              isError: model.data!.status == Status.ERROR,
-                              globalKey: key,
-                              text: bago.info!.content,
-                              links: bago.info!.links,
-                              index: bago.info!.id,
-                              creator: model.data!.status != Status.ERROR &&
-                                      model.data!.status == Status.COMPLETED
-                                  ? model.data!.data!.data!.info!.creator
-                                      .username
-                                  : bago.info!.creator.username,
-                              timeNow: timeNow,
-                              points: model.data!.status != Status.ERROR &&
-                                      model.data!.status == Status.COMPLETED
-                                  ? model.data!.data!.data!.info!.votesTotal
-                                  : bago.info!.votesTotal,
-                              commentsTotal: model.data!.status !=
-                                          Status.ERROR &&
-                                      model.data!.status == Status.COMPLETED
-                                  ? model
-                                      .data!.data!.data!.info!.commentsTotal
-                                  : bago.info!.commentsTotal,
-                              isVoted: model.data!.status != Status.ERROR &&
-                                      model.data!.status == Status.COMPLETED
-                                  ? model.data!.data!.data!.userVoted!
-                                  : bago.userVoted!,
-                              vote: model.data!.status != Status.ERROR &&
-                                      model.data!.status == Status.COMPLETED
-                                  ? model.data!.data!.data!.userVote!
-                                  : bago.userVote!,
-                            ),
-                          ],
-                          if (!model.dataReady) ...[
-                            _Content(
-                              isError: false,
+                              isError: isError,
                               globalKey: key,
                               text: bago.info!.content,
                               links: bago.info!.links,
@@ -133,20 +94,13 @@ class BagoCard extends StatelessWidget {
                               isVoted: bago.userVoted!,
                               vote: bago.userVote!,
                             ),
-                          ],
-                          // // MORE BTN IT CHECKS IF CURRENT USER IS POST AUTHOR
+                      
+                         // MORE BTN IT CHECKS IF CURRENT USER IS POST AUTHOR
                           _MoreBtn(
-                            isError: model.dataReady &&
-                                    model.data!.status == Status.ERROR
-                                ? true
-                                : false,
+                            isError: isError,
                             isSingle: isSingle,
                             index: bago.info!.id,
-                            creator: model.dataReady &&
-                                    model.data!.status != Status.ERROR
-                                ? model.data!.data!.data!.info!.creator
-                                    .username
-                                : bago.info!.creator.username,
+                            creator: bago.info!.creator.username,
                           )
                         ],
                       ),
