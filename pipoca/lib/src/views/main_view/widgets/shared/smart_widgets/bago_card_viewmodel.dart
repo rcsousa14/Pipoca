@@ -145,7 +145,7 @@ class BagoCardViewModel extends BaseViewModel {
       case Type.POST:
         result = await _feedService.pointPost(
             point: PostPoint(
-              postId: id,
+              id: id,
               voted: vote,
             ),
             filter: filter == false ? 'date' : 'pipocar');

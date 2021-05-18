@@ -24,4 +24,28 @@ class Comentario {
   }
 }
 
+class SubComentario {
+  bool? success;
+  String? message;
+  Bagos? bagos;
+
+  SubComentario({this.success, this.message, this.bagos});
+
+  SubComentario.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    bagos = new Bagos.fromJson(json['bagos']);
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+
+   data['bagos'] = this.bagos!.toJson();
+
+    return data;
+  }
+}
+
 

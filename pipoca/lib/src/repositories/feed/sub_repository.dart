@@ -9,25 +9,24 @@ import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 
 @lazySingleton
-class CommentRepository {
+class SubRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
-  // FUTURE TO POST A COMMENT WITH A POST ID
-  Future<Generic> postCommentData(
-      {required CreatePost post, required int postId}) async {
+//FUTURE TO POST A SUB_COMMENT WITH A COMMENT ID
+  Future<Generic> postSubData(
+      {required CreateSubComment post, required int commentId}) async {
     final response = await _helper.post(
-        query: '$postId/comments',
+        query: '$commentId/sub_comments',
         header: _header.setTokenHeaders(_authenticationService.token),
         body: post);
     Generic created = Generic.fromJson(response);
     return created;
   }
-
-  //FUTURE TO GET ALL THE COMMENTS ASSOCIATED WITH A POST
-  Future<Comentario> getCommentData(
+//FUTURE TO GET ALL THE SUB_COMMENTS ASSOCIATED WITH A COMMENT
+  Future<SubComentario> getSubData(
       {required Coordinates coords,
-      required int postId,
+      required int commentId,
       required int page,
       required String filter}) async {
     Map<String, String> queryParams = {
@@ -38,17 +37,17 @@ class CommentRepository {
     };
     String queryString = Uri(queryParameters: queryParams).query;
     final response = await _helper.get(
-      query: '$postId/comments?$queryString',
+      query: '$commentId/sub_comments?$queryString',
       header: _header.setTokenHeaders(_authenticationService.token),
     );
-    Comentario created = Comentario.fromJson(response);
+
+    SubComentario created = SubComentario.fromJson(response);
     return created;
   }
-
-  //FUTURE TO ADD A VOTE FOR THE COMMENT
-  Future<Generic> commentPointData(PostPoint point) async {
+  //FUTURE TO ADD A VOTE FOR THE SUB_COMMENT
+  Future<Generic> subPointData(PostPoint point) async {
     final response = await _helper.post(
-        query: 'comment/votes',
+        query: 'sub_comment/votes',
         header: _header.setTokenHeaders(_authenticationService.token),
         body: point);
 
@@ -56,11 +55,10 @@ class CommentRepository {
 
     return vote;
   }
-
-//FUTURE TO DELETE COMMENT
-  Future<Generic> deleteCommentData({required int id}) async {
+//FUTURE TO DELETE SUB_COMMENT
+  Future<Generic> deleteSubData({required int id}) async {
     final response = await _helper.delete(
-        query: 'comments/$id',
+        query: 'sub_comments/$id',
         header: _header.setTokenHeaders(_authenticationService.token));
     Generic generic = Generic.fromJson(response);
     return generic;
