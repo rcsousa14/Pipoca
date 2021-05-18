@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
-import 'package:pipoca/src/constants/api_helpers/response.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pipoca/src/constants/widgets/smart_widgets/link_caller.dart';
 import 'package:pipoca/src/constants/widgets/helpers/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
@@ -13,14 +13,21 @@ import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_car
 import 'package:stacked/stacked.dart';
 
 
+
 class BagoCard extends StatelessWidget {
-  final bool isError; 
+  final Type type;
+  final FocusNode? focus;
+  final TextEditingController? text;
+  final bool isError;
   final Data bago;
   final Function? goToPage;
   final bool isSingle;
   final Key chave;
   const BagoCard({
-   required this.isError,
+    this.focus,
+    this.text,
+    required this.type,
+    required this.isError,
     required this.chave,
     required this.bago,
     required this.isSingle,
@@ -31,9 +38,10 @@ class BagoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     GlobalKey key = GlobalKey();
 
-    return ViewModelBuilder<BagoCardViewModel>.reactive(
-      fireOnModelReadyOnce: true,
+    return ViewModelBuilder<BagoCardViewModel>.nonReactive(
       onModelReady: (model) {
+        print(
+            '${bago.userVoted!}, ${bago.userVote!}, ${bago.info!.votesTotal}');
         model.getVote(bago.userVoted!, bago.userVote!, bago.info!.votesTotal);
       },
       builder: (context, model, child) {
@@ -78,25 +86,27 @@ class BagoCard extends StatelessWidget {
                               image: bago.info!.creator.avatar),
 
                           // CONTENT WITH ERROR HANDLING
-                          
-                    
-                       
-                            _Content(
-                              isError: isError,
-                              globalKey: key,
-                              text: bago.info!.content,
-                              links: bago.info!.links,
-                              index: bago.info!.id,
-                              creator: bago.info!.creator.username,
-                              timeNow: timeNow,
-                              points: bago.info!.votesTotal,
-                              commentsTotal: bago.info!.commentsTotal,
-                              isVoted: bago.userVoted!,
-                              vote: bago.userVote!,
-                            ),
-                      
-                         // MORE BTN IT CHECKS IF CURRENT USER IS POST AUTHOR
+
+                          _Content(
+                            focus: focus,
+                            controller: text,
+                            type: type,
+                            isError: isError,
+                            globalKey: key,
+                            text: bago.info!.content,
+                            links: bago.info!.links,
+                            index: bago.info!.id,
+                            creator: bago.info!.creator.username,
+                            timeNow: timeNow,
+                            points: bago.info!.votesTotal,
+                            commentsTotal: bago.info!.commentsTotal,
+                            isVoted: bago.userVoted!,
+                            vote: bago.userVote!,
+                          ),
+
+                          // MORE BTN IT CHECKS IF CURRENT USER IS POST AUTHOR
                           _MoreBtn(
+                            type: type,
                             isError: isError,
                             isSingle: isSingle,
                             index: bago.info!.id,
@@ -182,8 +192,10 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
   final int index;
   final String creator;
   final bool isSingle;
+  final Type type; 
   const _MoreBtn({
     Key? key,
+    required this.type,
     required this.isError,
     required this.index,
     required this.creator,
@@ -198,7 +210,11 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
         padding: const EdgeInsets.only(top: 10.0),
         child: GestureDetector(
           onTap: () => creator == model.creator && isError == false
-              ? model.delete(id: index, isSingle: isSingle)
+              ? model.delete(
+                type: type,
+                  id: index,
+                  isSingle: isSingle,
+                )
               : null,
           child: Icon(
             PipocaBasics.menu,
@@ -212,6 +228,9 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
 }
 
 class _Content extends ViewModelWidget<BagoCardViewModel> {
+  final FocusNode? focus;
+  final TextEditingController? controller;
+  final Type type;
   final bool isError;
   final String creator, text;
   final String timeNow;
@@ -222,6 +241,9 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
   final int vote, points, commentsTotal, index;
   const _Content(
       {Key? key,
+      this.focus,
+      this.controller,
+      required this.type,
       required this.isError,
       required this.globalKey,
       required this.links,
@@ -325,6 +347,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             if (model.down == true && model.up == false ||
                                 model.up == null) {
                               model.vote(
+                               type: type,
                                 id: index,
                                 vote: 1,
                                 points: points,
@@ -365,6 +388,7 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             if (model.up == true && model.down == false ||
                                 model.down == null) {
                               model.vote(
+                                type: type,
                                 id: index,
                                 vote: -1,
                                 points: points,
@@ -408,31 +432,63 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       ),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () => model.share(globalKey),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3.0),
-                          child: Icon(
-                            PipocaBasics.export,
-                            size: 19,
-                            color: Colors.grey[400],
+                  if (type == Type.POST) ...[
+                    GestureDetector(
+                      onTap: () => model.share(globalKey),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3.0),
+                            child: Icon(
+                              PipocaBasics.export,
+                              size: 19,
+                              color: Colors.grey[400],
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('PARTILHAR',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
-                            )),
-                      ],
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text('PARTILHAR',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              )),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
+                  if (type == Type.COMMENT || type == Type.SUB) ...[
+                    GestureDetector(
+                      onTap: () {
+                        focus!.requestFocus();
+                        controller!.text = '@$creator: ';
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3.0),
+                            child: Icon(
+                              FontAwesomeIcons.reply,
+                              size: 19,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text('RESPONDER',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ]
                 ],
               ),
             ),

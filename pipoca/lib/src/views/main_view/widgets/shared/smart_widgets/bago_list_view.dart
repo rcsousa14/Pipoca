@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -70,7 +71,9 @@ class BagoListView extends StatelessWidget {
                                     if (model.loading == true) {
                                       return isLoading();
                                     } else {
-                                      if (model.dataReady && model.data!.status == Status.COMPLETED) {
+                                      if (model.dataReady &&
+                                          model.data!.status ==
+                                              Status.COMPLETED) {
                                         return isEnd(
                                             model.data!.data!.bagos!.nextPage ==
                                                 null);
@@ -83,6 +86,7 @@ class BagoListView extends StatelessWidget {
                                 },
                                 itemBuilder: (context, index) {
                                   List<Data> posts = model.posts;
+                                  print(posts.length);
                                   if (index == 0 ||
                                       index == model.posts.length + 1) {
                                     return Container();
@@ -97,6 +101,7 @@ class BagoListView extends StatelessWidget {
                                       }
                                     },
                                     child: BagoCard(
+                                      type: Type.POST,
                                       isError: false,
                                       chave: Key(
                                           '${posts[index - 1].info!.id}-bago-key'),

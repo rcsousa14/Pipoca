@@ -64,7 +64,7 @@ class _PostCallerState extends State<PostCaller> {
   void initState() {
    if (widget.itemCaller != null) {
           _single = Timer.periodic(
-              Duration(seconds: 15), (timer) => widget.itemCaller!());
+              Duration(seconds: 1), (timer) => widget.itemCaller!());
         }
     super.initState();
   }

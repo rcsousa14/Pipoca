@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/widgets/detectable_text_field.dart';
 import 'package:flutter/material.dart';
@@ -100,6 +100,7 @@ class PostView extends HookWidget {
                       if (model.dataReady &&
                           model.data!.status == Status.COMPLETED) ...[
                         BagoCard(
+                          type: Type.POST,
                           isError: false,
                           chave: Key('${data.info!.id}-bago-key'),
                           isSingle: true,
@@ -109,6 +110,7 @@ class PostView extends HookWidget {
                       if (model.dataReady &&
                           model.data!.status == Status.ERROR) ...[
                         BagoCard(
+                          type: Type.POST,
                           isError: true,
                           chave: Key('${data.info!.id}-bago-key'),
                           isSingle: true,
@@ -117,6 +119,7 @@ class PostView extends HookWidget {
                       ],
                       if (data.info != null && !model.dataReady) ...[
                         BagoCard(
+                          type: Type.POST,
                           isError: false,
                           chave: Key('${data.info!.id}-bago-key'),
                           isSingle: true,
@@ -152,7 +155,7 @@ class PostView extends HookWidget {
                       Container(
                           color: Colors.white,
                           margin: const EdgeInsets.only(bottom: 60),
-                          child: CommentListView())
+                          child: CommentListView(focus: focus, text: text,))
                     ],
                   ),
                   Align(
@@ -224,7 +227,7 @@ class _StringTextField extends ViewModelWidget<PostViewModel> {
               fontSize: 16,
             ),
             decoratedStyle: TextStyle(fontSize: 16, color: Colors.blue[400]),
-            detectionRegExp: detectionRegExp(atSign: false)!,
+            detectionRegExp: detectionRegExp()!,
             autofocus: false,
             cursorColor: Colors.blue[400],
             controller: controller,

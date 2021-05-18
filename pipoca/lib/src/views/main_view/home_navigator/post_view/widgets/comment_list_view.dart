@@ -6,19 +6,21 @@ import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/post_view/widgets/comment_list_view_model.dart';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_widget.dart';
 import 'package:stacked/stacked.dart';
+import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 
 class CommentListView extends StatelessWidget {
-  
+  final FocusNode focus;
+  final TextEditingController text;
   const CommentListView({
     Key? key,
- 
+    required this.focus, required this.text
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<CommentListViewModel>.reactive(
         builder: (context, model, child) {
-          if (!model.dataReady ) {
+          if (!model.dataReady) {
             return loading();
           } else {
             if (model.data!.status == Status.ERROR) {
@@ -50,6 +52,9 @@ class CommentListView extends StatelessWidget {
                                     }
                                   },
                                   child: BagoCard(
+                                    focus: focus,
+                                    text: text,
+                                      type: Type.COMMENT,
                                       isError: false,
                                       chave: Key("${posts[index]}-comment"),
                                       bago: posts[index],

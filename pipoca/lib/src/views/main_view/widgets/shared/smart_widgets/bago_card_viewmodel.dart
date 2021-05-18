@@ -2,13 +2,15 @@ import 'dart:async';
 import 'package:pipoca/src/app/locator.dart';
 import 'package:pipoca/src/constants/api_helpers/response.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
-import 'package:pipoca/src/models/user_feed_model.dart';
+
 import 'package:pipoca/src/services/capture_png_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/user_service.dart';
 import 'package:pipoca/src/views/main_view/home_navigator/home_navigator_view_model.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+
+enum Type { POST, COMMENT, SUB }
 
 class BagoCardViewModel extends BaseViewModel {
   //LOCATORS
@@ -56,38 +58,60 @@ class BagoCardViewModel extends BaseViewModel {
         notifyListeners();
       }
     }
+
     notifyListeners();
   }
 
 //FUTURE TO DELETE POST
-  Future delete({required int id, required bool isSingle}) async {
+  Future delete(
+      {required int id, required bool isSingle, required Type type}) async {
     var response = await _bottomSheetService.showBottomSheet(
         cancelButtonTitle: 'Não',
         confirmButtonTitle: 'Sim',
-        title: 'Eliminar Bago',
-        description: 'Tem certeza de que deseja excluir este bago?');
+        title: type == Type.POST ? 'Eliminar Bago' : 'Eliminar Comentário',
+        description: type == Type.POST
+            ? 'Tem certeza de que deseja excluir este bago?'
+            : 'Tem certeza de que deseja excluir este comentário?');
     if (response?.confirmed == true) {
-      var result = await _feedService.deletPost(id: id);
+      var result;
+      switch (type) {
+        case Type.POST:
+          result = await _feedService.deletPost(id: id);
+          return await deletingStatus(
+              result.status, id, isSingle, result.data!.message);
+        case Type.COMMENT:
+          return await deletingStatus(
+              result.status, id, isSingle, result.data!.message);
 
-      if (result.status == Status.ERROR) {
-        await refreshFeed;
-        _snackbarService.showSnackbar(message: '${result.data!.message}');
-        
+        case Type.SUB:
+          return await deletingStatus(
+              result.status, id, isSingle, result.data!.message);
+        default:
+          return result;
       }
-      if (result.status == Status.COMPLETED) {
-        _feedService.delete(id, isSingle);
-        await refreshFeed;
-      }
+      
+    }
+  }
+
+  Future deletingStatus(
+      Status status, int id, bool isSingle, String msg) async {
+    if (status == Status.ERROR) {
+      _snackbarService.showSnackbar(message: '$msg');
+      await refreshFeed;
+    }
+    if (status == Status.COMPLETED) {
+      _feedService.delete(id, isSingle);
+      await refreshFeed;
     }
   }
 
 //FUTURE TO MAKE A VOTE
-  Future vote({
-    required int id,
-    required int vote,
-    required bool isVoted,
-    required int points,
-  }) async {
+  Future vote(
+      {required int id,
+      required int vote,
+      required bool isVoted,
+      required int points,
+      required Type type}) async {
     if (vote == -1) {
       if (points == 0 && isVoted == true ||
           points == 1 && isVoted == true ||
@@ -116,34 +140,40 @@ class BagoCardViewModel extends BaseViewModel {
       _isDown = false;
       notifyListeners();
     }
+    var result;
+    switch (type) {
+      case Type.POST:
+        result = await _feedService.pointPost(
+            point: PostPoint(
+              postId: id,
+              voted: vote,
+            ),
+            filter: filter == false ? 'date' : 'pipocar');
+        return voteStatus(result.status);
+      case Type.COMMENT:
+        return voteStatus(result.status);
 
-    var result = await _feedService.pointPost(
-        point: PostPoint(
-          postId: id,
-          voted: vote,
-        ),
-        filter: filter == false ? 'date' : 'pipocar');
+      case Type.SUB:
+        return voteStatus(result.status);
 
-    if (result.status == Status.ERROR) {
+      default:
+        return result;
+    }
+
+  }
+
+  Future voteStatus(Status status) async {
+    if (status == Status.ERROR) {
       await refreshFeed;
       _snackbarService.showSnackbar(message: 'Tenta Novamente');
-     
     }
-    if (result.status == Status.COMPLETED) {
+    if (status == Status.COMPLETED) {
       await refreshFeed;
-      
-
     }
-    notifyListeners();
   }
 
   //FUTURE TO SHARE POST
   Future share(key) async {
     return await _captureService.capturePng(key);
   }
-
- 
-
-  @override
-  Stream<ApiResponse<SinglePost>> get stream => _feedService.singleStream;
 }

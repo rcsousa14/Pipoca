@@ -29,7 +29,6 @@ class PostViewModel extends StreamViewModel<ApiResponse<SinglePost>> {
   //GETTERS
   // bool get filter => _commentService.filter;
   String get creator => _userService.user.username;
-  
 
 //VARIABLE
   String _text = '';
@@ -55,7 +54,7 @@ class PostViewModel extends StreamViewModel<ApiResponse<SinglePost>> {
 
   //FUNCTION TO RETURN BACK
   Future goBack() async {
-    //await refreshFeed();
+    
     return _navigationService.back();
   }
 
@@ -114,18 +113,14 @@ class PostViewModel extends StreamViewModel<ApiResponse<SinglePost>> {
         id: id));
   }
 
-   //FUTURE TO CALL SINGULAR POST
+  //FUTURE TO CALL SINGULAR POST
   Future<ApiResponse<SinglePost>> fetchSingle({required int id}) async {
-   var result = await _feedService.singlePost(
+    var result = await _feedService.singlePost(
         info: PostInfo(coordinates: _location.currentLocation, id: id));
-    
 
     return result;
   }
 
   @override
-  
   Stream<ApiResponse<SinglePost>> get stream => _feedService.singleStream;
-
-  
 }

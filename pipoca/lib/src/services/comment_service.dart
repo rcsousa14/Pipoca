@@ -88,6 +88,10 @@ class CommentService extends IstoppableService with ReactiveServiceMixin {
     }
   }
 
+  void back() {
+    _data =  RxList<Data>();
+  }
+
   Future<ApiResponse<Generic>> postComment(
       {required CreatePost post, required int postId}) async {
     ApiResponse.loading('posting...');
