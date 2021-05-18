@@ -14,6 +14,7 @@ exports.store = async({ params, body, decoded }, res, next) => {
         const NOW = new Date();
         const result = await models.sub_comment.findOne({
             where: {
+                reply_to_id: reply_to_id,
                 content: content,
                 user_id: decoded.id,
                 comment_id: comment_id,
