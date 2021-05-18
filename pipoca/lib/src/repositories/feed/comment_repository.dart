@@ -13,6 +13,7 @@ class CommentRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
+  
   // FUTURE TO POST A COMMENT WITH A POST ID
   Future<Generic> postCommentData(
       {required CreatePost post, required int postId}) async {

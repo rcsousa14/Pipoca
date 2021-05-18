@@ -13,6 +13,7 @@ class SubRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
+
 //FUTURE TO POST A SUB_COMMENT WITH A COMMENT ID
   Future<Generic> postSubData(
       {required CreateSubComment post, required int commentId}) async {
@@ -23,6 +24,7 @@ class SubRepository {
     Generic created = Generic.fromJson(response);
     return created;
   }
+
 //FUTURE TO GET ALL THE SUB_COMMENTS ASSOCIATED WITH A COMMENT
   Future<SubComentario> getSubData(
       {required Coordinates coords,
@@ -44,6 +46,7 @@ class SubRepository {
     SubComentario created = SubComentario.fromJson(response);
     return created;
   }
+
   //FUTURE TO ADD A VOTE FOR THE SUB_COMMENT
   Future<Generic> subPointData(PostPoint point) async {
     final response = await _helper.post(
@@ -55,6 +58,7 @@ class SubRepository {
 
     return vote;
   }
+
 //FUTURE TO DELETE SUB_COMMENT
   Future<Generic> deleteSubData({required int id}) async {
     final response = await _helper.delete(
