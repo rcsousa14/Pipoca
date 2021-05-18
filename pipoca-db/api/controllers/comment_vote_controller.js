@@ -4,18 +4,18 @@ const models = require("../models");
 
 exports.store = async({ body, decoded }, res, next) => {
     try {
-        const { commentId, voted } = body;
-        const post = await models.comment.findByPk(commentId);
+        const { id, voted } = body;
+        const post = await models.comment.findByPk(id);
         if (!post) {
             next(ApiError.badRequestException("Bago não foi encontrado!"));
             return;
         }
         const vote = await models.comment_vote.findOne({
-            where: { user_id: decoded.id, comment_id: commentId },
+            where: { user_id: decoded.id, comment_id: id },
         });
 
         if (vote) {
-            await models.comment_vote.update({ id: vote.id, user_id: decoded.id, voted, comment_id: commentId }, {
+            await models.comment_vote.update({ id: vote.id, user_id: decoded.id, voted, comment_id: id }, {
                 where: { id: vote.id },
             });
 
@@ -25,8 +25,8 @@ exports.store = async({ body, decoded }, res, next) => {
             });
         }
         await models.comment_vote.create({
-            userId: decoded.id,
-            comment_id: commentId,
+            user_id: decoded.id,
+            comment_id: id,
             voted,
         });
 
