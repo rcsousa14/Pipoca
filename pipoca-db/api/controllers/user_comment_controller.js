@@ -147,6 +147,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
                 as: "creator",
                 attributes: {
                     exclude: [
+                        "email",
                         "createdAt",
                         "updatedAt",
                         "deleted_at",
@@ -282,6 +283,7 @@ exports.show = async({ query, decoded }, res, next) => {
                 as: "creator",
                 attributes: {
                     exclude: [
+                        "email",
                         "createdAt",
                         "updatedAt",
                         "deleted_at",

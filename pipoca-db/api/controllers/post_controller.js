@@ -57,6 +57,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
                     as: "creator",
                     attributes: {
                         exclude: [
+                            "email",
                             "createdAt",
                             "updatedAt",
                             "deleted_at",
