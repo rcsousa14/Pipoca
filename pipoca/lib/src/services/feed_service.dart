@@ -81,7 +81,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
           });
         } else {
           _data.sort((b, a) {
-            return a.info!.votesTotal.compareTo(b.info!.votesTotal);
+            return a.info!.votesTotal!.compareTo(b.info!.votesTotal!);
           });
         }
       } else {
@@ -96,7 +96,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
           });
         } else {
           _data.sort((b, a) {
-            return a.info!.votesTotal.compareTo(b.info!.votesTotal);
+            return a.info!.votesTotal!.compareTo(b.info!.votesTotal!);
           });
         }
       }
@@ -151,7 +151,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
         });
       } else {
         _data.sort((b, a) {
-          return a.info!.votesTotal.compareTo(b.info!.votesTotal);
+          return a.info!.votesTotal!.compareTo(b.info!.votesTotal!);
         });
       }
       return ApiResponse.completed(data);

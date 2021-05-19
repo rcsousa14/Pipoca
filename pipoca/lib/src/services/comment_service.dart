@@ -60,7 +60,7 @@ class CommentService extends IstoppableService with ReactiveServiceMixin {
           });
         } else {
           _data.sort((b, a) {
-            return a.info!.votesTotal.compareTo(b.info!.votesTotal);
+            return a.info!.votesTotal!.compareTo(b.info!.votesTotal!);
           });
         }
       } else {
@@ -75,7 +75,7 @@ class CommentService extends IstoppableService with ReactiveServiceMixin {
           });
         } else {
           _data.sort((b, a) {
-            return a.info!.votesTotal.compareTo(b.info!.votesTotal);
+            return a.info!.votesTotal!.compareTo(b.info!.votesTotal!);
           });
         }
       }

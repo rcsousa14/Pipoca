@@ -42,7 +42,7 @@ class BagoCard extends StatelessWidget {
       onModelReady: (model) {
         print(
             '${bago.userVoted!}, ${bago.userVote!}, ${bago.info!.votesTotal}');
-        model.getVote(bago.userVoted!, bago.userVote!, bago.info!.votesTotal);
+        model.getVote(bago.userVoted!, bago.userVote!, bago.info!.votesTotal!);
       },
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
@@ -98,7 +98,7 @@ class BagoCard extends StatelessWidget {
                             index: bago.info!.id,
                             creator: bago.info!.creator.username,
                             timeNow: timeNow,
-                            points: bago.info!.votesTotal,
+                            points: bago.info!.votesTotal!,
                             commentsTotal: bago.info!.commentsTotal,
                             isVoted: bago.userVoted!,
                             vote: bago.userVote!,

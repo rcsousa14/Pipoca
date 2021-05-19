@@ -141,16 +141,17 @@ class Bagos {
 class Data {
   bool? userVoted;
   int? userVote;
-  bool? userIsNear;
+   bool? userIsNear;
   String? replyTo;
   Info? info;
 
   Data(
-      {this.userVoted,
+      {
+        this.userVoted,
       this.userVote,
       this.userIsNear,
       this.replyTo,
-      this.info});
+       this.info});
 
   Data.fromJson(Map<String, dynamic> json) {
     userVoted = json['user_voted'];
@@ -177,7 +178,7 @@ class Info {
   late int id;
   late String content;
   late Links links;
-  late int votesTotal;
+   int? votesTotal;
   late int commentsTotal;
   late int flags;
   late bool isFlagged;
@@ -188,7 +189,7 @@ class Info {
       {required this.id,
       required this.content,
       required this.links,
-      required this.votesTotal,
+       this.votesTotal,
       required this.commentsTotal,
       required this.flags,
       required this.isFlagged,
@@ -266,7 +267,6 @@ class Links {
 
 class Creator {
   late int id;
-  late String email;
   late String username;
   String? avatar;
   String? fcmToken;
@@ -274,7 +274,6 @@ class Creator {
 
   Creator(
       {required this.id,
-      required this.email,
       required this.username,
       this.avatar,
       this.fcmToken,
@@ -282,7 +281,6 @@ class Creator {
 
   Creator.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    email = json['email'];
     username = json['username'];
     avatar = json['avatar'];
     fcmToken = json['fcm_token'];
@@ -292,7 +290,6 @@ class Creator {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['email'] = this.email;
     data['username'] = this.username;
     data['avatar'] = this.avatar;
     data['fcm_token'] = this.fcmToken;
