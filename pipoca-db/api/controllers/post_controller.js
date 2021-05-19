@@ -115,15 +115,15 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         let data = {
             user_voted: newData['votes'] == null ? false : true,
-            user_vote: newData['votes'] == null ? 0 : newData['votes'],
+            user_vote: newData['votes'],
             user_isNear: isNear,
-            reply_to: "",
+            reply_to: null,
             // distance: newData['distance'] * 111, //km
             info: {
                 id: newData['id'],
                 content: newData['content'],
                 links: linkInfo,
-                votes_total: newData['votes_total'] == null ? 0 : newData['votes_total'],
+                votes_total: newData['votes_total'],
                 comments_total: newData['comments_total'],
                 flags: newData['flags'],
                 is_flagged: newData['is_flagged'],
