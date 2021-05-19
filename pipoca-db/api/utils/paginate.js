@@ -76,7 +76,7 @@ exports.paginate = async(model, page, limit, search, order, attributes, include,
 
         data.push({
             "user_voted": row.vote ? true : false,
-            "user_vote": row.vote == null ? 0 : row.vote,
+            "user_vote": row.vote == null ? null : row.vote,
             "user_isNear": isNear,
             "reply_to": row.replyTo != null ? row.replyTo.username : "",
             //"distance": row.distance * 111, //km
