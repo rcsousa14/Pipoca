@@ -96,8 +96,8 @@ exports.show = async({ params, query, decoded }, res, next) => {
             });
         }
         let isNear;
-        if (distance <= 950) isNear = true;
-        if (distance > 950) isNear = false;
+        if (distance <= 2500) isNear = true;
+        if (distance > 2500) isNear = false;
 
 
 
@@ -115,7 +115,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         let data = {
             user_voted: newData['votes'] == null ? false : true,
-            user_vote: newData['votes'],
+            user_vote: newData['votes'] == null ? null : newData['votes'],
             user_isNear: isNear,
             reply_to: null,
             // distance: newData['distance'] * 111, //km
