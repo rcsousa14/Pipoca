@@ -6,6 +6,136 @@ const { paginate } = require("../utils/paginate");
 
 const Op = Sequelize.Op;
 
+exports.single = async({ params, query, decoded }, res, next) => {
+    try {
+        const { id } = params;
+        const { lat, lng } = query;
+        const comment = await models.comment.findOne({
+            where: { id: id },
+            distinct: true,
+            attributes: [
+                "id",
+                "content",
+                "flags",
+                "is_flagged",
+                "createdAt",
+                "coordinates", [
+                    Sequelize.fn(
+                        "ST_Distance",
+                        Sequelize.col("coordinates"),
+                        Sequelize.fn(
+                            "ST_SetSRID",
+                            Sequelize.fn("ST_MakePoint", lng, lat),
+                            4326
+                        )
+                    ),
+                    "distance",
+                ],
+                [
+                    Sequelize.literal(
+                        `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = ${id})`
+                    ),
+                    "vote",
+                ],
+                [
+                    Sequelize.literal(
+                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`
+                    ),
+                    "votes_total",
+                ],
+                [
+                    Sequelize.literal(
+                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`
+                    ),
+                    "comments_total",
+                ],
+            ],
+            include: [{
+                    model: models.user,
+                    as: "creator",
+                    attributes: {
+                        exclude: [
+                            "email",
+                            "createdAt",
+                            "updatedAt",
+                            "deleted_at",
+                            "birthday",
+                            "reset_password_token",
+                            "reset_password_expiration",
+                            "refresh_token",
+                            "role_id",
+                            "bio",
+                            "type",
+                            "password",
+                        ],
+                    },
+                },
+                {
+                    model: models.link,
+                    as: "links",
+                    required: false,
+                    attributes: ["url"],
+                    through: { attributes: [] },
+                },
+            ],
+        });
+        if (!comment) {
+            next(ApiError.badRequestException(`Comentário ${id} não existe`));
+            return;
+        }
+        let distance;
+        if (lat && lng) {
+            distance = getDistance({ latitude: lat, longitude: lng }, {
+                latitude: comment.coordinates.coordinates[1],
+                longitude: comment.coordinates.coordinates[0],
+            });
+        }
+        let isNear;
+        if (distance <= 2500) isNear = true;
+        if (distance > 2500) isNear = false;
+
+        let linkInfo = {};
+
+        if (comment.links.length > 0) {
+            const { url } = comment.links[0];
+
+            linkInfo = await scrapeMetaTags(url);
+        }
+        let newData = comment.get({ plain: true });
+
+        let data = {
+            user_voted: newData["votes"] ? false : true,
+            user_vote: newData["votes"] == null ? null : newData["votes"],
+            user_isNear: isNear,
+            reply_to: null,
+            // distance: newData['distance'] * 111, //km
+            info: {
+                id: newData["id"],
+                content: newData["content"],
+                links: linkInfo,
+                votes_total: newData["votes_total"],
+                comments_total: newData["comments_total"],
+                flags: newData["flags"],
+                is_flagged: newData["is_flagged"],
+                created_at: newData["createdAt"],
+                creator: newData["creator"],
+            },
+        };
+
+        const comment = {
+            success: true,
+            message: `Comentário ${id} para ti`,
+            data,
+        };
+        return res.status(200).json(post);
+    } catch (error) {
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
+    }
+};
+
 exports.store = async({ params, body, decoded }, res, next) => {
     try {
         const { post_id } = params;
@@ -20,10 +150,9 @@ exports.store = async({ params, body, decoded }, res, next) => {
                 createdAt: {
                     [Op.lt]: NOW,
                     [Op.gt]: TODAY_START,
-                }
-            }
+                },
+            },
         });
-
 
         if (result) {
             next(ApiError.badRequestException("Ninguém gosta de spam"));
@@ -68,10 +197,8 @@ exports.store = async({ params, body, decoded }, res, next) => {
         return res.status(201).json({
             success: true,
             message: "Comentário criado com sucesso!",
-
         });
     } catch (error) {
-
         next(
             ApiError.internalException("Não conseguiu se comunicar com o servidor")
         );
@@ -81,13 +208,10 @@ exports.store = async({ params, body, decoded }, res, next) => {
 
 exports.index = async({ params, query, decoded }, res, next) => {
     try {
-
-
         const { post_id } = params;
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
-
 
         const limit = 15;
         let search = { post_id: post_id };
@@ -109,7 +233,6 @@ exports.index = async({ params, query, decoded }, res, next) => {
             "content",
             "flags",
             "is_flagged",
-
             "createdAt",
             "coordinates", [
                 Sequelize.fn(
@@ -119,15 +242,15 @@ exports.index = async({ params, query, decoded }, res, next) => {
                         "ST_SetSRID",
                         Sequelize.fn("ST_MakePoint", lng, lat),
                         4326
-                    ),
-
-                ), "distance",
+                    )
+                ),
+                "distance",
             ],
             [
                 Sequelize.literal(
                     `(SELECT voted FROM comment_votes WHERE user_id = ${id} AND comment_id = comment.id)`
                 ),
-                "vote"
+                "vote",
             ],
             [
                 Sequelize.literal(
@@ -181,8 +304,7 @@ exports.index = async({ params, query, decoded }, res, next) => {
             include,
             group,
             lat,
-            lng,
-
+            lng
         );
         const data = {
             success: true,
@@ -192,7 +314,6 @@ exports.index = async({ params, query, decoded }, res, next) => {
 
         return res.status(200).json(data);
     } catch (error) {
-
         next(
             ApiError.internalException("Não conseguiu se comunicar com o servidor")
         );
@@ -209,7 +330,6 @@ exports.soft = async({ params, decoded }, res, next) => {
             },
         });
         if (updated) {
-
             return res.status(200).json({
                 success: true,
                 message: `Comentário ${id} foi eliminado com sucesso`,
@@ -228,8 +348,6 @@ exports.soft = async({ params, decoded }, res, next) => {
 
 exports.show = async({ query, decoded }, res, next) => {
     try {
-
-
         const { lat, lng } = query;
         const id = decoded.id;
         const page = parseInt(query.page);
@@ -254,15 +372,15 @@ exports.show = async({ query, decoded }, res, next) => {
                         "ST_SetSRID",
                         Sequelize.fn("ST_MakePoint", lng, lat),
                         4326
-                    ),
-
-                ), "distance",
+                    )
+                ),
+                "distance",
             ],
             [
                 Sequelize.literal(
                     `(SELECT voted FROM comment_votes WHERE user_id = ${id} AND comment_id = comment.id)`
                 ),
-                "vote"
+                "vote",
             ],
             [
                 Sequelize.literal(
@@ -318,13 +436,12 @@ exports.show = async({ query, decoded }, res, next) => {
             include,
             group,
             lat,
-            lng,
-
+            lng
         );
         const data = {
             success: true,
             message: "Todos os teus comentários!",
-            bagos
+            bagos,
         };
 
         return res.status(200).json(data);

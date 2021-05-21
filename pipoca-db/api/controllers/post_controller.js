@@ -139,7 +139,7 @@ exports.show = async({ params, query, decoded }, res, next) => {
 
         const post = {
             success: true,
-            message: ` Bago ${id} para ti`,
+            message: `Bago ${id} para ti`,
             data,
         };
 
