@@ -6,14 +6,15 @@ exports.store = async({ body, decoded }, res, next) => {
         const { id, voted } = body;
         const post = await models.sub_comment.findByPk(id);
         if (!post) {
-            return res.status(400).json({ message: "🤔 Bago não foi encontrado!" });
+            next(ApiError.badRequestException("Bago não foi encontrado!"));
+            return;
         }
         const vote = await models.sub_comment_vote.findOne({
             where: { user_id: decoded.id, sub_comment_id: id },
         });
 
         if (vote) {
-            await models.sub_comment_vote.update({ user_id: decoded.id, voted, sub_comment_id: id }, {
+            await models.sub_comment_vote.update({ id: vote.id, user_id: decoded.id, voted, sub_comment_id: id }, {
                 where: { id: vote.id },
             });
 
