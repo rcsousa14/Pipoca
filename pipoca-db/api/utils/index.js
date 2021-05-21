@@ -15,10 +15,17 @@ exports.jwtToken = {
 
     },
     verifyToken(token) {
-        return jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '7d' });
+        return jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, verfied) => {
+            if (err) {
+                return false;
+            }
+            if (verfied) {
+                return true;
+            }
+        });
 
     },
-    
+
     passToken({ id }) {
         return jwt.sign({ id }, process.env.JWT_SECRET_PASS, {
             expiresIn: '10m'
@@ -33,5 +40,7 @@ exports.jwtToken = {
 };
 
 
+export const hashPassword = (password) => bcrypt.hashSync(password, 10);
+export const comparePassword = (password, hash) => bcrypt.compareSync(password, hash);
 export const hashPassword = (password) => bcrypt.hashSync(password, 10);
 export const comparePassword = (password, hash) => bcrypt.compareSync(password, hash);
