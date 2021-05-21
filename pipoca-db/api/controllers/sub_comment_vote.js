@@ -11,11 +11,11 @@ exports.store = async({ body, decoded }, res, next) => {
             next(ApiError.badRequestException("Bago não foi encontrado!"));
             return;
         }
-        return res.status(200).json(post);
-        // const vote = await models.sub_comment_vote.findOne({
-        //     where: { user_id: decoded.id, sub_comment_id: id },
-        // });
 
+        const vote = await models.sub_comment_vote.findOne({
+            where: { user_id: decoded.id, sub_comment_id: id },
+        });
+        return res.status(200).json(vote);
         // if (vote) {
         //     await models.sub_comment_vote.update({ id: vote.id, user_id: decoded.id, voted, sub_comment_id: id }, {
         //         where: { id: vote.id },
