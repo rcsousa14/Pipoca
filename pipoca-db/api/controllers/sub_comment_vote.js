@@ -5,12 +5,13 @@ const models = require("../models");
 exports.store = async({ body, decoded }, res, next) => {
     try {
         const { id, voted } = body;
-        return res.status(200).json(body);
-        // const post = await models.sub_comment.findByPk(id);
-        // if (!post) {
-        //     next(ApiError.badRequestException("Bago não foi encontrado!"));
-        //     return;
-        // }
+
+        const post = await models.sub_comment.findByPk(id);
+        if (!post) {
+            next(ApiError.badRequestException("Bago não foi encontrado!"));
+            return;
+        }
+        return res.status(200).json(post);
         // const vote = await models.sub_comment_vote.findOne({
         //     where: { user_id: decoded.id, sub_comment_id: id },
         // });
