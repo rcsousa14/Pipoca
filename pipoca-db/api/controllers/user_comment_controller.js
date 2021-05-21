@@ -1,5 +1,6 @@
 import ApiError from "../errors/api_error";
-
+import { getDistance } from "geolib";
+const { scrapeMetaTags } = require("../utils/paginate");
 const models = require("../models");
 const Sequelize = require("sequelize");
 const { paginate } = require("../utils/paginate");
@@ -125,10 +126,11 @@ exports.single = async({ params, query, decoded }, res, next) => {
         const post = {
             success: true,
             message: `Comentário ${id} para ti`,
-            data,
+            data
         };
         return res.status(200).json(post);
     } catch (error) {
+
         next(
             ApiError.internalException("Não conseguiu se comunicar com o servidor")
         );
