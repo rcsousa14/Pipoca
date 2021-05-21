@@ -1,5 +1,6 @@
+import ApiError from "../errors/api_error";
+
 const models = require("../models");
-const ApiError = require("../errors/api_error");
 
 exports.store = async({ body, decoded }, res, next) => {
     try {
@@ -34,9 +35,10 @@ exports.store = async({ body, decoded }, res, next) => {
             message: "added",
         });
     } catch (error) {
-        next(
-            ApiError.internalException("Não conseguiu se comunicar com o servidor")
-        );
-        return;
+        return res.status(500).json(error);
+        // next(
+        //     ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        // );
+        // return;
     }
 };
