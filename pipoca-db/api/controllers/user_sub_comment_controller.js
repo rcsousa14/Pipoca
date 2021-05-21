@@ -132,7 +132,7 @@ exports.single = async({ params, query, decoded }, res, next) => {
                 content: newData["content"],
                 links: linkInfo,
                 votes_total: newData["votes_total"],
-                comments_total: newData["comments_total"],
+                comments_total: null,
                 flags: newData["flags"],
                 is_flagged: newData["is_flagged"],
                 created_at: newData["createdAt"],
