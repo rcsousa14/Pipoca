@@ -5,6 +5,7 @@ import 'package:pipoca/src/constants/api_helpers/header.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/post_comments_model.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 
@@ -13,6 +14,22 @@ class CommentRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
+
+  //SINGLE COMMENT 
+  Future<SinglePost> getCommentData({required Coordinates coords, required int commentId}) async {
+     Map<String, String> queryParams = {
+      'lat': coords.latitude.toString(),
+      'lng': coords.longitude.toString(),
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final response = await _helper.get(
+        query: 'comments/$commentId?$queryString',
+        header: _header.setTokenHeaders(_authenticationService.token));
+
+    SinglePost post = SinglePost.fromJson(response);
+ 
+    return post;
+  }
   
   // FUTURE TO POST A COMMENT WITH A POST ID
   Future<Generic> postCommentData(
@@ -26,7 +43,7 @@ class CommentRepository {
   }
 
   //FUTURE TO GET ALL THE COMMENTS ASSOCIATED WITH A POST
-  Future<Comentario> getCommentData(
+  Future<Comentario> getCommentsData(
       {required Coordinates coords,
       required int postId,
       required int page,

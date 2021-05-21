@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -86,7 +87,7 @@ class BagoListView extends StatelessWidget {
                                 },
                                 itemBuilder: (context, index) {
                                   List<Data> posts = model.posts;
-                                  print(posts.length);
+
                                   if (index == 0 ||
                                       index == model.posts.length + 1) {
                                     return Container();
@@ -196,8 +197,8 @@ Widget isEnd(bool isEnd) {
 Widget isLoading() {
   return Center(
     child: Container(
-      height: 50,
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      height: 40,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: LoadingIndicator(
         indicatorType: Indicator.lineScale,
         color: Colors.grey.withOpacity(0.5),

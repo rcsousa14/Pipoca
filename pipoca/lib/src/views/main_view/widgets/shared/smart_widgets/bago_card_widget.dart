@@ -12,20 +12,21 @@ import 'package:pipoca/src/constants/themes/colors.dart';
 import 'package:pipoca/src/views/main_view/widgets/shared/smart_widgets/bago_card_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
-
-
 class BagoCard extends StatelessWidget {
   final Type type;
   final FocusNode? focus;
   final TextEditingController? text;
   final bool isError;
   final Data bago;
+  final int? postId, commentId;
   final Function? goToPage;
   final bool isSingle;
   final Key chave;
   const BagoCard({
     this.focus,
     this.text,
+    this.postId,
+    this.commentId,
     required this.type,
     required this.isError,
     required this.chave,
@@ -39,11 +40,6 @@ class BagoCard extends StatelessWidget {
     GlobalKey key = GlobalKey();
 
     return ViewModelBuilder<BagoCardViewModel>.nonReactive(
-      onModelReady: (model) {
-        print(
-            '${bago.userVoted!}, ${bago.userVote!}, ${bago.info!.votesTotal}');
-        model.getVote(bago.userVoted!, bago.userVote!, bago.info!.votesTotal!);
-      },
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
         final time = DateTime.parse(bago.info!.createdAt);
@@ -93,6 +89,8 @@ class BagoCard extends StatelessWidget {
                             type: type,
                             isError: isError,
                             globalKey: key,
+                            commentId: commentId,
+                            postId: postId,
                             text: bago.info!.content,
                             links: bago.info!.links,
                             index: bago.info!.id,
@@ -192,7 +190,7 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
   final int index;
   final String creator;
   final bool isSingle;
-  final Type type; 
+  final Type type;
   const _MoreBtn({
     Key? key,
     required this.type,
@@ -209,9 +207,9 @@ class _MoreBtn extends ViewModelWidget<BagoCardViewModel> {
       child: Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: GestureDetector(
-          onTap: () => creator == model.creator && isError == false
-              ? model.delete(
-                type: type,
+          onTap: () async => creator == model.creator && isError == false
+              ? await model.delete(
+                  type: type,
                   id: index,
                   isSingle: isSingle,
                 )
@@ -237,11 +235,13 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
   final bool isVoted;
   final Links links;
   final GlobalKey globalKey;
-
-  final int vote, points, commentsTotal, index;
+  final int index;
+  final int? vote, points, commentId, postId, commentsTotal;
   const _Content(
       {Key? key,
       this.focus,
+      this.commentId,
+      this.postId,
       this.controller,
       required this.type,
       required this.isError,
@@ -251,14 +251,17 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
       required this.creator,
       required this.timeNow,
       required this.isVoted,
-      required this.vote,
-      required this.points,
+      this.vote,
+      this.points,
       required this.index,
-      required this.commentsTotal})
+      this.commentsTotal})
       : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
+    int point = points != null ? points! : 0;
+    int total = model.points ?? point;
+
     return Expanded(
       flex: 14,
       child: Container(
@@ -316,18 +319,18 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                         })
                   ],
                 )),
-            links.checkUrl()
-                ? Container()
-                : LinkCaller(
-                    isError: isError,
-                    comments: commentsTotal,
-                    links: links,
-                    index: index,
-                    vote: vote,
-                    points: points,
-                    isVoted: isVoted,
-                    filter: model.filter,
-                    page: model.page),
+            // links.checkUrl()
+            //     ? Container()
+            //     : LinkCaller(
+            //         isError: isError,
+            //         comments: commentsTotal,
+            //         links: links,
+            //         index: index,
+            //         vote: vote!,
+            //         points: points!,
+            //         isVoted: isVoted,
+            //         filter: model.filter,
+            //         page: model.page),
 
             // content link
 
@@ -344,14 +347,16 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       children: <Widget>[
                         InkWell(
                           onTap: () {
-                            if (model.down == true && model.up == false ||
+                            if (vote! == -1 ||
+                                model.down == true && model.up == false ||
                                 model.up == null) {
                               model.vote(
-                               type: type,
+                                commentId: commentId,
+                                postId: postId,
+                                type: type,
                                 id: index,
-                                vote: 1,
+                                direction: 'up',
                                 points: points,
-                                isVoted: isVoted,
                               );
                             }
                           },
@@ -359,7 +364,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             child: Icon(
                               PipocaBasics.up_arrow,
                               size: 20,
-                              color: model.up == true && model.down == false
+                              color: vote == 1 ||
+                                      model.up == true && model.down == false
                                   ? red
                                   : Colors.grey[400],
                             ),
@@ -369,11 +375,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                           width: 5,
                         ),
                         Center(
-                          child: Text('${model.points}',
+                          child: Text('$total',
                               style: TextStyle(
-                                  color: model.points! >= 1
+                                  color: total >= 1 
                                       ? red
-                                      : model.points! <= -1
+                                      : total <= -1
                                           ? Colors.black
                                           : Colors.grey,
                                   fontSize: 13,
@@ -383,16 +389,17 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                           width: 5,
                         ),
                         InkWell(
-                          highlightColor: Colors.red,
                           onTap: () {
-                            if (model.up == true && model.down == false ||
+                            if (vote! == 1 ||
+                                model.up == true && model.down == false ||
                                 model.down == null) {
                               model.vote(
+                                commentId: commentId,
+                                postId: postId,
                                 type: type,
                                 id: index,
-                                vote: -1,
+                                direction: 'down',
                                 points: points,
-                                isVoted: isVoted,
                               );
                             }
                           },
@@ -400,7 +407,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             child: Icon(
                               PipocaBasics.down_arrow,
                               size: 20,
-                              color: model.down == true && model.up == false
+                              color: vote == -1 ||
+                                      model.down == true && model.up == false
                                   ? Colors.black
                                   : Colors.grey[400],
                             ),
@@ -409,86 +417,90 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text('$commentsTotal',
-                          style: TextStyle(
-                              color: commentsTotal > 0
-                                  ? Colors.grey.shade600
-                                  : Colors.grey[400],
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600)),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Container(
-                        child: Icon(
-                          PipocaBasics.chat,
-                          size: 20,
-                          color: Colors.grey[400],
+                        if(commentsTotal != null) ... [
+                          Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                            Text('$commentsTotal',
+                                style: TextStyle(
+                                    color: commentsTotal! > 0
+                                        ? Colors.grey.shade600
+                                        : Colors.grey[400],
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600)),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Container(
+                              child: Icon(
+                                PipocaBasics.chat,
+                                size: 20,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  if (type == Type.POST) ...[
-                    GestureDetector(
-                      onTap: () => model.share(globalKey),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 3.0),
-                            child: Icon(
-                              PipocaBasics.export,
-                              size: 19,
-                              color: Colors.grey[400],
+                        ],
+
+                        if (type == Type.POST) ...[
+                          GestureDetector(
+                            onTap: () => model.share(globalKey),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 3.0),
+                                  child: Icon(
+                                    PipocaBasics.export,
+                                    size: 19,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text('PARTILHAR',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                    )),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text('PARTILHAR',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              )),
                         ],
-                      ),
-                    ),
-                  ],
-                  if (type == Type.COMMENT || type == Type.SUB) ...[
-                    GestureDetector(
-                      onTap: () {
-                        focus!.requestFocus();
-                        controller!.text = '@$creator: ';
-                      },
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 3.0),
-                            child: Icon(
-                              FontAwesomeIcons.reply,
-                              size: 19,
-                              color: Colors.grey[400],
+                        if (type == Type.COMMENT || type == Type.SUB) ...[
+                          GestureDetector(
+                            onTap: () {
+                              focus!.requestFocus();
+                              controller!.text = '@$creator: ';
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 3.0),
+                                  child: Icon(
+                                    FontAwesomeIcons.reply,
+                                    size: 19,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text('RESPONDER',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                    )),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text('RESPONDER',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              )),
-                        ],
-                      ),
-                    ),
-                  ]
+                        ]
                 ],
               ),
             ),

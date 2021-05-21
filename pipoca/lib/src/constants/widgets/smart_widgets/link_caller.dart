@@ -10,7 +10,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class LinkCaller extends StatelessWidget {
   final Links links;
-  final int index, points, page, vote, comments;
+  final int index, points, page, vote;
+  final int? comments; 
   final bool isVoted, filter, isError;
 
   const LinkCaller(
@@ -23,7 +24,7 @@ class LinkCaller extends StatelessWidget {
       required this.filter,
       required this.isError,
       required this.vote,
-      required this.comments})
+      this.comments})
       : super(key: key);
 
   @override
@@ -47,7 +48,7 @@ class LinkCaller extends StatelessWidget {
                           children: [
                             if (links.image != null) ...[
                               ContentImage(
-                                isError: isError,
+                                  isError: isError,
                                   comments: comments,
                                   vote: vote,
                                   index: index,
@@ -57,12 +58,10 @@ class LinkCaller extends StatelessWidget {
                                   filter: filter,
                                   isLink: false,
                                   image: CachedNetworkImageProvider(
-                               
-                                    links.image!.isNotEmpty
-                                        ? links.image!
-                                        : links.url!,
-                                        cacheKey: key
-                                  )),
+                                      links.image!.isNotEmpty
+                                          ? links.image!
+                                          : links.url!,
+                                      cacheKey: key)),
                               SizedBox(height: 5),
                               Padding(
                                 padding: const EdgeInsets.only(left: 4.0),
@@ -99,7 +98,7 @@ class LinkCaller extends StatelessWidget {
                           ],
                         ),
                       )
-                    : ContentVideo(url: links.video!,  isError: isError)
+                    : ContentVideo(url: links.video!, isError: isError)
                 : Builder(builder: (context) {
                     return Container(
                       margin: EdgeInsets.only(bottom: 20),
@@ -112,17 +111,14 @@ class LinkCaller extends StatelessWidget {
                         children: <Widget>[
                           if (links.image!.isNotEmpty) ...[
                             ContentImage(
-                               isError: isError,
-                              isLink: true,
-                              links: links,
-                              image: CachedNetworkImageProvider(
-                               
+                                isError: isError,
+                                isLink: true,
+                                links: links,
+                                image: CachedNetworkImageProvider(
                                     links.image!.isNotEmpty
                                         ? links.image!
                                         : links.url!,
-                                        cacheKey: key
-                                  )
-                            )
+                                    cacheKey: key))
                           ],
                           Container(
                             width: double.infinity,

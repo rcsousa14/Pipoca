@@ -14,7 +14,7 @@ import '../repositories/feed/comment_repository.dart' as _i11;
 import '../repositories/feed/feed_repository.dart' as _i15;
 import '../repositories/feed/sub_repository.dart' as _i22;
 import '../repositories/user/auth_repository.dart' as _i5;
-import '../repositories/user/user_repository.dart' as _i23;
+import '../repositories/user/user_repository.dart' as _i24;
 import '../services/authentication_service.dart' as _i6;
 import '../services/battery_service.dart' as _i7;
 import '../services/caller.service.dart' as _i9;
@@ -26,9 +26,10 @@ import '../services/feed_service.dart' as _i16;
 import '../services/location_service.dart' as _i18;
 import '../services/push_notification_service.dart' as _i20;
 import '../services/shared_local_storage_service.dart' as _i21;
-import '../services/third_party_service_model.dart' as _i26;
-import '../services/user_service.dart' as _i24;
-import '../services/validation_service.dart' as _i25;
+import '../services/sub_service.dart' as _i23;
+import '../services/third_party_service_model.dart' as _i27;
+import '../services/user_service.dart' as _i25;
+import '../services/validation_service.dart' as _i26;
 import '../views/main_view/home_navigator/home_navigator_view_model.dart'
     as _i17;
 import '../views/main_view/main_view_model.dart'
@@ -73,13 +74,14 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       () => thirdPartyServicesModule.snackbarService);
   gh.lazySingleton<_i5.SocialRepository>(() => _i5.SocialRepository());
   gh.lazySingleton<_i22.SubRepository>(() => _i22.SubRepository());
-  gh.lazySingleton<_i23.UserRepository>(() => _i23.UserRepository());
-  gh.lazySingleton<_i24.UserService>(() => _i24.UserService());
-  gh.lazySingleton<_i25.ValidationService>(() => _i25.ValidationService());
+  gh.lazySingleton<_i23.SubService>(() => _i23.SubService());
+  gh.lazySingleton<_i24.UserRepository>(() => _i24.UserRepository());
+  gh.lazySingleton<_i25.UserService>(() => _i25.UserService());
+  gh.lazySingleton<_i26.ValidationService>(() => _i26.ValidationService());
   return get;
 }
 
-class _$ThirdPartyServicesModule extends _i26.ThirdPartyServicesModule {
+class _$ThirdPartyServicesModule extends _i27.ThirdPartyServicesModule {
   @override
   _i8.BottomSheetService get bottomSheetService => _i8.BottomSheetService();
   @override

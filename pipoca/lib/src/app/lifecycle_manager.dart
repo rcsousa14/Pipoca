@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pipoca/src/interfaces/stoppable_interface.dart';
 import 'package:pipoca/src/services/battery_service.dart';
+import 'package:pipoca/src/services/comment_service.dart';
 import 'package:pipoca/src/services/connectivity_service.dart';
 import 'package:pipoca/src/services/feed_service.dart';
 import 'package:pipoca/src/services/location_service.dart';
+import 'package:pipoca/src/services/sub_service.dart';
 
 import 'locator.dart';
 
@@ -22,6 +24,8 @@ class _LifeCycleManagerState extends State<LifeCycleManager>
     locator<ConnectivityService>(),
     locator<BatteryService>(),
    locator<FeedService>(),
+   locator<CommentService>(),
+   locator<SubService>(),
   ];
 
   @override

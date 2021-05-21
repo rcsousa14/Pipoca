@@ -1,11 +1,11 @@
 import 'package:pipoca/src/models/user_location_model.dart';
 
 class FeedInfo {
-  Coordinates? coordinates;
-  String? filter;
+  Coordinates coordinates;
+  String filter;
   int page;
 
-  FeedInfo({this.coordinates, this.filter, required this.page});
+  FeedInfo({required this.coordinates, required this.filter, required this.page});
 }
 
 class PostInfo {
@@ -16,24 +16,18 @@ class PostInfo {
 
 class CommentInfo {
   Coordinates coordinates;
-  String filter;
-  int id;
+  String? filter;
+  int id; // This id is associated with either postId or commentId for comment/subcomment get
   int page;
 
   CommentInfo(
-      {required this.coordinates, required this.filter, required this.page, required this.id});
+      {required this.coordinates,
+      this.filter,
+      required this.page,
+      required this.id});
 }
 
-class SubCommentInfo {
-  Coordinates? coordinates;
-  String? filter;
-  int? replyId;
-  int id;
-  int page;
 
-  SubCommentInfo(
-      {this.coordinates, this.filter, required this.page, required this.id, this.replyId});
-}
 
 class CheckData {
   String? creator;
@@ -70,7 +64,6 @@ class Feed {
     return data;
   }
 }
-
 
 class SinglePost {
   bool? success;
@@ -141,17 +134,16 @@ class Bagos {
 class Data {
   bool? userVoted;
   int? userVote;
-   bool? userIsNear;
+  bool? userIsNear;
   String? replyTo;
   Info? info;
 
   Data(
-      {
-        this.userVoted,
+      {this.userVoted,
       this.userVote,
       this.userIsNear,
       this.replyTo,
-       this.info});
+      this.info});
 
   Data.fromJson(Map<String, dynamic> json) {
     userVoted = json['user_voted'];
@@ -178,8 +170,8 @@ class Info {
   late int id;
   late String content;
   late Links links;
-   int? votesTotal;
-  late int commentsTotal;
+  int? votesTotal;
+  int? commentsTotal;
   late int flags;
   late bool isFlagged;
   late String createdAt;
@@ -189,8 +181,8 @@ class Info {
       {required this.id,
       required this.content,
       required this.links,
-       this.votesTotal,
-      required this.commentsTotal,
+      this.votesTotal,
+      this.commentsTotal,
       required this.flags,
       required this.isFlagged,
       required this.createdAt,

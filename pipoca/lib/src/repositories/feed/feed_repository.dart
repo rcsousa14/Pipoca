@@ -15,6 +15,7 @@ class FeedRepository {
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
 
+ //SINGLE POST
   Future<SinglePost> getPostData(
       {required Coordinates coords, required int postId}) async {
     Map<String, String> queryParams = {
@@ -27,10 +28,11 @@ class FeedRepository {
         header: _header.setTokenHeaders(_authenticationService.token));
 
     SinglePost post = SinglePost.fromJson(response);
-    print(post);
+ 
     return post;
   }
 
+ // FUTURE TO GET ALL THE FEED
   Future<Feed> getFeedData(
       {required Coordinates coords,
       required int page,
@@ -50,6 +52,7 @@ class FeedRepository {
     return feed;
   }
 
+ // POST A NEW POST
   Future<Generic> postFeedData(CreatePost post) async {
     final response = await _helper.post(
         query: 'posts',
@@ -58,7 +61,7 @@ class FeedRepository {
     Generic created = Generic.fromJson(response);
     return created;
   }
-
+ // POST VOTE
   Future<Generic> postPointData(PostPoint point) async {
     final response = await _helper.post(
         query: 'post/votes',
@@ -68,7 +71,7 @@ class FeedRepository {
 
     return vote;
   }
-
+// DELETE POST 
   Future<Generic> deletePostData({required int id}) async {
     final response = await _helper.delete(
         query: 'posts/$id',

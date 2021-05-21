@@ -65,9 +65,9 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
     try {
       Feed data = await _api.getFeedData(
-        coords: info.coordinates!,
+        coords: info.coordinates,
         page: info.page,
-        filter: info.filter!,
+        filter: info.filter,
       );
 
       feedSink.add(ApiResponse.completed(data));
@@ -131,7 +131,8 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     try {
       SinglePost data =
           await _api.getPostData(coords: info.coordinates, postId: info.id);
-
+      _data[_data.indexWhere(
+          (element) => element.info!.id == data.data!.info!.id)] = data.data!;
       singleSink.add(ApiResponse.completed(data));
       return ApiResponse.completed(data);
     } catch (e) {
@@ -162,7 +163,6 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
 
   void back() {
     _single.add(ApiResponse.completed(SinglePost()));
-    
   }
 
   void delete(int id, bool isSingle) {
@@ -176,6 +176,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
     ApiResponse.loading('loading');
     try {
       Generic data = await _api.deletePostData(id: id);
+
       return ApiResponse.completed(data);
     } catch (e) {
       return ApiResponse.error(e.toString());

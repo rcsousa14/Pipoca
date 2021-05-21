@@ -35,8 +35,8 @@ class PostView extends HookWidget {
 
     return ViewModelBuilder<PostViewModel>.reactive(
       onModelReady: (model) {
-        model.fetchSingle(id: data.info!.id);
-        model.pushComments();
+        //model.fetchSingle(id: data.info!.id);
+        //model.pushComments();
       },
       builder: (context, model, child) {
         Widget loadingIndicator = focus.hasFocus == true
@@ -152,10 +152,10 @@ class PostView extends HookWidget {
                         ),
                       ),
                       //TODO: add list of comments here
-                      Container(
-                          color: Colors.white,
-                          margin: const EdgeInsets.only(bottom: 60),
-                          child: CommentListView(focus: focus, text: text,))
+                      // Container(
+                      //     color: Colors.white,
+                      //     margin: const EdgeInsets.only(bottom: 60),
+                      //     child: CommentListView(focus: focus, text: text,))
                     ],
                   ),
                   Align(

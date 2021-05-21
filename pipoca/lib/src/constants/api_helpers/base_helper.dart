@@ -50,12 +50,12 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-      
+
       var response = await client
           .get(url, headers: header)
           .timeout(Duration(seconds: sec));
-      
 
+      print(response.body);
       responseJson = _returnResponse(response);
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');
@@ -115,13 +115,13 @@ class ApiBaseHelper implements IRepository {
     try {
       var uri = Uri.encodeFull('$_heroku/$query');
       var url = Uri.parse(uri);
-
+     
       var response = await client
           .post(url,
               headers: header,
               body: body != null ? json.encode(body.toJson()) : null)
           .timeout(Duration(seconds: sec));
-
+   
       responseJson = _returnResponse(response);
     } on SocketException {
       throw FetchDataException('Sem conexão com a Internet🌐');

@@ -5,6 +5,7 @@ import 'package:pipoca/src/constants/api_helpers/header.dart';
 import 'package:pipoca/src/models/auth_token_model.dart';
 import 'package:pipoca/src/models/create_post_model.dart';
 import 'package:pipoca/src/models/post_comments_model.dart';
+import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:pipoca/src/models/user_location_model.dart';
 import 'package:pipoca/src/services/authentication_service.dart';
 
@@ -13,7 +14,22 @@ class SubRepository {
   final _header = locator<ApiHeaders>();
   final _helper = locator<ApiBaseHelper>();
   final _authenticationService = locator<AuthenticationService>();
+//SINGLE SUB
+Future<SinglePost> getSubData(
+      {required Coordinates coords, required int subId}) async {
+    Map<String, String> queryParams = {
+      'lat': coords.latitude.toString(),
+      'lng': coords.longitude.toString(),
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final response = await _helper.get(
+        query: 'sub_comments/$subId?$queryString',
+        header: _header.setTokenHeaders(_authenticationService.token));
 
+    SinglePost post = SinglePost.fromJson(response);
+ 
+    return post;
+  }
 //FUTURE TO POST A SUB_COMMENT WITH A COMMENT ID
   Future<Generic> postSubData(
       {required CreateSubComment post, required int commentId}) async {
@@ -26,16 +42,16 @@ class SubRepository {
   }
 
 //FUTURE TO GET ALL THE SUB_COMMENTS ASSOCIATED WITH A COMMENT
-  Future<SubComentario> getSubData(
+  Future<SubComentario> getSubsData(
       {required Coordinates coords,
       required int commentId,
       required int page,
-      required String filter}) async {
+      }) async {
     Map<String, String> queryParams = {
       'lat': coords.latitude.toString(),
       'lng': coords.longitude.toString(),
       'page': page.toString(),
-      'filter': filter
+      
     };
     String queryString = Uri(queryParameters: queryParams).query;
     final response = await _helper.get(
