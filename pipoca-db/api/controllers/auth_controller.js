@@ -254,11 +254,13 @@ exports.refresh = async(req, res, next) => {
         return res.status(200).json({
             success: true,
             message: "Bem-vindo ao Pipoca",
-            check,
+            token,
+            id
         });
     } catch (error) {
-        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
-        return;
+        return res.status(500).json(error);
+        // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+        // return;
     }
 }
 
