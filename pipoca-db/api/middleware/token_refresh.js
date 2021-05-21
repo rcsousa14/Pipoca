@@ -10,6 +10,7 @@ export default (req, res, next) => {
     }
 
     const { token } = req.query;
+
     jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, decoded) => {
         if (err) {
             next();
