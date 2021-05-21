@@ -33,19 +33,19 @@ exports.single = async({ params, query, decoded }, res, next) => {
                 ],
                 [
                     Sequelize.literal(
-                        `(SELECT voted FROM post_votes WHERE user_id = ${decoded.id} AND post_id = ${id})`
+                        `(SELECT voted FROM comment_votes WHERE user_id = ${decoded.id} AND comment_id = ${id})`
                     ),
                     "vote",
                 ],
                 [
                     Sequelize.literal(
-                        `(SELECT CAST(SUM(voted) AS INT)  fROM post_votes WHERE post_id = ${id})`
+                        `(SELECT CAST(SUM(voted) AS INT)  fROM comment_votes WHERE comment_id = ${id})`
                     ),
                     "votes_total",
                 ],
                 [
                     Sequelize.literal(
-                        `(SELECT CAST(COUNT(id) AS INT)  fROM comments WHERE post_id = ${id})`
+                        `(SELECT CAST(COUNT(id) AS INT)  fROM sub_comments WHERE comment_id = ${id})`
                     ),
                     "comments_total",
                 ],
