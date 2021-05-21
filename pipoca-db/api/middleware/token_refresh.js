@@ -4,10 +4,7 @@ require('dotenv').config();
 
 
 export default (req, res, next) => {
-    if (!req.headers.authorization) {
-        next(ApiError.unauthorisedInvalidException("desautorizado : 💩"))
-        return;
-    }
+
 
     const { token } = req.query;
 
