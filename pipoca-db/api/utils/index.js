@@ -15,14 +15,7 @@ exports.jwtToken = {
 
     },
     verifyToken(token) {
-        return jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, verfied) => {
-            if (err) {
-                return false;
-            }
-            if (verfied) {
-                return true;
-            }
-        });
+        return jwt.verify(token, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     },
 

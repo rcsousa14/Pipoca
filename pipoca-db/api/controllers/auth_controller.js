@@ -231,35 +231,30 @@ exports.logout = async({ decoded }, res, next) => {
 
 exports.refresh = async(req, res, next) => {
     try {
-        const { token, id } = req.query;
-        const check = auth.jwtToken.verifyToken(token);
-        // if (!check) {
-        //     const user = await models.user.findByPk(id);
-        //     if (user && user.refresh_token != null || user.refresh_token.length > 0) {
-        //         const token = auth.jwtToken.createToken(user);
-        //         if (user.refresh_token == 'blocked') {
-        //             next(ApiError.unauthorisedValidException("Foste bloqueado devido a violação de uso!"));
-        //             return;
-        //         }
+        const { id } = req.query;
 
-        //         return res.status(201).json({
-        //             success: true,
-        //             message: "Bem-vindo ao Pipoca",
-        //             token,
-        //         });
-        //     }
-        //     next(ApiError.badRequestException("Não estas logado"));
-        //     return;
-        // }
-        return res.status(200).json({
-            success: true,
-            message: "Bem-vindo ao Pipoca",
-            check,
-        });
+
+        const user = await models.user.findByPk(id);
+        if (user && user.refresh_token != null || user.refresh_token.length > 0) {
+            const token = auth.jwtToken.createToken(user);
+            if (user.refresh_token == 'blocked') {
+                next(ApiError.unauthorisedValidException("Foste bloqueado devido a violação de uso!"));
+                return;
+            }
+
+            return res.status(201).json({
+                success: true,
+                message: "Bem-vindo ao Pipoca",
+                token,
+            });
+        }
+        next(ApiError.badRequestException("Não estas logado"));
+        return;
+
+
     } catch (error) {
-        return res.status(500).json(error);
-        // next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
-        // return;
+        next(ApiError.internalException("Não conseguiu se comunicar com o servidor"));
+        return;
     }
 }
 

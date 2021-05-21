@@ -6,7 +6,7 @@ import authorizeMiddleware from '../middleware/authorize';
 import postauthMiddleware from '../middleware/post_auth';
 import adminMiddleware from '../middleware/admin_auth';
 import voteMiddleware from '../middleware/vote_auth';
-
+import tokenMiddleware from '../middleware/token_refresh';
 
 const user = require('../controllers/user_controller');
 const auth = require('../controllers/auth_controller');
@@ -46,7 +46,7 @@ router.post('/v1/auth/signup', limiter, speedLimiter, authMiddleware, auth.signu
 router.get('/v1/auth/activate-account/:token', limiter, speedLimiter, auth.confirmation);
 router.post('/v1/auth/login', limiter, speedLimiter, authMiddleware, auth.login); //☑️
 router.post('/v1/auth/social', limiter, speedLimiter, authMiddleware, auth.social); //☑️
-router.post('/v1/auth/refresh-token', limiter, speedLimiter, auth.refresh);
+router.post('/v1/auth/refresh-token', limiter, speedLimiter, tokenMiddleware, auth.refresh);
 router.patch('/v1/auth/logout', limiter, speedLimiter, authorizeMiddleware, auth.logout);
 router.post('/v1/auth/forgot-password', limiter, speedLimiter, auth.forgot);
 router.get('/v1/auth/reset-password', limiter, speedLimiter, auth.reset); //needs a middleware to check if the token query exists
