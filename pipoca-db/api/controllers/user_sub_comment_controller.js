@@ -1,10 +1,159 @@
 import ApiError from "../errors/api_error";
-
+import { getDistance } from "geolib";
+const { scrapeMetaTags } = require("../utils/paginate");
 const { paginate } = require("../utils/paginate");
 const models = require("../models");
 const Sequelize = require("sequelize");
 
 const Op = Sequelize.Op;
+
+exports.single = async({ params, query, decoded }, res, next) => {
+    try {
+        const { id } = params;
+        const { lat, lng } = query;
+        const comment = await models.sub_comment.findOne({
+            where: { id: id },
+            distinct: true,
+            attributes: [
+                "id",
+                "content",
+                "flags",
+                "is_flagged",
+                "createdAt",
+                "coordinates", [
+                    Sequelize.fn(
+                        "ST_Distance",
+                        Sequelize.col("coordinates"),
+                        Sequelize.fn(
+                            "ST_SetSRID",
+                            Sequelize.fn("ST_MakePoint", lng, lat),
+                            4326
+                        )
+                    ),
+                    "distance",
+                ],
+                [
+                    Sequelize.literal(
+                        `(SELECT voted FROM sub_comment_votes WHERE user_id = ${id} AND sub_comment_id = sub_comment.id)`
+                    ),
+                    "vote",
+                ],
+                [
+                    Sequelize.literal(
+                        `(SELECT CAST(SUM(voted) AS INT)  fROM sub_comment_votes WHERE sub_comment_id = sub_comment.id)`
+                    ),
+                    "votes_total",
+                ],
+            ],
+            include: [{
+                    model: models.user,
+                    as: "creator",
+                    attributes: {
+                        exclude: [
+                            "email",
+                            "createdAt",
+                            "updatedAt",
+                            "deleted_at",
+                            "birthday",
+                            "reset_password_token",
+                            "reset_password_expiration",
+                            "refresh_token",
+                            "role_id",
+                            "bio",
+                            "type",
+                            "password",
+                        ],
+                    },
+                },
+                {
+                    model: models.user,
+                    as: "replyTo",
+                    attributes: {
+                        exclude: [
+                            "id",
+                            "createdAt",
+                            "updatedAt",
+                            "deleted_at",
+                            "birthday",
+                            "reset_password_token",
+                            "reset_password_expiration",
+                            "refresh_token",
+                            "role_id",
+                            "bio",
+                            "type",
+                            "password",
+                            "email",
+                            "avatar",
+                            "active",
+                        ],
+                    },
+                },
+                {
+                    model: models.link,
+                    as: "links",
+                    required: false,
+                    attributes: ["url"],
+                    through: { attributes: [] },
+                },
+            ],
+        });
+        if (!comment) {
+            next(ApiError.badRequestException(`Comentário ${id} não existe`));
+            return;
+        }
+        let distance;
+        if (lat && lng) {
+            distance = getDistance({ latitude: lat, longitude: lng }, {
+                latitude: comment.coordinates.coordinates[1],
+                longitude: comment.coordinates.coordinates[0],
+            });
+        }
+        let isNear;
+        if (distance <= 2500) isNear = true;
+        if (distance > 2500) isNear = false;
+
+        let linkInfo = {};
+
+        if (comment.links.length > 0) {
+            const { url } = comment.links[0];
+
+            linkInfo = await scrapeMetaTags(url);
+        }
+        let newData = comment.get({ plain: true });
+
+        let data = {
+            user_voted: newData["votes"] ? false : true,
+            user_vote: newData["votes"] == null ? null : newData["votes"],
+            user_isNear: isNear,
+            reply_to: newData["replyTo"] != null ? newData["replyTo"]["username"] : null,
+            // distance: newData['distance'] * 111, //km
+            info: {
+                id: newData["id"],
+                content: newData["content"],
+                links: linkInfo,
+                votes_total: newData["votes_total"],
+                comments_total: newData["comments_total"],
+                flags: newData["flags"],
+                is_flagged: newData["is_flagged"],
+                created_at: newData["createdAt"],
+                creator: newData["creator"],
+            },
+        };
+
+        const post = {
+            success: true,
+            message: `Comentário ${id} para ti`,
+            data
+        };
+        return res.status(200).json(post);
+    } catch (error) {
+
+        next(
+            ApiError.internalException("Não conseguiu se comunicar com o servidor")
+        );
+        return;
+    }
+};
 exports.store = async({ params, body, decoded }, res, next) => {
     try {
         const { comment_id } = params;

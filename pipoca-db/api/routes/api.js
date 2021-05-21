@@ -90,7 +90,7 @@ router.post('/v1/:comment_id/sub_comments', limiter, speedLimiter, authorizeMidd
 router.get('/v1/:comment_id/sub_comments', speedLimiter, authorizeMiddleware, user_sub_comments.index); //☑️❎ cache data with redis
 router.get('/v1/sub_comments', speedLimiter, authorizeMiddleware, user_sub_comments.show); //☑️❎ cache data with redis
 router.delete('/v1/sub_comments/:id', limiter, speedLimiter, authorizeMiddleware, user_sub_comments.soft); //☑️ need to be tested
-
+router.get('/v1/sub_comments/:id', speedLimiter, authorizeMiddleware, user_sub_comments.single);
 
 /**
  * dont forget to cache the authorizeMiddleware
