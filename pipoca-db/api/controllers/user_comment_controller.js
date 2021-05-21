@@ -122,7 +122,7 @@ exports.single = async({ params, query, decoded }, res, next) => {
             },
         };
 
-        const comment = {
+        const post = {
             success: true,
             message: `Comentário ${id} para ti`,
             data,
