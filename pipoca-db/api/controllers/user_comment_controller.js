@@ -105,8 +105,8 @@ exports.single = async({ params, query, decoded }, res, next) => {
         let newData = comment.get({ plain: true });
 
         let data = {
-            user_voted: newData["votes"] ? false : true,
-            user_vote: newData["votes"] == null ? null : newData["votes"],
+            user_voted: newData['vote'] ? false : true,
+            user_vote: newData['vote'] == null ? null : newData['vote'],
             user_isNear: isNear,
             reply_to: null,
             // distance: newData['distance'] * 111, //km
