@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pipoca/src/constants/widgets/smart_widgets/link_caller.dart';
+import 'package:pipoca/src/constants/widgets/helpers/feed_caller.dart';
 import 'package:pipoca/src/constants/widgets/helpers/webview_screen.dart';
 import 'package:pipoca/src/models/user_feed_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -40,6 +40,11 @@ class BagoCard extends StatelessWidget {
     GlobalKey key = GlobalKey();
 
     return ViewModelBuilder<BagoCardViewModel>.nonReactive(
+      onModelReady: (model) {
+        model.setData(bago.userVote, bago.userVoted!, bago.info!.votesTotal);
+      },
+      disposeViewModel: false,
+      
       builder: (context, model, child) {
         timeago.setLocaleMessages('pt_BR_short', timeago.PtBrShortMessages());
         final time = DateTime.parse(bago.info!.createdAt);
@@ -59,65 +64,65 @@ class BagoCard extends StatelessWidget {
         return RepaintBoundary(
           key: key,
           child: GestureDetector(
-            onTap: () => goToPage != null ? goToPage!() : null,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                      bottom:
-                          BorderSide(color: Colors.grey.shade200, width: 1))),
-              child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          // POST USER AVART
-                          _Avatar(
-                              key: Key('${bago.info!.id}-avatar'),
-                              isError: isError,
-                              image: bago.info!.creator.avatar),
+                onTap: () => goToPage != null ? goToPage!() : null,
+                child: Container(
+                  decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+              bottom:
+                  BorderSide(color: Colors.grey.shade200, width: 1))),
+                  child: Container(
+                    child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  // POST USER AVART
+                  _Avatar(
+          key: Key('${bago.info!.id}-avatar'),
+          isError: isError,
+          image: bago.info!.creator.avatar),
 
-                          // CONTENT WITH ERROR HANDLING
+                  // CONTENT WITH ERROR HANDLING
 
-                          _Content(
-                            focus: focus,
-                            controller: text,
-                            type: type,
-                            isError: isError,
-                            globalKey: key,
-                            commentId: commentId,
-                            postId: postId,
-                            text: bago.info!.content,
-                            links: bago.info!.links,
-                            index: bago.info!.id,
-                            creator: bago.info!.creator.username,
-                            timeNow: timeNow,
-                            points: bago.info!.votesTotal!,
-                            commentsTotal: bago.info!.commentsTotal,
-                            isVoted: bago.userVoted!,
-                            vote: bago.userVote!,
-                          ),
+                  _Content(
+                    focus: focus,
+                    controller: text,
+                    type: type,
+                    isError: isError,
+                    globalKey: key,
+                    isVoted: bago.userVoted!,
+                    commentId: commentId,
+                    postId: postId,
+                    text: bago.info!.content,
+                    links: bago.info!.links,
+                    index: bago.info!.id,
+                    isSingle: isSingle,
+                    creator: bago.info!.creator.username,
+                    timeNow: timeNow,
+                    commentsTotal: bago.info!.commentsTotal,
+                    
+                  ),
 
-                          // MORE BTN IT CHECKS IF CURRENT USER IS POST AUTHOR
-                          _MoreBtn(
-                            type: type,
-                            isError: isError,
-                            isSingle: isSingle,
-                            index: bago.info!.id,
-                            creator: bago.info!.creator.username,
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  // MORE BTN IT CHECKS IF CURRENT USER IS POST AUTHOR
+                  _MoreBtn(
+                    type: type,
+                    isError: isError,
+                    isSingle: isSingle,
+                    index: bago.info!.id,
+                    creator: bago.info!.creator.username,
+                  )
+                ],
               ),
             ),
-          ),
+          ],
+                    ),
+                  ),
+                ),
+              ),
         );
       },
       viewModelBuilder: () => BagoCardViewModel(),
@@ -229,20 +234,23 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
   final FocusNode? focus;
   final TextEditingController? controller;
   final Type type;
-  final bool isError;
+  final bool isError, isSingle, isVoted;
   final String creator, text;
   final String timeNow;
-  final bool isVoted;
   final Links links;
   final GlobalKey globalKey;
   final int index;
-  final int? vote, points, commentId, postId, commentsTotal;
+
+  final int? commentId, postId, commentsTotal;
   const _Content(
       {Key? key,
       this.focus,
       this.commentId,
       this.postId,
+      required this.isVoted,
+      
       this.controller,
+      required this.isSingle,
       required this.type,
       required this.isError,
       required this.globalKey,
@@ -250,18 +258,15 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
       required this.text,
       required this.creator,
       required this.timeNow,
-      required this.isVoted,
-      this.vote,
-      this.points,
       required this.index,
       this.commentsTotal})
       : super(key: key, reactive: true);
 
   @override
   Widget build(BuildContext context, BagoCardViewModel model) {
-    int point = points != null ? points! : 0;
-    int total = model.points ?? point;
-
+    int votes = model.points ?? 0;
+ 
+   
     return Expanded(
       flex: 14,
       child: Container(
@@ -347,16 +352,16 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       children: <Widget>[
                         InkWell(
                           onTap: () {
-                            if (vote! == -1 ||
-                                model.down == true && model.up == false ||
+                            if (model.down == true && model.up == false ||
                                 model.up == null) {
-                              model.vote(
+                              model.voting(
+                                isSingle: isSingle,
                                 commentId: commentId,
                                 postId: postId,
                                 type: type,
                                 id: index,
                                 direction: 'up',
-                                points: points,
+                                points: model.points,
                               );
                             }
                           },
@@ -364,8 +369,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             child: Icon(
                               PipocaBasics.up_arrow,
                               size: 20,
-                              color: vote == 1 ||
-                                      model.up == true && model.down == false
+                              color: 
+                                      isVoted == true && votes > 0 || model.up == true && model.down == false 
                                   ? red
                                   : Colors.grey[400],
                             ),
@@ -375,11 +380,11 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                           width: 5,
                         ),
                         Center(
-                          child: Text('$total',
+                          child: Text('$votes',
                               style: TextStyle(
-                                  color: total >= 1 
+                                  color: votes >= 1
                                       ? red
-                                      : total <= -1
+                                      : votes <= -1
                                           ? Colors.black
                                           : Colors.grey,
                                   fontSize: 13,
@@ -390,16 +395,16 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                         ),
                         InkWell(
                           onTap: () {
-                            if (vote! == 1 ||
-                                model.up == true && model.down == false ||
+                            if (model.up == true && model.down == false ||
                                 model.down == null) {
-                              model.vote(
+                              model.voting(
+                                isSingle: isSingle,
                                 commentId: commentId,
                                 postId: postId,
                                 type: type,
                                 id: index,
                                 direction: 'down',
-                                points: points,
+                                points: model.points,
                               );
                             }
                           },
@@ -407,8 +412,8 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                             child: Icon(
                               PipocaBasics.down_arrow,
                               size: 20,
-                              color: vote == -1 ||
-                                      model.down == true && model.up == false
+                              color:  isVoted == true && votes < 0 || model.down == true && model.up == false 
+                                    
                                   ? Colors.black
                                   : Colors.grey[400],
                             ),
@@ -417,90 +422,88 @@ class _Content extends ViewModelWidget<BagoCardViewModel> {
                       ],
                     ),
                   ),
-                        if(commentsTotal != null) ... [
-                          Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-
-                            Text('$commentsTotal',
-                                style: TextStyle(
-                                    color: commentsTotal! > 0
-                                        ? Colors.grey.shade600
-                                        : Colors.grey[400],
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600)),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Container(
-                              child: Icon(
-                                PipocaBasics.chat,
-                                size: 20,
-                                color: Colors.grey[400],
-                              ),
-                            ),
-                          ],
+                  if (commentsTotal != null) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('$commentsTotal',
+                            style: TextStyle(
+                                color: commentsTotal! > 0
+                                    ? Colors.grey.shade600
+                                    : Colors.grey[400],
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600)),
+                        SizedBox(
+                          width: 5,
                         ),
-                        ],
-
-                        if (type == Type.POST) ...[
-                          GestureDetector(
-                            onTap: () => model.share(globalKey),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 3.0),
-                                  child: Icon(
-                                    PipocaBasics.export,
-                                    size: 19,
-                                    color: Colors.grey[400],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text('PARTILHAR',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                    )),
-                              ],
+                        Container(
+                          child: Icon(
+                            PipocaBasics.chat,
+                            size: 20,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (type == Type.POST) ...[
+                    GestureDetector(
+                      onTap: () => model.share(globalKey),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3.0),
+                            child: Icon(
+                              PipocaBasics.export,
+                              size: 19,
+                              color: Colors.grey[400],
                             ),
                           ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text('PARTILHAR',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              )),
                         ],
-                        if (type == Type.COMMENT || type == Type.SUB) ...[
-                          GestureDetector(
-                            onTap: () {
-                              focus!.requestFocus();
-                              controller!.text = '@$creator: ';
-                            },
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 3.0),
-                                  child: Icon(
-                                    FontAwesomeIcons.reply,
-                                    size: 19,
-                                    color: Colors.grey[400],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text('RESPONDER',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                    )),
-                              ],
+                      ),
+                    ),
+                  ],
+                  if (type == Type.COMMENT || type == Type.SUB) ...[
+                    GestureDetector(
+                      onTap: () {
+                        focus!.requestFocus();
+                        controller!.text = '@$creator: ';
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3.0),
+                            child: Icon(
+                              FontAwesomeIcons.reply,
+                              size: 19,
+                              color: Colors.grey[400],
                             ),
                           ),
-                        ]
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text('RESPONDER',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ]
                 ],
               ),
             ),

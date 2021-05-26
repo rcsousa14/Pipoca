@@ -133,6 +133,7 @@ class FeedService extends IstoppableService with ReactiveServiceMixin {
           await _api.getPostData(coords: info.coordinates, postId: info.id);
       _data[_data.indexWhere(
           (element) => element.info!.id == data.data!.info!.id)] = data.data!;
+          
       singleSink.add(ApiResponse.completed(data));
       return ApiResponse.completed(data);
     } catch (e) {

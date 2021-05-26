@@ -54,8 +54,8 @@ class PostViewModel extends StreamViewModel<ApiResponse<SinglePost>> {
 
   //FUNCTION TO RETURN BACK
   Future goBack() async {
-    
-    return _navigationService.back();
+    _navigationService.back();
+    return await refreshFeed();
   }
 
   //FUTURE TO POST COMMENT

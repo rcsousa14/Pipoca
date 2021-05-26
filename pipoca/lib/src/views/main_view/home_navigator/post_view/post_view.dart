@@ -35,8 +35,8 @@ class PostView extends HookWidget {
 
     return ViewModelBuilder<PostViewModel>.reactive(
       onModelReady: (model) {
-        //model.fetchSingle(id: data.info!.id);
-        //model.pushComments();
+        model.fetchSingle(id: data.info!.id);
+        model.pushComments();
       },
       builder: (context, model, child) {
         Widget loadingIndicator = focus.hasFocus == true
@@ -46,7 +46,7 @@ class PostView extends HookWidget {
                   text.clear();
                 },
                 child: new Container(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withOpacity(0.05),
                   width: width,
                   height: height,
                 ),
@@ -109,6 +109,7 @@ class PostView extends HookWidget {
                       ],
                       if (model.dataReady &&
                           model.data!.status == Status.ERROR) ...[
+                         
                         BagoCard(
                           type: Type.POST,
                           isError: true,
@@ -117,7 +118,7 @@ class PostView extends HookWidget {
                           bago: data,
                         ),
                       ],
-                      if (data.info != null && !model.dataReady) ...[
+                       if (data.info != null && !model.dataReady) ...[
                         BagoCard(
                           type: Type.POST,
                           isError: false,
@@ -126,9 +127,7 @@ class PostView extends HookWidget {
                           bago: data,
                         ),
                       ],
-                      if (data.info == null && !model.dataReady) ...[
-                        // THIS SPACE FOR FOR SOME SORT OF LOADING FOR THE POST THIS WILL BE DONE ONCE THE DYNAMIC LINK IS SET
-                      ],
+                     
 
                       InkWell(
                         onTap: () => model.changeFilter,
@@ -152,10 +151,12 @@ class PostView extends HookWidget {
                         ),
                       ),
                       //TODO: add list of comments here
-                      // Container(
-                      //     color: Colors.white,
-                      //     margin: const EdgeInsets.only(bottom: 60),
-                      //     child: CommentListView(focus: focus, text: text,))
+                       Container(
+                        
+                           color: Colors.white,
+                           margin: const EdgeInsets.only(bottom: 60),
+                          child: CommentListView(focus: focus, text: text,)
+                       )
                     ],
                   ),
                   Align(

@@ -33,6 +33,8 @@ class BagoCardViewModel extends BaseViewModel {
   //VARIABLES
   bool? _up;
   bool? _down;
+  bool? isVoted;
+
   int? _points;
 
   // GETTERS
@@ -41,13 +43,37 @@ class BagoCardViewModel extends BaseViewModel {
   bool get filter => _homeNavigator.filter;
   Future get refreshFeed => _homeNavigator.refreshFeed(isRefresh: true);
   int get page => _homeNavigator.currentPage;
+
   bool? get up => _up;
   bool? get down => _down;
   int? get points => _points;
 
+  //SET DATA
+  void setData(int? userVote, bool userVoted, int? votesTotal) {
+    _points = votesTotal;
+    isVoted = userVoted;
+
+    
+      if (userVote == -1) {
+        _up = false;
+        _down = true;
+      }
+      if (userVote == 1) {
+        _up = true;
+        _down = false;
+      }
+    
+    print('$_points , $_up, $_down, $isVoted');
+    notifyListeners();
+  }
+
 //FUTURE TO DELETE POST
   Future delete(
-      {required int id, required bool isSingle, required Type type, int? postId, int? commentId}) async {
+      {required int id,
+      required bool isSingle,
+      required Type type,
+      int? postId,
+      int? commentId}) async {
     var response = await _bottomSheetService.showBottomSheet(
         cancelButtonTitle: 'Não',
         confirmButtonTitle: 'Sim',
@@ -66,8 +92,7 @@ class BagoCardViewModel extends BaseViewModel {
               status: result.status,
               id: id,
               isSingle: isSingle,
-              msg: result.data!.message
-              );
+              msg: result.data!.message);
         case Type.COMMENT:
           result = await _commentService.deletPost(id: id);
           return await deletingStatus(
@@ -85,7 +110,7 @@ class BagoCardViewModel extends BaseViewModel {
               status: result.status,
               id: id,
               isSingle: isSingle,
-              msg: result.data!.message, 
+              msg: result.data!.message,
               commentId: commentId);
       }
     }
@@ -96,13 +121,14 @@ class BagoCardViewModel extends BaseViewModel {
       required int id,
       required bool isSingle,
       required Type type,
-      String? msg, int? postId, int? commentId}) async {
+      String? msg,
+      int? postId,
+      int? commentId}) async {
     if (status == Status.ERROR) {
       _snackbarService.showSnackbar(message: msg!);
       switch (type) {
         case Type.POST:
-
-         return await refreshFeed;
+          return await refreshFeed;
         case Type.COMMENT:
         case Type.SUB:
           // TODO: Future wait of both comment and sub list since they will always be together.
@@ -111,10 +137,9 @@ class BagoCardViewModel extends BaseViewModel {
     }
     if (status == Status.COMPLETED) {
       _feedService.delete(id, isSingle);
-        switch (type) {
+      switch (type) {
         case Type.POST:
-
-         return await refreshFeed;
+          return await refreshFeed;
         case Type.COMMENT:
         case Type.SUB:
           // TODO: Future wait of both comment and sub list since they will always be together.
@@ -124,10 +149,11 @@ class BagoCardViewModel extends BaseViewModel {
   }
 
 //FUTURE TO MAKE A VOTE
-  Future vote(
+  Future voting(
       {required String direction,
       required int id,
       required Type type,
+      required bool isSingle,
       int? commentId,
       int? postId,
       int? points}) async {
@@ -136,23 +162,29 @@ class BagoCardViewModel extends BaseViewModel {
       _up = true;
       _down = false;
 
-      if (points != null) {
+      if (points != null && isVoted == false) {
         _points = ++points;
+      } else if (points == -1 && isVoted == true) {
+        _points = 1;
       } else {
         _points = 1;
       }
+      isVoted = true;
       vote = _points!;
       notifyListeners();
     }
     if (direction == "down") {
       _up = false;
       _down = true;
-      _points = 1;
-      if (points != null) {
+
+      if (points != null && isVoted == false) {
         _points = --points;
+      } else if (points == 1 && isVoted == true) {
+        _points = -1;
       } else {
         _points = -1;
       }
+      isVoted = true;
       vote = _points!;
       notifyListeners();
     }
@@ -167,7 +199,8 @@ class BagoCardViewModel extends BaseViewModel {
               voted: vote,
             ),
             filter: filter == false ? 'date' : 'pipocar');
-        return await voteStatus(status: result.status, type: type, postId: id);
+        return await voteStatus(
+            status: result.status, type: type, postId: id, isSingle: isSingle);
       case Type.COMMENT:
         result = await _commentService.pointComment(
             point: PostPoint(id: id, voted: vote),
@@ -186,6 +219,7 @@ class BagoCardViewModel extends BaseViewModel {
   Future voteStatus(
       {required Status status,
       required Type type,
+      bool? isSingle,
       int? commentId,
       int? subId,
       int? postId}) async {
@@ -196,13 +230,15 @@ class BagoCardViewModel extends BaseViewModel {
     if (status == Status.COMPLETED) {
       switch (type) {
         case Type.POST:
-          await fetchSingle(id: postId!, type: type);
-          setNull();
+          if (isSingle! == true) {
+            await fetchSingle(id: postId!, type: type);
+          }
+
           return await refreshFeed;
 
         case Type.COMMENT:
           await fetchSingle(id: commentId!, type: type);
-          setNull();
+
           return await _commentService.fetchComments(
               info: CommentInfo(
                   coordinates: _location.currentLocation,
@@ -212,7 +248,6 @@ class BagoCardViewModel extends BaseViewModel {
               isRefresh: true);
         case Type.SUB:
           await fetchSingle(id: subId!, type: type);
-          setNull();
 
           return await _subService.fetchSubs(
               info: CommentInfo(
@@ -222,13 +257,6 @@ class BagoCardViewModel extends BaseViewModel {
               isRefresh: true);
       }
     }
-  }
-
-  void setNull() {
-    _up = null;
-    _down = null;
-    _points = null;
-    notifyListeners();
   }
 
   //FUTURE TO SHARE POST
@@ -244,14 +272,26 @@ class BagoCardViewModel extends BaseViewModel {
       case Type.POST:
         result = await _feedService.singlePost(
             info: PostInfo(coordinates: _location.currentLocation, id: id));
+        if (result.status == Status.COMPLETED) {
+          Data post = result.data!.data!;
+          setData(post.userVote, post.userVoted!, post.info!.votesTotal);
+        }
         return result;
       case Type.COMMENT:
         result = await _commentService.singlePost(
             info: PostInfo(coordinates: _location.currentLocation, id: id));
+        if (result.status == Status.COMPLETED) {
+          Data post = result.data!.data!;
+          setData(post.userVote, post.userVoted!, post.info!.votesTotal);
+        }
         return result;
       case Type.SUB:
         result = await _subService.singlePost(
             info: PostInfo(coordinates: _location.currentLocation, id: id));
+        if (result.status == Status.COMPLETED) {
+          Data post = result.data!.data!;
+          setData(post.userVote, post.userVoted!, post.info!.votesTotal);
+        }
         return result;
     }
   }
